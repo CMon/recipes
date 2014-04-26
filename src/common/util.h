@@ -4,7 +4,7 @@
 
 namespace Util
 {
-    bool setConsoleEcho(const bool on);
+    bool enableConsoleEcho(const bool enable);
+    bool enableConsoleBufferedIo(const bool enable);
     QString enterPassword(const QString & prompt);
-
 }
