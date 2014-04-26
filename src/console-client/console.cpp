@@ -48,10 +48,12 @@ CommandAndArguments Console::getNextCommand()
 
     enableConsole(false);
     int currentHistoryIndex = history_.size();
+    int cursorPos = string.size();
     do {
         c = getchar();
 
         const int origStringLen = string.size();
+        const int oldCursorPos = cursorPos;
         if (c == '\n' || c == '\r') {
             endOfLine = true;
         } else if (c == 0x1b) { // escape char
@@ -64,6 +66,7 @@ CommandAndArguments Console::getNextCommand()
                         currentHistoryIndex = qMax(currentHistoryIndex - 1, 0);
                         string = history_.at(currentHistoryIndex).toString();
                     }
+                    cursorPos = string.size();
                 } else if (escape2 == 'B') {
                     // down
                     currentHistoryIndex = qMin(currentHistoryIndex + 1, history_.size());
@@ -72,6 +75,13 @@ CommandAndArguments Console::getNextCommand()
                     } else {
                         string = history_.at(currentHistoryIndex).toString();
                     }
+                    cursorPos = string.size();
+                } else if (escape2 == 'D') {
+                    // left
+                    cursorPos = qMax(cursorPos - 1, 0);
+                } else if (escape2 == 'C') {
+                    // right
+                    cursorPos = qMin(cursorPos + 1, string.size());
                 } else {
                     LOG_INFO("Unhandled escape2: %1", escape2);
                 }
@@ -84,13 +94,21 @@ CommandAndArguments Console::getNextCommand()
                 c = '\b';
                 string.chop(1);
             }
+            --cursorPos;
         } else {
-            string.append(c);
+            string.insert(cursorPos, c);
+            ++cursorPos;
         }
+
+        // move cursor behind word
+        for (int i = 0; i < origStringLen - oldCursorPos; ++i) printf(" ");
 
         // write new string
         for(int i = 0; i < origStringLen; ++i) printf("\b \b");
         printf("%s", qPrintable(string));
+
+        // move cursor into position
+        for (int i = 0; i < string.size() - cursorPos; ++i) printf("\b");
     } while (!endOfLine);
     printf("\n");
     enableConsole(true);
