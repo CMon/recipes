@@ -1,11 +1,24 @@
 #pragma once
 
 #include <QObject>
+#include <QStringList>
 #include <QTextStream>
 
-class QStringList;
+class CommandAndArguments
+{
+public:
+    CommandAndArguments() {}
+    CommandAndArguments(const QString & command, const QStringList & arguments)
+        : command_(command), arguments_(arguments) {}
 
-typedef QPair<QString, QStringList> CommandAndArguments;
+    QString toString() const { return command_ + " " + arguments_.join(" "); }
+    QString command() const { return command_; }
+    QStringList arguments() const { return arguments_; }
+
+private:
+    QString command_;
+    QStringList arguments_;
+};
 
 class Console : public QObject
 {
@@ -27,7 +40,6 @@ private:
 private:
     QString ps1_;
     QTextStream out_;
-    QTextStream in_;
 
     QList<CommandAndArguments> history_;
 };
