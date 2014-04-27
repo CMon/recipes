@@ -34,33 +34,33 @@ Thoughts about the database structure(tables)
 ** PK(FK(portionId), language(zB: en_GB))
 ** category  //Desert, Mainmenu, starter, summer, winter,..., vegetarian, vegan, 
 
-* receipts
+* recipes
 ** id
 ** FK(portionId)
 ** portionCount
 ** FK(createdByUserId)
 
-* receiptTitle_i18n
-** PK(FK(receiptId), language(de_DE))
+* recipeTitle_i18n
+** PK(FK(recipeId), language(de_DE))
 ** KEY(description:varchar255)
 
-* receiptDescription_i18n
-** PK(FK(receiptId), language(de_DE))
+* recipeDescription_i18n
+** PK(FK(recipeId), language(de_DE))
 ** description:Text
 
-* receiptPictures
-** PK(FK(receiptId), id)
+* recipePictures
+** PK(FK(recipeId), id)
 ** pathToImg
 
 * ReceiptToIngredients
-** PK(FK(receiptId), id)
+** PK(FK(recipeId), id)
 ** FK(ingridientId)
 ** isOptional
 ** unitCount
 ** FK(unitId)
 
 * ReceiptToCategory
-** PK(FK(receiptId), FK(categoryId))
+** PK(FK(recipeId), FK(categoryId))
 
 
 
@@ -74,11 +74,11 @@ Thoughts about the database structure(tables)
 ** lastName
 ** isDeleted
 
-* receiptBooks  // only used for storing foreign receipts
-** PK(FK(userId), FK(receiptId))
+* recipeBooks  // only used for storing foreign recipes
+** PK(FK(userId), FK(recipeId))
 
 * ratings
-** PK(FK(receiptId), FK(userId))
+** PK(FK(recipeId), FK(userId))
 ** rating       // -1 - 5 (-1 unrated, 0 stars to 5 stars)
 ** notes:text(1024)
 
