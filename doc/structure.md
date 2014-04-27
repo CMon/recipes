@@ -15,6 +15,7 @@ Receipts
 
 * ingridients
 ** id
+** FK(unitId)
 ** isLiquid    //used for translation of units into gram or ml
 ** FK(foodCategoryId) // vegan, vegetarian, ...
 ** containsGluten
@@ -33,7 +34,7 @@ Receipts
 ** id
 ** isFoodCategory
 * category_i18n
-** PK(FK(portionId), language(zB: en_GB))
+** PK(FK(categoryId), language(zB: en_GB))
 ** category  //Desert, Mainmenu, starter, summer, winter,..., vegetarian, vegan, 
 
 * recipes

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QLocale>
 #include <QString>
 
 namespace Util
@@ -8,3 +9,5 @@ namespace Util
     bool enableConsoleBufferedIo(const bool enable);
     QString enterPassword(const QString & prompt);
 }
+
+typedef QHash<QLocale, QString> Locale2String;

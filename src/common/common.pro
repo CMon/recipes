@@ -4,7 +4,13 @@ QT       += core
 
 HEADERS += \
     log.h \
-    util.h
+    util.h \
+    recipe.h \
+    ingredient.h \
+    user.h \
+    category.h \
+    unit.h \
+    portion.h
 
 TARGET = common_lib
 initLib()
