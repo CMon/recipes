@@ -1,5 +1,7 @@
 include(config.pri)
 
+OTHER_FILES = doc/structure.md
+
 TEMPLATE = subdirs
 
 CONFIG(common) {

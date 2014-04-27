@@ -1,6 +1,8 @@
 Thoughts about the database structure(tables)
+=============================================
 
------- Receipts ------
+Receipts
+--------
 
 * units
 ** id
@@ -62,9 +64,9 @@ Thoughts about the database structure(tables)
 * ReceiptToCategory
 ** PK(FK(recipeId), FK(categoryId))
 
+Users
+-----
 
-
----- Users ----
 * users
 ** id
 ** login
