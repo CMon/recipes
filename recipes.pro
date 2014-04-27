@@ -7,6 +7,10 @@ CONFIG(common) {
     addSubdirs(src/common)
 }
 
+CONFIG(database) {
+    addSubdirs(src/database)
+}
+
 CONFIG(clients) {
     message("Building clients")
     addSubdirs(src/console-client src/common)
@@ -14,5 +18,5 @@ CONFIG(clients) {
 
 CONFIG(server) {
     message("Building server")
-    addSubdirs(src/server)
+    addSubdirs(src/server src/database src/common)
 }
