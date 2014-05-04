@@ -14,4 +14,8 @@ HEADERS += \
     permission.h
 
 TARGET = common_lib
+
+useLibs(cflib_serialize cflib_util)
 lib($$RECIPES_ROOT/lib)
+serializeGen()
+
