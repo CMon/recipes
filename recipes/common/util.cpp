@@ -3,6 +3,7 @@
 #ifdef Q_OS_WIN
     #include <Windows.h>
 #else
+    #include <unistd.h>
     #include <termios.h>
 #endif
 
