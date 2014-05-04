@@ -10,7 +10,8 @@ HEADERS += \
     user.h \
     category.h \
     unit.h \
-    portion.h
+    portion.h \
+    permission.h
 
 TARGET = common_lib
 lib($$RECIPES_ROOT/lib)
