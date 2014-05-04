@@ -72,7 +72,7 @@ Users
 ** id
 ** login
 ** passwordHash
-** passwordSalt
+** permissions
 ** preName
 ** lastName
 ** isDeleted
