@@ -1,4 +1,0 @@
-CONFIG += release
-#CONFIG += debug
-
-CONFIG += clients server

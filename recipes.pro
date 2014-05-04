@@ -1,24 +1,9 @@
-include(config.pri)
+include(cflib/include.pri)
 
-OTHER_FILES = doc/structure.md
+cache()
 
-TEMPLATE = subdirs
+addSubdir(cflib)
+addSubdir(recipes, cflib)
 
-CONFIG(common) {
-    message("Building common")
-    addSubdirs(src/common)
-}
-
-CONFIG(database) {
-    addSubdirs(src/database)
-}
-
-CONFIG(clients) {
-    message("Building clients")
-    addSubdirs(src/console-client src/common)
-}
-
-CONFIG(server) {
-    message("Building server")
-    addSubdirs(src/server src/database src/common)
-}
+OTHER_FILES = \
+    doc/structure.md \

@@ -1,6 +1,6 @@
-!include(../../config.pri):error("base config file (config.pri) not available")
+!include(../config.pri):error("Could not find config.pri")
 
-QT       += core
+QT -= gui
 
 HEADERS += \
     log.h \
@@ -13,4 +13,4 @@ HEADERS += \
     portion.h
 
 TARGET = common_lib
-initLib()
+lib($$RECIPES_ROOT/lib)

@@ -1,13 +1,11 @@
-!include(../../config.pri):error("base config file (config.pri) not available")
+!include(../config.pri):error("Could not find config.pri")
 
-QT       += core network
+QT       += network
 QT       -= gui
 
 TARGET = console-client
 
 CONFIG   += console
-CONFIG   -= app_bundle
-TEMPLATE = app
 
 SOURCES += \
     main.cpp \
@@ -18,4 +16,5 @@ HEADERS += \
     consoleclient.h \
     console.h
 
-initApp(common_lib)
+useLibs($$RECIPES_ROOT/lib, common_lib)
+app()

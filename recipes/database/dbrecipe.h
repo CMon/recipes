@@ -1,4 +1,4 @@
-#pragma oncd
+#pragma once
 
 namespace DB {
 void addRecipe();
