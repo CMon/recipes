@@ -5,6 +5,7 @@ QT -= gui
 
 HEADERS += \
     dbrecipe.h \
+    dbuser.h
 
 TARGET = database_lib
 
