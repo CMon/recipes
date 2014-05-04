@@ -3,6 +3,7 @@
 QT -= gui
 
 HEADERS += \
+    userservice.h
 
 TARGET = services_lib
 
