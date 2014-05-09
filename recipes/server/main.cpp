@@ -22,12 +22,18 @@ int main(int argc, char ** argv)
     cflib::http::ApiServer api;
     api.registerService(&userService);
 
+    const int port = 8080;
+    const QHostAddress listenOn = QHostAddress::LocalHost;
+
     cflib::http::Server serv;
     serv.registerHandler(&api);
-    if (!serv.start(8080)) {
+    if (!serv.start(port, listenOn)) {
         QTextStream(stderr) << "cannot start HTTP-Server (port already in use)" << endl;
         return 1;
     }
+    const QString startedMsg = QString("Started Server. Listening on %1:%2").arg(listenOn.toString()).arg(port);
+    logInfo(qPrintable(startedMsg));
+    QTextStream(stdout) << startedMsg << endl;
 
     int retval = a.exec();
     logInfo("terminating softly with retval: %1", retval);
