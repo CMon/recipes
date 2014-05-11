@@ -93,8 +93,8 @@ CommandAndArguments Console::getNextCommand()
             if (string.size() > 0) {
                 c = '\b';
                 string.chop(1);
+                --cursorPos;
             }
-            --cursorPos;
         } else {
             string.insert(cursorPos, c);
             ++cursorPos;
