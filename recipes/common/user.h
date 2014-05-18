@@ -7,44 +7,45 @@
 class UserId
 {
 public:
-    UserId() : id_(-1) {}
-    UserId(const int id) : id_(id) {}
+	UserId() : id_(-1) {}
+	UserId(const int id) : id_(id) {}
 
-    QString toString() const { return QString::number(id_); }
+	QString toString() const { return QString::number(id_); }
 
-    bool isNull() const { return id_ == -1; }
-    bool isValid() const { return id_ > 0; }
+	bool isNull() const { return id_ == -1; }
+	bool isValid() const { return id_ > 0; }
 
 private:
-    int id_;
+	int id_;
 };
 
 class User
 {
-    SERIALIZE_CLASS
-public:
-    User();
-    User(const UserId & id, const QString & login, const Permissions & permissions, const QString & firstName, const QString & lastName, bool isDeleted);
+	SERIALIZE_CLASS
 
-    bool isNull() const;
-    bool hasPermission(const Permission & permission) const;
-    bool isValid() const;
+	public:
+	User();
+	User(const UserId & id, const QString & login, const Permissions & permissions, const QString & firstName, const QString & lastName, bool isDeleted);
 
-    QString toString() const;
+	bool isNull() const;
+	bool hasPermission(const Permission & permission) const;
+	bool isValid() const;
 
-    QString getLogin() const { return login_; }
-    Permissions getPermissions() const { return permissions_; }
-    QString getFirstName() const { return firstName_; }
-    QString getLastName() const { return lastName_; }
-    bool getIsDeleted() const { return isDeleted_; }
+	QString toString() const;
+
+	QString getLogin() const { return login_; }
+	Permissions getPermissions() const { return permissions_; }
+	QString getFirstName() const { return firstName_; }
+	QString getLastName() const { return lastName_; }
+	bool getIsDeleted() const { return isDeleted_; }
 
 private:
-    UserId id_;
+	UserId id_;
 
 private serialized:
-    QString login_;
-    Permissions permissions_;
-    QString firstName_;
-    QString lastName_;
-    bool    isDeleted_;
+	QString login_;
+	Permissions permissions_;
+	QString firstName_;
+	QString lastName_;
+	bool    isDeleted_;
 };

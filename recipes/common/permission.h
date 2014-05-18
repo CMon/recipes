@@ -6,20 +6,21 @@
 
 class Permission
 {
-    SERIALIZE_CLASS
+	SERIALIZE_CLASS
+
 public:
-    enum Type {
-        Admin      = 1 << 0,
-    };
+	enum Type {
+		Admin      = 1 << 0,
+	};
 
-    Permission(uint perm) : perm(perm) {}
-    operator uint() const { return perm; }
+	Permission(uint perm) : perm(perm) {}
+	operator uint() const { return perm; }
 
-    bool operator==(const Permission & rhs) const { return perm == rhs.perm; }
-    bool operator!=(const Permission & rhs) const { return !operator==(rhs); }
+	bool operator==(const Permission & rhs) const { return perm == rhs.perm; }
+	bool operator!=(const Permission & rhs) const { return !operator==(rhs); }
 
 private serialized:
-    uint perm;
+	uint perm;
 };
 
 typedef QFlags<Permission> Permissions;

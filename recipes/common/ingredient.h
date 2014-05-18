@@ -7,20 +7,20 @@
 class Ingredient
 {
 public:
-    Ingredient();
+	Ingredient();
 
-    void setIsOptional(bool optional) { isOptional = optional; }
-    bool getIsOptional() { return isOptional; }
+	void setIsOptional(bool optional) { isOptional = optional; }
+	bool getIsOptional() { return isOptional; }
 
 private:
-    Locale2String name;
-    Unit unit;
-    Category foodCategory;
-    bool isLiquid;
-    bool containsGluten;
-    bool containsLactose;
+	Locale2String name;
+	Unit unit;
+	Category foodCategory;
+	bool isLiquid;
+	bool containsGluten;
+	bool containsLactose;
 
-    bool isOptional;
+	bool isOptional;
 };
 
 typedef QList<Ingredient> Ingredients;

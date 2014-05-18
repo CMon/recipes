@@ -5,11 +5,11 @@
 class Category
 {
 public:
-    Category();
+	Category();
 
 private:
-    Locale2String name;
-    bool isFoodCategory;
+	Locale2String name;
+	bool isFoodCategory;
 };
 
 typedef QList<Category> Categories;

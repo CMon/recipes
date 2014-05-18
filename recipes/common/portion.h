@@ -5,8 +5,8 @@
 class Portion
 {
 public:
-    Portion();
+	Portion();
 
 private:
-    Locale2String description;
+	Locale2String description;
 };

@@ -11,14 +11,14 @@
 class Recipe
 {
 public:
-    Recipe();
+	Recipe();
 
 private:
-    User creatingUser;
-    Portion portion;
-    Categories categories;
-    Locale2String title;
-    Locale2String description;
-    QStringList imagePaths;
-    Ingredients ingredients;
+	User creatingUser;
+	Portion portion;
+	Categories categories;
+	Locale2String title;
+	Locale2String description;
+	QStringList imagePaths;
+	Ingredients ingredients;
 };

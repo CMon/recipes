@@ -8,16 +8,16 @@ class QStringList;
 
 class ConsoleClient : public QObject
 {
-    Q_OBJECT
+	Q_OBJECT
 public:
-    ConsoleClient(QObject *parent);
+	ConsoleClient(QObject *parent);
 
-    void start();
+	void start();
 
 private slots:
-    void command(const QString & command, const QStringList & arguments);
+	void command(const QString & command, const QStringList & arguments);
 
 private:
-    Console console_;
-    Remote  remote_;
+	Console console_;
+	Remote  remote_;
 };

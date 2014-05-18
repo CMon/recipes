@@ -11,108 +11,108 @@ USE_LOG(LogCat::Db)
 
 bool DB::updateUser(const User & user, const QString password)
 {
-    Transaction;
-    QSqlQuery query(ta.db);
+	Transaction;
+	QSqlQuery query(ta.db);
 
-    query.prepare(
-        "INSERT INTO "
-            "users "
-        "("
-            "login, firstName, lastName, passwordHash, permissions, isDeleted"
-        ") VALUES ("
-            ":login, :firstName, :lastName, :passwordHash, :permissions, :isDeleted"
-        ")"
-    );
-    query.bindValue(":login",        user.getLogin());
-    query.bindValue(":firstName",    user.getFirstName());
-    query.bindValue(":lastName",     user.getLastName());
-    query.bindValue(":passwordHash", cflib::crypt::hashPassword(password));
-    query.bindValue(":permissions",  (uint)user.getPermissions());
-    query.bindValue(":isDeleted",    false);
+	query.prepare(
+	            "INSERT INTO "
+	                "users "
+	            "("
+	                "login, firstName, lastName, passwordHash, permissions, isDeleted"
+	            ") VALUES ("
+	                ":login, :firstName, :lastName, :passwordHash, :permissions, :isDeleted"
+	            ")"
+	            );
+	query.bindValue(":login",        user.getLogin());
+	query.bindValue(":firstName",    user.getFirstName());
+	query.bindValue(":lastName",     user.getLastName());
+	query.bindValue(":passwordHash", cflib::crypt::hashPassword(password));
+	query.bindValue(":permissions",  (uint)user.getPermissions());
+	query.bindValue(":isDeleted",    false);
 
-    if (!execQuery(query)) return false;
+	if (!execQuery(query)) return false;
 
-    return ta.commit();
+	return ta.commit();
 }
 
 User DB::getUser(const QString & login)
 {
-    Transaction;
-    QSqlQuery query(ta.db);
+	Transaction;
+	QSqlQuery query(ta.db);
 
-    query.prepare(
-            "SELECT "
-                "id, login, permissions, firstName, lastName, isDeleted "
-            "FROM "
-                "users "
-            "WHERE "
-                "login = :login"
-    );
-    query.bindValue(":login", login);
-    if (!execQueryCommit(query) || !query.next()) return User();
+	query.prepare(
+	            "SELECT "
+	                "id, login, permissions, firstName, lastName, isDeleted "
+	            "FROM "
+	                "users "
+	            "WHERE "
+	                "login = :login"
+	            );
+	query.bindValue(":login", login);
+	if (!execQueryCommit(query) || !query.next()) return User();
 
-    User user(
-                UserId(query.value(0).toInt()),
-                query.value(1).toString(),
-                Permission(query.value(2).toUInt()),
-                query.value(3).toString(),
-                query.value(4).toString(),
-                query.value(5).toBool()
-                );
+	User user(
+	            UserId(query.value(0).toInt()),
+	            query.value(1).toString(),
+	            Permission(query.value(2).toUInt()),
+	            query.value(3).toString(),
+	            query.value(4).toString(),
+	            query.value(5).toBool()
+	            );
 
-    return user;
+	return user;
 }
 
 bool DB::checkPassword(const QString &login, const QString &password)
 {
-    Transaction;
-    QSqlQuery query(ta.db);
+	Transaction;
+	QSqlQuery query(ta.db);
 
-    query.prepare(
-            "SELECT "
-                "passwordHash "
-            "FROM "
-                "users "
-            "WHERE "
-                "login = :login"
-    );
-    query.bindValue(":login", login);
-    if (!execQueryCommit(query) || !query.next()) return false;
+	query.prepare(
+	            "SELECT "
+	                "passwordHash "
+	            "FROM "
+	                "users "
+	            "WHERE "
+	                "login = :login"
+	            );
+	query.bindValue(":login", login);
+	if (!execQueryCommit(query) || !query.next()) return false;
 
-    if (!cflib::crypt::checkPassword(password, query.value(0).toByteArray())) {
-            return false;
-    }
+	if (!cflib::crypt::checkPassword(password, query.value(0).toByteArray())) {
+		return false;
+	}
 
-    return true;
+	return true;
 }
 
 QList<User> DB::getAllUsers()
 {
-    Transaction;
-    QSqlQuery query(ta.db);
+	Transaction;
+	QSqlQuery query(ta.db);
 
-    query.prepare(
-            "SELECT "
-                "id, login, permissions, firstName, lastName, isDeleted "
-            "FROM "
-                "users "
-    );
-    if (!execQuery(query)) return QList<User>();
+	query.prepare(
+	            "SELECT "
+	                "id, login, permissions, firstName, lastName, isDeleted "
+	            "FROM "
+	                "users "
+	            );
+	if (!execQuery(query)) return QList<User>();
 
-    QList<User> retval;
-    while (query.next()) {
-        User user(
-                    UserId(query.value(0).toInt()),
-                    query.value(1).toString(),
-                    Permission(query.value(2).toUInt()),
-                    query.value(3).toString(),
-                    query.value(4).toString(),
-                    query.value(5).toBool()
-                    );
+	QList<User> retval;
+	while (query.next()) {
+		User user(
+		            UserId(query.value(0).toInt()),
+		            query.value(1).toString(),
+		            Permission(query.value(2).toUInt()),
+		            query.value(3).toString(),
+		            query.value(4).toString(),
+		            query.value(5).toBool()
+		            );
 
-        retval << user;
-    }
+		retval << user;
+	}
 
-    if (!ta.commit()) return QList<User>();
-    return retval;
+	if (!ta.commit()) return QList<User>();
+	return retval;
 }
