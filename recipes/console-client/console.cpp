@@ -82,6 +82,16 @@ CommandAndArguments Console::getNextCommand()
                 } else if (escape2 == 'C') {
                     // right
                     cursorPos = qMin(cursorPos + 1, string.size());
+                } else if (escape2 == '3') {
+                    char escape3 = getchar();
+                    if (escape3 == '~') {
+                        // delete key
+                        if (cursorPos < string.size()) {
+                            string.remove(cursorPos, 1);
+                        }
+                    } else {
+                        LOG_INFO("Unhandled escape3: %1", escape3);
+                    }
                 } else {
                     LOG_INFO("Unhandled escape2: %1", escape2);
                 }
@@ -90,6 +100,7 @@ CommandAndArguments Console::getNextCommand()
             }
             c ='\0';
         } else if (c == 0x7f) {
+            // backspace
             if (string.size() > 0) {
                 c = '\b';
                 string.chop(1);
