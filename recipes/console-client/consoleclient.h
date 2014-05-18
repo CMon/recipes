@@ -1,6 +1,7 @@
 #pragma once
 
 #include <console-client/console.h>
+#include <console-client/remote.h>
 
 class QString;
 class QStringList;
@@ -18,4 +19,5 @@ private slots:
 
 private:
     Console console_;
+    Remote  remote_;
 };
