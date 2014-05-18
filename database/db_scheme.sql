@@ -1,13 +1,9 @@
-CREATE DATABASE `recipes`;
-
-USE `recipes`;
-
 CREATE TABLE `users` (
     `id`           BIGINT(11) NOT NULL AUTO_INCREMENT,
     `login`        VARCHAR(255) NOT NULL,
     `passwordHash` VARCHAR(255) NOT NULL,
     `permissions`  INT(10) unsigned NOT NULL,
-    `preName`      VARCHAR(255) DEFAULT NULL,
+    `firstName`    VARCHAR(255) DEFAULT NULL,
     `lastName`     VARCHAR(255) DEFAULT NULL,
     `isDeleted`    TINYINT(3) DEFAULT 1,
     PRIMARY KEY (`id`)

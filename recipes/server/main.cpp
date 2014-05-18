@@ -15,7 +15,7 @@ int main(int argc, char ** argv)
 	a.setApplicationName("Receipts Server");
 
 	cflib::util::Log::start("recipes-server.log");
-	cflib::db::setParameter("recipes", "recipesRoot", "sql");
+	cflib::db::setParameter("recipes", "root", "sql");
 
 	UserService userService;
 
