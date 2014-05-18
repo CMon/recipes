@@ -19,4 +19,5 @@ HEADERS += \
     remote.h
 
 useLibs($$RECIPES_ROOT/lib, common_lib)
+useLibs(cflib_util)
 app()

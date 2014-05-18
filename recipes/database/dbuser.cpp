@@ -1,13 +1,13 @@
 #include "dbuser.h"
 
 #include <common/user.h>
-#include <common/log.h>
 
 #include <cflib/crypt/util.h>
 #include <cflib/db/db.h>
+
 #include <QSqlQuery>
 
-USE_LOG(LogCat::Db)
+USE_LOG(LogCat::Db) // needed by Transaction and other db methods from cflib
 
 bool DB::updateUser(const User & user, const QString password)
 {

@@ -1,9 +1,11 @@
 #include "console.h"
 
-#include <common/log.h>
+#include <cflib/util/log.h>
 #include <common/util.h>
 
 #include <QStringList>
+
+USE_LOG(LogCat::User)
 
 namespace {
 const QString ExitCommand = "exit";
@@ -90,13 +92,13 @@ CommandAndArguments Console::getNextCommand()
 							string.remove(cursorPos, 1);
 						}
 					} else {
-						LOG_INFO("Unhandled escape3: %1", escape3);
+						logInfo("Unhandled escape3: %1", escape3);
 					}
 				} else {
-					LOG_INFO("Unhandled escape2: %1", escape2);
+					logInfo("Unhandled escape2: %1", escape2);
 				}
 			} else {
-				LOG_INFO("Unhandled escape1: '%1'", escape1);
+				logInfo("Unhandled escape1: '%1'", escape1);
 			}
 			c ='\0';
 		} else if (c == 0x7f) {

@@ -7,7 +7,7 @@
 #include <cflib/http/apiserver.h>
 #include <cflib/http/server.h>
 
-USE_LOG(LogCat::Etc)
+USE_LOG(LogCat::User)
 
 int main(int argc, char ** argv)
 {

@@ -10,5 +10,5 @@ HEADERS += \
 TARGET = database_lib
 
 useLibs($$RECIPES_ROOT/lib, common_lib)
-useLibs(cflib_db)
+useLibs(cflib_db cflib_util)
 lib($$RECIPES_ROOT/lib)

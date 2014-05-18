@@ -3,7 +3,6 @@
 QT -= gui
 
 HEADERS += \
-    log.h \
     util.h \
     recipe.h \
     ingredient.h \

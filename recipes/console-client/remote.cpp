@@ -1,6 +1,6 @@
 #include "remote.h"
 
-#include <common/log.h>
+#include <cflib/util/log.h>
 #include <common/waiter.h>
 
 #include <QNetworkRequest>
@@ -9,6 +9,8 @@
 #include <QString>
 #include <QNetworkAccessManager>
 #include <QRegExp>
+
+USE_LOG(LogCat::Network)
 
 Remote::Remote(QObject *parent)
     :
@@ -29,8 +31,6 @@ QString Remote::getBaseUrl()
 
 QStringList Remote::getServices()
 {
-	LOG_DEBUG_FUNCTION;
-
 	QNetworkRequest request(baseURL_ + "/api/services/");
 	Waiter waiter;
 
@@ -39,7 +39,7 @@ QStringList Remote::getServices()
 
 	waiter.wait(35 * 1000);
 	if (waiter.timedOut()) {
-		LOG_DEBUG("Request timedout");
+		logInfo("Request timedout");
 		return QStringList();
 	}
 
@@ -56,7 +56,7 @@ QStringList Remote::getMethodSignatures(const QString &service)
 
 	waiter.wait(35 * 1000);
 	if (waiter.timedOut()) {
-		LOG_DEBUG("Request timedout");
+		logInfo("Request timedout");
 		return QStringList();
 	}
 
