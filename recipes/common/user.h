@@ -23,7 +23,7 @@ class User
 {
 	SERIALIZE_CLASS
 
-	public:
+public:
 	User();
 	User(const UserId & id, const QString & login, const Permissions & permissions, const QString & firstName, const QString & lastName, bool isDeleted);
 
@@ -38,6 +38,9 @@ class User
 	QString getFirstName() const { return firstName_; }
 	QString getLastName() const { return lastName_; }
 	bool getIsDeleted() const { return isDeleted_; }
+
+	bool operator ==(const User & rhs);
+	bool operator !=(const User & rhs);
 
 private:
 	UserId id_;

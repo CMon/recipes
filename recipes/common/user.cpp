@@ -34,3 +34,19 @@ QString User::toString() const
 {
 	return QString("%1 (%2)").arg(login_).arg(id_.toString());
 }
+
+bool User::operator ==(const User & rhs)
+{
+	return
+	        login_       == rhs.login_ &&
+	        permissions_ == rhs.permissions_ &&
+	        firstName_   == rhs.firstName_ &&
+	        lastName_    == rhs.lastName_ &&
+	        isDeleted_   == rhs.isDeleted_
+	        ;
+}
+
+bool User::operator !=(const User & rhs)
+{
+	return !operator ==(rhs);
+}
