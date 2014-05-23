@@ -5,7 +5,7 @@
 class Category
 {
 public:
-	Category();
+	Category(const Locale2String & name);
 
 private:
 	Locale2String name;

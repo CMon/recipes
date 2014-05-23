@@ -5,7 +5,7 @@
 class Unit
 {
 public:
-	Unit();
+	Unit(int g, int m);
 
 	void setCount(int c) { count = c; }
 	int getCount() { return count; }
