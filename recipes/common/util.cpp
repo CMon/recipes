@@ -65,4 +65,9 @@ QString Util::enterPassword(const QString &prompt)
 	out << endl;
 
 	enableConsoleEcho(originalConsoleEcho);
-	return password;}
+	return password;
+}
+
+uint qHash(const QLocale & locale) {
+	return qHash(locale.bcp47Name());
+}
