@@ -12,14 +12,14 @@ CREATE TABLE `users` (
 
 CREATE TABLE `units` (
     `id`      INT(3) NOT NULL AUTO_INCREMENT,
-    `inGram`  INT(5) NOT NULL,
-    `inMl`    INT(5) NOT NULL,
+    `inGram`  INT(5) DEFAULT NULL,
+    `inMl`    INT(5) DEFAULT NULL,
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `units_i18n` (
     `unitId`       INT(3) NOT NULL,
-    `language`     VARCHAR(5) NOT NULL,
+    `language`     VARCHAR(255) NOT NULL,
     `abbreviation` VARCHAR(255) NOT NULL,
     `completeName` VARCHAR(255) NOT NULL,
     PRIMARY KEY (`unitId`, `language`),
@@ -35,7 +35,7 @@ CREATE TABLE `categories` (
 
 CREATE TABLE `categories_i18n` (
     `categoryId` INT(5) NOT NULL,
-    `language`   VARCHAR(5) NOT NULL,
+    `language`   VARCHAR(255) NOT NULL,
     `name`       VARCHAR(255) NOT NULL,
     PRIMARY KEY (`categoryId`, `language`),
     CONSTRAINT `categories_i18n_key1` FOREIGN KEY (`categoryId`) REFERENCES `categories` (`id`)
@@ -54,7 +54,7 @@ CREATE TABLE `ingridients` (
 
 CREATE TABLE `ingridients_i18n` (
     `ingridientId` INT(5) NOT NULL,
-    `language`     VARCHAR(5) NOT NULL,
+    `language`     VARCHAR(255) NOT NULL,
     `name`         VARCHAR(255) NOT NULL,
     PRIMARY KEY (`ingridientId`, `language`),
     CONSTRAINT `ingridients_i18n_key1` FOREIGN KEY (`ingridientId`) REFERENCES `ingridients` (`id`)
@@ -68,7 +68,7 @@ CREATE TABLE `portions` (
 
 CREATE TABLE `portions_i18n` (
     `portionId`  INT(5) NOT NULL,
-    `language`    VARCHAR(5) NOT NULL,
+    `language`    VARCHAR(255) NOT NULL,
     `description` VARCHAR(255) NOT NULL,
     PRIMARY KEY (`portionId`, `language`),
     CONSTRAINT `portions_i18n_key1` FOREIGN KEY (`portionId`) REFERENCES `portions` (`id`)
@@ -87,7 +87,7 @@ CREATE TABLE `recipes` (
 
 CREATE TABLE `recipeTitle_i18n` (
     `recipeId`    BIGINT(11) NOT NULL,
-    `language`    VARCHAR(5) NOT NULL,
+    `language`    VARCHAR(255) NOT NULL,
     `description` VARCHAR(255) NOT NULL,
     PRIMARY KEY (`recipeId`, `language`),
     CONSTRAINT `recipeTitle_i18n_key1` FOREIGN KEY (`recipeId`) REFERENCES `recipes` (`id`)
@@ -95,7 +95,7 @@ CREATE TABLE `recipeTitle_i18n` (
 
 CREATE TABLE `recipeDescription_i18n` (
     `recipeId`    BIGINT(11) NOT NULL,
-    `language`    VARCHAR(5) NOT NULL,
+    `language`    VARCHAR(255) NOT NULL,
     `description` TEXT NOT NULL,
     PRIMARY KEY (`recipeId`, `language`),
     CONSTRAINT `recipeDescription_i18n_key1` FOREIGN KEY (`recipeId`) REFERENCES `recipes` (`id`)
@@ -103,7 +103,7 @@ CREATE TABLE `recipeDescription_i18n` (
 
 CREATE TABLE `recipePictures` (
     `recipeId`    BIGINT(11) NOT NULL,
-    `language`    VARCHAR(5) NOT NULL,
+    `language`    VARCHAR(255) NOT NULL,
     `pathToImg`   VARCHAR(255) NOT NULL,
     PRIMARY KEY (`recipeId`, `language`),
     CONSTRAINT `recipePictures_i18n_key1` FOREIGN KEY (`recipeId`) REFERENCES `recipes` (`id`)
