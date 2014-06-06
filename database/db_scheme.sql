@@ -20,8 +20,8 @@ CREATE TABLE `units` (
 CREATE TABLE `units_i18n` (
     `unitId`       INT(3) NOT NULL,
     `language`     VARCHAR(255) NOT NULL,
-    `abbreviation` VARCHAR(255) NOT NULL,
-    `completeName` VARCHAR(255) NOT NULL,
+    `abbreviation` VARCHAR(255) DEFAULT NULL,
+    `completeName` VARCHAR(255) DEFAULT NULL,
     PRIMARY KEY (`unitId`, `language`),
     CONSTRAINT `unit_key1` FOREIGN KEY (`unitId`) REFERENCES `units` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

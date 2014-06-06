@@ -5,7 +5,10 @@
 class Unit
 {
 public:
+	Unit() : gram(-1), ml(-1) {}
 	Unit(int g, int m);
+
+	bool isNull() const;
 
 	void setCount(int c) { count = c; }
 	int getCount() const { return count; }
@@ -18,6 +21,11 @@ public:
 
 	int getGram() const { return gram; }
 	int getMl() const { return ml; }
+
+	bool operator ==(const Unit & rhs) const;
+	bool operator !=(const Unit & rhs) const;
+
+	QString toString() const;
 
 private:
 	Locale2String abbreviation;

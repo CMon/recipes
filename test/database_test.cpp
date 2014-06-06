@@ -1,6 +1,7 @@
 #include "database_test.h"
 
 #include <database/dbuser.h>
+#include <database/dbrecipe.h>
 #include <common/user.h>
 
 #include <cflib/db/db.h>
@@ -82,6 +83,53 @@ void DatabaseTest::user_checkPassword()
 	QVERIFY(!DB::checkPassword("user_checkPassword", "hallo welt"));
 	QVERIFY(!DB::checkPassword("user_checkPassword", "bla"));
 	QVERIFY(!DB::checkPassword("user_checkPassword", "passwor"));
+}
+
+void DatabaseTest::unit_addOrUpdateUnit_getUnits()
+{
+	// initial unit
+	Unit unit(28, -1);
+	{
+		unit.updateAbbreviation(QLocale("de_DE"), "oz");
+		unit.updateCompleteName(QLocale("de_DE"), "Unze");
+
+		DB::addOrUpdateUnit(unit);
+
+		const QList<Unit> units = DB::getUnits();
+		QCOMPARE(units.size(), 1);
+		QCOMPARE(units.first(), unit);
+	}
+
+	// adding another translation to initial unit
+	Unit updatedUnit = unit;
+	{
+		updatedUnit.updateAbbreviation(QLocale("en_US"), "oz");
+		updatedUnit.updateCompleteName(QLocale("en_US"), "Ounce");
+		QVERIFY(unit != updatedUnit);
+
+		DB::addOrUpdateUnit(updatedUnit);
+
+		const QList<Unit> units = DB::getUnits();
+		foreach(const Unit & unit, units) {
+			logInfo(qPrintable(unit.toString()));
+		}
+		QCOMPARE(units.size(), 1);
+		COMPARE(units.first(), updatedUnit);
+	}
+
+	// adding another unit
+	Unit anotherUnit(1, 1);
+	{
+		anotherUnit.updateAbbreviation(QLocale("de_DE"), "ml");
+		anotherUnit.updateCompleteName(QLocale("de_DE"), "milliliter");
+
+		DB::addOrUpdateUnit(anotherUnit);
+
+		const QList<Unit> units = DB::getUnits();
+		QCOMPARE(units.size(), 2);
+		QVERIFY(units.contains(updatedUnit));
+		QVERIFY(units.contains(anotherUnit));
+	}
 }
 
 #include "moc_database_test.cpp"
