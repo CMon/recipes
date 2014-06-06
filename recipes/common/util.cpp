@@ -71,3 +71,10 @@ QString Util::enterPassword(const QString &prompt)
 uint qHash(const QLocale & locale) {
 	return qHash(locale.name());
 }
+
+
+QString Util::boolToString(const bool b)
+{
+	if (b) return "true";
+	return "false";
+}
