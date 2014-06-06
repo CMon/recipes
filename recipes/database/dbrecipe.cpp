@@ -7,6 +7,8 @@
 
 USE_LOG(LogCat::Db) // needed by Transaction and other db methods from cflib
 
+// units
+
 static int getUnitId(const QLocale & language, const QString & abbreviation)
 {
 	Transaction;
@@ -278,22 +280,30 @@ void DB::addOrUpdateCategory(const Category & category)
 	if (!addOrUpdateCategoryTranslation(categoryId, category)) return;
 
 	ta.commit();
-
 }
 
-QList<Category> DB::getCategories()
+QList<Category> DB::getCategories(const int & id)
 {
 	Transaction;
 
+	QString queryStr =
+	        "SELECT "
+	          "c.id, c.isFoodCategory, i18n.language, i18n.name "
+	        "FROM "
+	          "categories c, categories_i18n i18n "
+	        "WHERE "
+	          "c.id = i18n.categoryId";
+
+	if (id != -1) {
+		queryStr += " AND c.id = :id";
+	}
+
 	QSqlQuery query(ta.db);
-	query.prepare(
-	            "SELECT "
-	              "c.id, c.isFoodCategory, i18n.language, i18n.name "
-	            "FROM "
-	              "categories c, categories_i18n i18n "
-	            "WHERE "
-	               "c.id = i18n.categoryId"
-	            );
+	query.prepare(queryStr);
+
+	if (id != -1) {
+		query.bindValue(":id", id);
+	}
 
 	QList<Category> retval;
 	if (!execQuery(query)) return retval;
