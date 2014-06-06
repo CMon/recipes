@@ -13,6 +13,6 @@ private slots:
 	void user_updateUser_getUser();
 	void user_checkPassword();
 
-	void unit_addOrUpdateUnit_getUnits();
-	void unit_addOrUpdateCategory_getCategories();
+	void addOrUpdateUnit_getUnits();
+	void addOrUpdateCategory_getCategories();
 };

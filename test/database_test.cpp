@@ -85,7 +85,7 @@ void DatabaseTest::user_checkPassword()
 	QVERIFY(!DB::checkPassword("user_checkPassword", "passwor"));
 }
 
-void DatabaseTest::unit_addOrUpdateUnit_getUnits()
+void DatabaseTest::addOrUpdateUnit_getUnits()
 {
 	// initial unit
 	Unit unit(28, -1);
@@ -132,7 +132,7 @@ void DatabaseTest::unit_addOrUpdateUnit_getUnits()
 	}
 }
 
-void DatabaseTest::unit_addOrUpdateCategory_getCategories()
+void DatabaseTest::addOrUpdateCategory_getCategories()
 {
 	// initial category
 	Category category(true);
