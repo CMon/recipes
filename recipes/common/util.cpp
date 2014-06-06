@@ -69,5 +69,5 @@ QString Util::enterPassword(const QString &prompt)
 }
 
 uint qHash(const QLocale & locale) {
-	return qHash(locale.bcp47Name());
+	return qHash(locale.name());
 }
