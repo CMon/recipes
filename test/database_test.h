@@ -14,4 +14,5 @@ private slots:
 	void user_checkPassword();
 
 	void unit_addOrUpdateUnit_getUnits();
+	void unit_addOrUpdateCategory_getCategories();
 };

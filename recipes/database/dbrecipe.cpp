@@ -173,3 +173,148 @@ QList<Unit> DB::getUnits()
 
 	return dummy.values();
 }
+
+// categories
+
+static int getCategoryId(const QLocale & language, const QString & name)
+{
+	Transaction;
+
+	QSqlQuery query(ta.db);
+	query.prepare(
+	            "SELECT "
+	              "categoryId "
+	            "FROM "
+	              "categories_i18n "
+	            "WHERE "
+	              "language = :language AND name = :name"
+	            );
+	query.bindValue(":language", language.name());
+	query.bindValue(":name", name);
+
+	int retval = -1;
+	if (!execQuery(query)) return retval;
+
+	if (query.next()) {
+		retval = query.value(0).toInt();
+	}
+	ta.commit();
+
+	return retval;
+}
+
+static bool addOrUpdateCategoryTranslation(const int categoryId, const Category & category)
+{
+	Transaction;
+
+	QSqlQuery queryAbbrev(ta.db);
+	queryAbbrev.prepare(
+	        "INSERT INTO "
+	          "categories_i18n "
+	        "("
+	          "categoryId, language, name "
+	        ") VALUES ("
+	          ":categoryId, :language, :name "
+	        ") "
+	        "ON DUPLICATE KEY UPDATE "
+	          "name=VALUES(name) "
+	            );
+
+	queryAbbrev.bindValue(":categoryId", categoryId);
+
+	Locale2String names = category.getNames();
+	foreach(const QLocale & locale, names.keys()) {
+		queryAbbrev.bindValue(":language", locale.name());
+		queryAbbrev.bindValue(":name",     names.value(locale));
+		execQuery(queryAbbrev);
+	}
+
+	return ta.commit();
+}
+
+void DB::addOrUpdateCategory(const Category & category)
+{
+	Transaction;
+
+	const Locale2String names = category.getNames();
+	int categoryId = -1;
+	foreach (const QLocale & lang, names.keys()) {
+		categoryId = getCategoryId(lang, names.value(lang));
+		if (categoryId != -1) break;
+	}
+
+	QString queryString;
+	if (categoryId == -1) {
+		queryString =
+		        "INSERT INTO "
+		          "categories "
+		        "("
+		          "isFoodCategory"
+		        ") VALUES ("
+		          ":isFoodCategory"
+		        ")";
+	} else {
+		queryString =
+		        "UPDATE "
+		          "categories "
+		        "SET "
+		          "isFoodCategory=:isFoodCategory "
+		        "WHERE id=:categoryId ";
+	}
+
+	QSqlQuery query(ta.db);
+	query.prepare(queryString);
+
+	query.bindValue(":isFoodCategory", category.isFoodCategory());
+	if (categoryId != -1) {
+		query.bindValue(":categoryId", categoryId);
+	}
+	if(!execQuery(query)) return;
+
+	if (categoryId == -1) {
+		categoryId = query.lastInsertId().toUInt();
+	}
+
+	if (!addOrUpdateCategoryTranslation(categoryId, category)) return;
+
+	ta.commit();
+
+}
+
+QList<Category> DB::getCategories()
+{
+	Transaction;
+
+	QSqlQuery query(ta.db);
+	query.prepare(
+	            "SELECT "
+	              "c.id, c.isFoodCategory, i18n.language, i18n.name "
+	            "FROM "
+	              "categories c, categories_i18n i18n "
+	            "WHERE "
+	               "c.id = i18n.categoryId"
+	            );
+
+	QList<Category> retval;
+	if (!execQuery(query)) return retval;
+
+	QHash<int, Category> dummy;
+	while (query.next()) {
+		const int id = query.value(0).toInt();
+		const QLocale lang = QLocale(query.value(2).toString());
+
+		Category category;
+		if (dummy.contains(id)) {
+			category = dummy.value(id);
+		} else {
+			category = Category(query.value(1).toBool());
+		}
+		category.updateName(lang, query.value(3).toString());
+
+		dummy.insert(id, category);
+	}
+
+	ta.commit();
+
+	return dummy.values();
+}

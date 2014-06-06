@@ -132,5 +132,48 @@ void DatabaseTest::unit_addOrUpdateUnit_getUnits()
 	}
 }
 
+void DatabaseTest::unit_addOrUpdateCategory_getCategories()
+{
+	// initial category
+	Category category(true);
+	{
+		category.updateName(QLocale("de_DE"), "Nachtisch");
+
+		DB::addOrUpdateCategory(category);
+
+		const QList<Category> categories = DB::getCategories();
+		QCOMPARE(categories.size(), 1);
+		QCOMPARE(categories.first(), category);
+	}
+
+	// adding another translation to initial category
+	Category updatedCategory = category;
+	{
+		updatedCategory.updateName(QLocale("en_US"), "Desert");
+		QVERIFY(category != updatedCategory);
+
+		DB::addOrUpdateCategory(updatedCategory);
+
+		const QList<Category> categories = DB::getCategories();
+		foreach(const Category & category, categories) {
+			logInfo(qPrintable(category.toString()));
+		}
+		QCOMPARE(categories.size(), 1);
+		COMPARE(categories.first(), updatedCategory);
+	}
+
+	// adding another category
+	Category anotherCategory(false);
+	{
+		anotherCategory.updateName(QLocale("de_DE"), "süss");
+
+		DB::addOrUpdateCategory(anotherCategory);
+
+		const QList<Category> categories = DB::getCategories();
+		QCOMPARE(categories.size(), 2);
+		QVERIFY(categories.contains(updatedCategory));
+		QVERIFY(categories.contains(anotherCategory));
+	}
+}
 #include "moc_database_test.cpp"
 ADD_TEST(DatabaseTest)
