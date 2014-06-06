@@ -12,8 +12,21 @@ namespace {
 	const QString databaseTestName = "recipes_database_test";
 }
 
+static void resetDatabase()
+{
+	QSqlDatabase db = QSqlDatabase::addDatabase("QMYSQL");
+	db.setHostName("localhost");
+	db.setUserName("root");
+	db.setPassword("sql");
+	db.open();
+	db.exec("DROP DATABASE " + databaseTestName + "; CREATE DATABASE " + databaseTestName + ";");
+	db.close();
+}
+
 void DatabaseTest::initTestCase()
 {
+	resetDatabase();
+
 	cflib::util::Log::start(databaseTestName + ".log");
 
 	cflib::db::setParameter(databaseTestName, "root", "sql");
@@ -28,10 +41,6 @@ void DatabaseTest::initTestCase()
 
 void DatabaseTest::cleanupTestCase()
 {
-	Transaction;
-	ta.db.exec("DROP DATABASE " + databaseTestName + "; CREATE DATABASE " + databaseTestName + ";");
-	ta.commit();
-
 	cflib::db::closeDBConnection();
 }
 
