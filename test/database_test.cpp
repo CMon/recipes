@@ -110,9 +110,6 @@ void DatabaseTest::addOrUpdateUnit_getUnits()
 		DB::addOrUpdateUnit(updatedUnit);
 
 		const QList<Unit> units = DB::getUnits();
-		foreach(const Unit & unit, units) {
-			logInfo(qPrintable(unit.toString()));
-		}
 		QCOMPARE(units.size(), 1);
 		COMPARE(units.first(), updatedUnit);
 	}
@@ -155,9 +152,6 @@ void DatabaseTest::addOrUpdateCategory_getCategories()
 		DB::addOrUpdateCategory(updatedCategory);
 
 		const QList<Category> categories = DB::getCategories();
-		foreach(const Category & category, categories) {
-			logInfo(qPrintable(category.toString()));
-		}
 		QCOMPARE(categories.size(), 1);
 		COMPARE(categories.first(), updatedCategory);
 	}
