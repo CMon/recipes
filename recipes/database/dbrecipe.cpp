@@ -178,7 +178,7 @@ QList<Unit> DB::getUnits()
 
 // categories
 
-static int getCategoryId(const QLocale & language, const QString & name)
+static int getCategoryId(const Locale2String & names)
 {
 	Transaction;
 
@@ -191,14 +191,17 @@ static int getCategoryId(const QLocale & language, const QString & name)
 	            "WHERE "
 	              "language = :language AND name = :name"
 	            );
-	query.bindValue(":language", language.name());
-	query.bindValue(":name", name);
 
 	int retval = -1;
-	if (!execQuery(query)) return retval;
+	foreach (const QLocale & lang, names.keys()) {
+		query.bindValue(":language", lang.name());
+		query.bindValue(":name",     names.value(lang));
+		if (!execQuery(query)) return retval;
 
-	if (query.next()) {
-		retval = query.value(0).toInt();
+		if (query.next()) {
+			retval = query.value(0).toInt();
+		}
+		if (retval != -1) break;
 	}
 	ta.commit();
 
@@ -238,12 +241,7 @@ void DB::addOrUpdateCategory(const Category & category)
 {
 	Transaction;
 
-	const Locale2String names = category.getNames();
-	int categoryId = -1;
-	foreach (const QLocale & lang, names.keys()) {
-		categoryId = getCategoryId(lang, names.value(lang));
-		if (categoryId != -1) break;
-	}
+	int categoryId = getCategoryId(category.getNames());
 
 	QString queryString;
 	if (categoryId == -1) {
