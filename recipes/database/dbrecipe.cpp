@@ -9,7 +9,7 @@ USE_LOG(LogCat::Db) // needed by Transaction and other db methods from cflib
 
 // units
 
-static int getUnitId(const QLocale & language, const QString & abbreviation)
+static int getUnitId(const Locale2String & abbreviations)
 {
 	Transaction;
 
@@ -22,14 +22,18 @@ static int getUnitId(const QLocale & language, const QString & abbreviation)
 	            "WHERE "
 	             "language = :language AND abbreviation = :abbreviation"
 	            );
-	query.bindValue(":language", language.name());
-	query.bindValue(":abbreviation", abbreviation);
 
 	int retval = -1;
-	if (!execQuery(query)) return retval;
+	foreach (const QLocale & lang, abbreviations.keys()) {
+		query.bindValue(":language",     lang.name());
+		query.bindValue(":abbreviation", abbreviations.value(lang));
 
-	if (query.next()) {
-		retval = query.value(0).toInt();
+		if (!execQuery(query)) return retval;
+
+		if (query.next()) {
+			retval = query.value(0).toInt();
+		}
+		if (retval != -1) break;
 	}
 	ta.commit();
 
@@ -91,12 +95,7 @@ void DB::addOrUpdateUnit(const Unit & unit)
 {
 	Transaction;
 
-	const Locale2String abbrev = unit.getAbbreviations();
-	int unitId = -1;
-	foreach (const QLocale & lang, abbrev.keys()) {
-		unitId = getUnitId(lang, abbrev.value(lang));
-		if (unitId != -1) break;
-	}
+	int unitId = getUnitId(unit.getAbbreviations());
 
 	QString queryString;
 	if (unitId == -1) {
