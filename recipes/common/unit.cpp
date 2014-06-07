@@ -24,7 +24,7 @@ void Unit::updateCompleteName(const QLocale & locale, const QString & name)
 
 bool Unit::operator ==(const Unit & rhs) const
 {
-	bool different =
+	bool equal =
 	        gram  == rhs.gram &&
 	        ml    == rhs.ml &&
 	        count == rhs.count &&
@@ -32,14 +32,14 @@ bool Unit::operator ==(const Unit & rhs) const
 	        completeName.size() == rhs.completeName.size();
 
 	foreach (const QLocale & locale, abbreviation) {
-		different = different && (rhs.abbreviation[locale] == abbreviation[locale]);
+		equal = equal && (rhs.abbreviation[locale] == abbreviation[locale]);
 	}
 
 	foreach (const QLocale & locale, completeName) {
-		different = different && (rhs.completeName[locale] == completeName[locale]);
+		equal = equal && (rhs.completeName[locale] == completeName[locale]);
 	}
 
-	return different;
+	return equal;
 }
 
 bool Unit::operator !=(const Unit & rhs) const

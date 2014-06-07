@@ -22,7 +22,7 @@ void Ingredient::updateName(const QLocale & locale, const QString & name)
 
 bool Ingredient::operator ==(const Ingredient & rhs) const
 {
-	bool different =
+	bool equal =
 	        foodCategory    == rhs.foodCategory &&
 	        isLiquid        == rhs.isLiquid &&
 	        containsGluten  == rhs.containsGluten &&
@@ -30,10 +30,10 @@ bool Ingredient::operator ==(const Ingredient & rhs) const
 	        name.size()     == rhs.name.size();
 
 	foreach (const QLocale & locale, name) {
-		different = different && (rhs.name[locale] == name[locale]);
+		equal = equal && (rhs.name[locale] == name[locale]);
 	}
 
-	return different;
+	return equal;
 }
 
 bool Ingredient::operator !=(const Ingredient & rhs) const

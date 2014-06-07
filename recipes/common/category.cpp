@@ -7,14 +7,14 @@ void Category::updateName(const QLocale & locale, const QString & name)
 
 bool Category::operator ==(const Category & rhs) const
 {
-	bool different = isFoodCategory_ == rhs.isFoodCategory_ &&
+	bool equal = isFoodCategory_ == rhs.isFoodCategory_ &&
 	                 name.size()     == rhs.name.size();
 
 	foreach (const QLocale & locale, name) {
-		different = different && (rhs.name[locale] == name[locale]);
+		equal = equal && (rhs.name[locale] == name[locale]);
 	}
 
-	return different;
+	return equal;
 }
 
 bool Category::operator !=(const Category & rhs) const
