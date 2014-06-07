@@ -326,3 +326,152 @@ QList<Category> DB::getCategories(const int & id)
 
 	return dummy.values();
 }
+
+// Ingridients
+
+static int getIngredientId(const Locale2String & names)
+{
+	Transaction;
+
+	QSqlQuery query(ta.db);
+	query.prepare(
+	            "SELECT "
+	              "ingredientId "
+	            "FROM "
+	              "ingredients_i18n "
+	            "WHERE "
+	              "language = :language AND name = :name"
+	            );
+
+	int retval = -1;
+	foreach (const QLocale & lang, names.keys()) {
+		query.bindValue(":language", lang.name());
+		query.bindValue(":name",     names.value(lang));
+		if (!execQuery(query)) return retval;
+
+		if (query.next()) {
+			retval = query.value(0).toInt();
+		}
+		if (retval != -1) break;
+	}
+	ta.commit();
+
+	return retval;
+}
+
+static bool addOrUpdateIngredientTranslation(const int ingredientId, const Ingredient & ingredient)
+{
+	Transaction;
+
+	QSqlQuery queryAbbrev(ta.db);
+	queryAbbrev.prepare(
+	        "INSERT INTO "
+	          "ingredients_i18n "
+	        "("
+	          "ingredientId, language, name "
+	        ") VALUES ("
+	          ":ingredientId, :language, :name "
+	        ") "
+	        "ON DUPLICATE KEY UPDATE "
+	          "name=VALUES(name) "
+	            );
+
+	queryAbbrev.bindValue(":ingredientId", ingredientId);
+
+	Locale2String names = ingredient.getNames();
+	foreach(const QLocale & locale, names.keys()) {
+		queryAbbrev.bindValue(":language", locale.name());
+		queryAbbrev.bindValue(":name",     names.value(locale));
+		execQuery(queryAbbrev);
+	}
+
+	return ta.commit();
+}
+
+void DB::addOrUpdateIngredient(const Ingredient & ingredient)
+{
+	Transaction;
+
+	int ingredientId = getIngredientId(ingredient.getNames());
+
+	QString queryString;
+	if (ingredientId == -1) {
+		queryString =
+		        "INSERT INTO "
+		          "ingredients "
+		        "("
+		          "isLiquid, foodCategoryId, containsGluten, containsLactose"
+		        ") VALUES ("
+		          ":isLiquid, :foodCategoryId, :containsGluten, :containsLactose"
+		        ")";
+	} else {
+		queryString =
+		        "UPDATE "
+		          "ingredients "
+		        "SET "
+		          "isLiquid=:isLiquid, "
+		          "foodCategoryId=:foodCategoryId, "
+		          "containsGluten=:containsGluten, "
+		          "containsLactose=:ingredientId "
+		        "WHERE id=:categoryId ";
+	}
+
+	QSqlQuery query(ta.db);
+	query.prepare(queryString);
+
+	query.bindValue(":isLiquid",        ingredient.getIsLiquid());
+	query.bindValue(":foodCategoryId",  getCategoryId(ingredient.getFoodCategory().getNames()));
+	query.bindValue(":containsGluten",  ingredient.getContainsGluten());
+	query.bindValue(":containsLactose", ingredient.getContainsLactose());
+	if (ingredientId != -1) {
+		query.bindValue(":categoryId", ingredientId);
+	}
+	if(!execQuery(query)) return;
+
+	if (ingredientId == -1) {
+		ingredientId = query.lastInsertId().toUInt();
+	}
+
+	if (!addOrUpdateIngredientTranslation(ingredientId, ingredient)) return;
+
+	ta.commit();
+}
+
+QList<Ingredient> DB::getIngredients()
+{
+	Transaction;
+
+	QSqlQuery query(ta.db);
+	query.prepare(
+	            "SELECT "
+	              "i.id, i.foodCategoryId, i.isLiquid, i.containsGluten, i.containsLactose, i18n.language, i18n.name "
+	            "FROM "
+	              "ingredients i, ingredients_i18n i18n "
+	            "WHERE "
+	               "i.id = i18n.ingredientId"
+	            );
+
+	QList<Ingredient> retval;
+	if (!execQuery(query)) return retval;
+
+	QHash<int, Ingredient> dummy;
+	while (query.next()) {
+		const int id = query.value(0).toInt();
+		const QLocale lang = QLocale(query.value(5).toString());
+
+		Ingredient ingredient;
+		if (dummy.contains(id)) {
+			ingredient = dummy.value(id);
+		} else {
+			ingredient = Ingredient(query.value(2).toBool(), query.value(3).toBool(), query.value(4).toBool());
+			ingredient.setFoodCategory(DB::getCategories(query.value(1).toInt()).first());
+		}
+		ingredient.updateName(lang, query.value(6).toString());
+
+		dummy.insert(id, ingredient);
+	}
+
+	ta.commit();
+
+	return dummy.values();
+}

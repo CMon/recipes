@@ -7,20 +7,30 @@
 class Ingredient
 {
 public:
-	Ingredient(const Locale2String & name, const Unit & unit, const Category & category);
+	Ingredient();
+	Ingredient(const bool isLiquid, const bool withGluten, const bool withLactose);
 
-	void setIsOptional(bool optional) { isOptional = optional; }
-	bool getIsOptional() { return isOptional; }
+	void setFoodCategory(const Category & category) { foodCategory = category; }
+	Category getFoodCategory() const { return foodCategory; }
+
+	bool getIsLiquid() const { return isLiquid; }
+	bool getContainsGluten() const { return containsGluten; }
+	bool getContainsLactose() const { return containsLactose; }
+
+	void updateName(const QLocale & locale, const QString & name);
+	Locale2String getNames() const { return name; }
+
+	bool operator ==(const Ingredient & rhs) const;
+	bool operator !=(const Ingredient & rhs) const;
+
+	QString toString() const;
 
 private:
 	Locale2String name;
-	Unit unit;
 	Category foodCategory;
 	bool isLiquid;
 	bool containsGluten;
 	bool containsLactose;
-
-	bool isOptional;
 };
 
 typedef QList<Ingredient> Ingredients;

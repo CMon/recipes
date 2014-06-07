@@ -169,5 +169,54 @@ void DatabaseTest::addOrUpdateCategory_getCategories()
 		QVERIFY(categories.contains(anotherCategory));
 	}
 }
+
+void DatabaseTest::addOrUpdateIngredient_getIngredients()
+{
+	// needed for the test elements
+	Category category(false);
+	category.updateName(QLocale("de_DE"), "süss");
+
+	// initial Ingredient
+	Ingredient ingredient(false, false, false);
+	{
+		ingredient.setFoodCategory(category);
+		ingredient.updateName(QLocale("de_DE"), "Zucker");
+
+		DB::addOrUpdateIngredient(ingredient);
+
+		const QList<Ingredient> ingredients = DB::getIngredients();
+		QCOMPARE(ingredients.size(), 1);
+		COMPARE(ingredients.first(), ingredient);
+	}
+
+	// adding another translation to initial Ingredient
+	Ingredient updatedIngredient = ingredient;
+	{
+		updatedIngredient.updateName(QLocale("en_US"), "Desert");
+		QVERIFY(ingredient != updatedIngredient);
+
+		DB::addOrUpdateIngredient(updatedIngredient);
+
+		const QList<Ingredient> ingredients = DB::getIngredients();
+		QCOMPARE(ingredients.size(), 1);
+		COMPARE(ingredients.first(), updatedIngredient);
+	}
+
+	// adding another Ingredient
+	Ingredient anotherIngredient(true, false, false);
+	{
+		anotherIngredient.setFoodCategory(category);
+		anotherIngredient.updateName(QLocale("de_DE"), "Milch");
+
+		DB::addOrUpdateIngredient(anotherIngredient);
+
+		const QList<Ingredient> ingredients = DB::getIngredients();
+		QCOMPARE(ingredients.size(), 2);
+		QVERIFY(ingredients.contains(updatedIngredient));
+		QVERIFY(ingredients.contains(anotherIngredient));
+	}
+}
+
+
 #include "moc_database_test.cpp"
 ADD_TEST(DatabaseTest)

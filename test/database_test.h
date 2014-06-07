@@ -15,4 +15,5 @@ private slots:
 
 	void addOrUpdateUnit_getUnits();
 	void addOrUpdateCategory_getCategories();
+	void addOrUpdateIngredient_getIngredients();
 };
