@@ -245,7 +245,7 @@ void DatabaseTest::addOrUpdatePortion_getPortions()
 		COMPARE(portions.first(), updatedPortion);
 	}
 
-	// adding another Ingredient
+	// adding another Portion
 	Portion anotherPortion;
 	{
 		anotherPortion.updateDescriptions(QLocale("de_DE"), "Person(en)");
