@@ -20,7 +20,8 @@ static void resetDatabase()
 	db.setUserName("root");
 	db.setPassword("sql");
 	db.open();
-	db.exec("DROP DATABASE " + databaseTestName + "; CREATE DATABASE " + databaseTestName + ";");
+	db.exec("DROP DATABASE " + databaseTestName);
+	db.exec("CREATE DATABASE " + databaseTestName);
 	db.close();
 }
 
