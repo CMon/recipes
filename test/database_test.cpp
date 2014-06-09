@@ -259,6 +259,49 @@ void DatabaseTest::addOrUpdatePortion_getPortions()
 	}
 }
 
+void DatabaseTest::addOrUpdateRecipe_getRecipes()
+{
+	// initial Recipe
+	Recipe recipe;
+	{
+		recipe.updateTitle(QLocale("de_DE"), "Schokokekse");
+		recipe.updateDescription(QLocale("de_DE"), "Kekse + Schokolade mischen und schon sinds Schokokekse");
+
+		DB::addOrUpdateRecipe(recipe);
+
+		const QList<Recipe> recipes = DB::getRecipes();
+		QCOMPARE(recipes.size(), 1);
+		COMPARE(recipes.first(), recipe);
+	}
+
+	// adding another translation to initial Recipe
+	Recipe updatedRecipe = recipe;
+	{
+		updatedRecipe.updateTitle(QLocale("en_US"), "Chocolatecookies");
+		updatedRecipe.updateDescription(QLocale("en_US"), "Cookies + Choclate mix them and you get Chocolatecookies");
+		QVERIFY(recipe != updatedRecipe);
+
+		DB::addOrUpdateRecipe(updatedRecipe);
+
+		const QList<Recipe> recipes = DB::getRecipes();
+		QCOMPARE(recipes.size(), 1);
+		COMPARE(recipes.first(), updatedRecipe);
+	}
+
+	// adding another Recipe
+	Recipe anotherRecipe;
+	{
+		anotherRecipe.updateTitle(QLocale("de_DE"), "Mett");
+		anotherRecipe.updateDescription(QLocale("de_DE"), "Fleisch in den Fleischwolf => Mett");
+
+		DB::addOrUpdateRecipe(anotherRecipe);
+
+		const QList<Recipe> recipes = DB::getRecipes();
+		QCOMPARE(recipes.size(), 2);
+		QVERIFY(recipes.contains(updatedRecipe));
+		QVERIFY(recipes.contains(anotherRecipe));
+	}
+}
 
 #include "moc_database_test.cpp"
 ADD_TEST(DatabaseTest)

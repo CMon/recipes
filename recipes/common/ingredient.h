@@ -34,3 +34,24 @@ private:
 };
 
 typedef QList<Ingredient> Ingredients;
+
+class IngredientPOD
+{
+public:
+	IngredientPOD(int c, const Unit & u, const Ingredient & i) : count(c), unit(u), ingredient(i) {}
+
+	QString toString() const
+	{
+		return
+				"Count: " + QString::number(count) + " "
+				"Unit: "  + unit.toString() + " "
+				"Ingredient: " + ingredient.toString();
+	}
+
+public:
+	int count;
+	Unit unit;
+	Ingredient ingredient;
+};
+
+typedef QList<IngredientPOD> IngredientPODs;

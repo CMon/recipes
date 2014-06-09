@@ -3,6 +3,7 @@
 #include <common/category.h>
 #include <common/ingredient.h>
 #include <common/portion.h>
+#include <common/recipe.h>
 #include <common/unit.h>
 
 namespace DB {
@@ -18,5 +19,8 @@ QList<Ingredient> getIngredients();
 
 void addOrUpdatePortion(const Portion & portion);
 QList<Portion> getPortions();
+
+void addOrUpdateRecipe(const Recipe & recipe);
+QList<Recipe> getRecipes();
 
 }

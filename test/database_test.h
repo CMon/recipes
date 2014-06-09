@@ -17,4 +17,5 @@ private slots:
 	void addOrUpdateCategory_getCategories();
 	void addOrUpdateIngredient_getIngredients();
 	void addOrUpdatePortion_getPortions();
+	void addOrUpdateRecipe_getRecipes();
 };

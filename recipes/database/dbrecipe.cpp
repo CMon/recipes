@@ -592,3 +592,15 @@ QList<Portion> DB::getPortions()
 
 	return dummy.values();
 }
+
+// recipes
+
+void DB::addOrUpdateRecipe(const Recipe & recipe)
+{
+
+}
+
+QList<Recipe> DB::getRecipes()
+{
+
+}
