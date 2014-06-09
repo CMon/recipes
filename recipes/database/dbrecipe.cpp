@@ -474,3 +474,121 @@ QList<Ingredient> DB::getIngredients()
 
 	return dummy.values();
 }
+
+// portions
+
+static int getPortionId(const Locale2String & names)
+{
+	Transaction;
+
+	QSqlQuery query(ta.db);
+	query.prepare(
+	            "SELECT "
+	              "portionId "
+	            "FROM "
+	              "portions_i18n "
+	            "WHERE "
+	              "language = :language AND description = :description"
+	            );
+
+	int retval = -1;
+	foreach (const QLocale & lang, names.keys()) {
+		query.bindValue(":language",    lang.name());
+		query.bindValue(":description", names.value(lang));
+		if (!execQuery(query)) return retval;
+
+		if (query.next()) {
+			retval = query.value(0).toInt();
+		}
+		if (retval != -1) break;
+	}
+	ta.commit();
+
+	return retval;
+}
+
+static bool addOrUpdatePortionTranslation(const int portionId, const Portion & portion)
+{
+	Transaction;
+
+	QSqlQuery queryDescriptions(ta.db);
+	queryDescriptions.prepare(
+	        "INSERT INTO "
+	          "portions_i18n "
+	        "("
+	          "portionId, language, description "
+	        ") VALUES ("
+	          ":portionId, :language, :description "
+	        ") "
+	        "ON DUPLICATE KEY UPDATE "
+	          "description=VALUES(description) "
+	            );
+
+	queryDescriptions.bindValue(":portionId", portionId);
+
+	Locale2String names = portion.getDescriptions();
+	foreach(const QLocale & locale, names.keys()) {
+		queryDescriptions.bindValue(":language",    locale.name());
+		queryDescriptions.bindValue(":description", names.value(locale));
+		execQuery(queryDescriptions);
+	}
+
+	return ta.commit();
+}
+
+void DB::addOrUpdatePortion(const Portion & portion)
+{
+	Transaction;
+
+	int portionId = getPortionId(portion.getDescriptions());
+
+	QString queryString;
+	if (portionId == -1) {
+		QSqlQuery query(ta.db);
+		query.prepare("INSERT INTO portions () VALUES()");
+		if(!execQuery(query)) return;
+		portionId = query.lastInsertId().toUInt();
+	}
+
+	if (!addOrUpdatePortionTranslation(portionId, portion)) return;
+
+	ta.commit();
+}
+
+QList<Portion> DB::getPortions()
+{
+	Transaction;
+
+	QSqlQuery query(ta.db);
+	query.prepare(
+	            "SELECT "
+	              "p.id, i18n.language, i18n.description "
+	            "FROM "
+	              "portions p, portions_i18n i18n "
+	            "WHERE "
+	               "p.id = i18n.portionId"
+	            );
+
+	QList<Portion> retval;
+	if (!execQuery(query)) return retval;
+
+	QHash<int, Portion> dummy;
+	while (query.next()) {
+		const int id = query.value(0).toInt();
+		const QLocale lang = QLocale(query.value(1).toString());
+
+		Portion portion;
+		if (dummy.contains(id)) {
+			portion = dummy.value(id);
+		} else {
+			portion = Portion();
+		}
+		portion.updateDescriptions(lang, query.value(2).toString());
+
+		dummy.insert(id, portion);
+	}
+
+	ta.commit();
+
+	return dummy.values();
+}

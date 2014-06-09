@@ -217,6 +217,47 @@ void DatabaseTest::addOrUpdateIngredient_getIngredients()
 	}
 }
 
+void DatabaseTest::addOrUpdatePortion_getPortions()
+{
+	// initial Portion
+	Portion portion;
+	{
+		portion.updateDescriptions(QLocale("de_DE"), "Teller");
+
+		DB::addOrUpdatePortion(portion);
+
+		const QList<Portion> portions = DB::getPortions();
+		QCOMPARE(portions.size(), 1);
+		COMPARE(portions.first(), portion);
+	}
+
+	// adding another translation to initial Portion
+	Portion updatedPortion = portion;
+	{
+		updatedPortion.updateDescriptions(QLocale("en_US"), "Plate");
+		QVERIFY(portion != updatedPortion);
+
+		DB::addOrUpdatePortion(updatedPortion);
+
+		const QList<Portion> portions = DB::getPortions();
+		QCOMPARE(portions.size(), 1);
+		COMPARE(portions.first(), updatedPortion);
+	}
+
+	// adding another Ingredient
+	Portion anotherPortion;
+	{
+		anotherPortion.updateDescriptions(QLocale("de_DE"), "Person(en)");
+
+		DB::addOrUpdatePortion(anotherPortion);
+
+		const QList<Portion> portions = DB::getPortions();
+		QCOMPARE(portions.size(), 2);
+		QVERIFY(portions.contains(updatedPortion));
+		QVERIFY(portions.contains(anotherPortion));
+	}
+}
+
 
 #include "moc_database_test.cpp"
 ADD_TEST(DatabaseTest)
