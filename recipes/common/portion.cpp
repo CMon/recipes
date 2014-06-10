@@ -3,6 +3,7 @@
 #include <common/util.h>
 
 Portion::Portion()
+    : count(0)
 {
 }
 
@@ -13,7 +14,9 @@ void Portion::updateDescriptions(const QLocale & locale, const QString & descrip
 
 bool Portion::operator ==(const Portion & rhs) const
 {
-	return description == rhs.description;
+	return
+	        count == rhs.count &&
+	        description == rhs.description;
 }
 
 bool Portion::operator !=(const Portion & rhs) const
@@ -24,5 +27,6 @@ bool Portion::operator !=(const Portion & rhs) const
 QString Portion::toString() const
 {
 	return
+	        "count: "  + QString::number(count) + " "
 	        "names: [" + description.toString() + "]";
 }

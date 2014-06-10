@@ -76,29 +76,24 @@ CREATE TABLE `portions_i18n` (
 
 
 CREATE TABLE `recipes` (
-    `id`              BIGINT(11) NOT NULL AUTO_INCREMENT,
+    `id`             BIGINT(11) NOT NULL AUTO_INCREMENT,
+    `externId`       VARCHAR(255) NOT NULL,
     `portionId`      INT(5) NOT NULL,
     `portionCount`   INT(3) NOT NULL,
     `createdByUserId` BIGINT(11) NOT NULL,
     PRIMARY KEY (`id`),
-    CONSTRAINT `recipes_key1` FOREIGN KEY (`portionId`) REFERENCES `portions` (`id`),
-    CONSTRAINT `recipes_key2` FOREIGN KEY (`createdByUserId`) REFERENCES `users` (`id`)
+    UNIQUE KEY `recipes_key1` (`externId`),
+    CONSTRAINT `recipes_key2` FOREIGN KEY (`portionId`) REFERENCES `portions` (`id`),
+    CONSTRAINT `recipes_key3` FOREIGN KEY (`createdByUserId`) REFERENCES `users` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE `recipeTitle_i18n` (
+CREATE TABLE `recipes_i18n` (
     `recipeId`    BIGINT(11) NOT NULL,
     `language`    VARCHAR(255) NOT NULL,
-    `description` VARCHAR(255) NOT NULL,
+    `title`       VARCHAR(255) DEFAULT NULL,
+    `description` TEXT DEFAULT NULL,
     PRIMARY KEY (`recipeId`, `language`),
     CONSTRAINT `recipeTitle_i18n_key1` FOREIGN KEY (`recipeId`) REFERENCES `recipes` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-CREATE TABLE `recipeDescription_i18n` (
-    `recipeId`    BIGINT(11) NOT NULL,
-    `language`    VARCHAR(255) NOT NULL,
-    `description` TEXT NOT NULL,
-    PRIMARY KEY (`recipeId`, `language`),
-    CONSTRAINT `recipeDescription_i18n_key1` FOREIGN KEY (`recipeId`) REFERENCES `recipes` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `recipePictures` (

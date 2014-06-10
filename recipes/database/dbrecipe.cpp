@@ -1,5 +1,7 @@
 #include "dbrecipe.h"
 
+#include <database/dbuser.h>
+
 #include <cflib/db/db.h>
 
 #include <QLocale>
@@ -611,5 +613,44 @@ void DB::addOrUpdateRecipe(const Recipe & recipe)
 
 QList<Recipe> DB::getRecipes()
 {
+	Transaction;
 
+	QSqlQuery query(ta.db);
+	query.prepare(
+	            "SELECT "
+	              "r.id, r.portionId, r.portionCount, r.createdByUserId, i18n.language, i18n.title, i18n.description "
+	            "FROM "
+	              "recipes r, recipes_i18n i18n "
+	            "WHERE "
+	               "r.id = i18n.recipeId"
+	            );
+
+	QList<Recipe> retval;
+	if (!execQuery(query)) return retval;
+
+	QHash<int, Recipe> dummy;
+	while (query.next()) {
+		const int id = query.value(0).toInt();
+		const QLocale lang = QLocale(query.value(4).toString());
+
+		Recipe recipe;
+		if (dummy.contains(id)) {
+			recipe = dummy.value(id);
+		} else {
+			Portion portion = DB::getPortions(query.value(1).toInt()).first();
+			portion.setCount(query.value(2).toInt());
+			const QList<User> users = DB::getAllUsers(query.value(3).toInt());
+			recipe = Recipe();
+			recipe.setPortion(portion);
+			recipe.setCreatedByUser(users.first());
+		}
+		recipe.updateTitle(lang, query.value(5).toString());
+		recipe.updateDescription(lang, query.value(6).toString());
+
+		dummy.insert(id, recipe);
+	}
+
+	ta.commit();
+
+	return dummy.values();
 }
