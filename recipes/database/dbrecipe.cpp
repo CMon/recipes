@@ -411,7 +411,7 @@ void DB::addOrUpdateIngredient(const Ingredient & ingredient)
 		          "isLiquid=:isLiquid, "
 		          "foodCategoryId=:foodCategoryId, "
 		          "containsGluten=:containsGluten, "
-		          "containsLactose=:ingredientId "
+		          "containsLactose=:containsLactose "
 		        "WHERE id=:categoryId ";
 	}
 
