@@ -555,19 +555,28 @@ void DB::addOrUpdatePortion(const Portion & portion)
 	ta.commit();
 }
 
-QList<Portion> DB::getPortions()
+QList<Portion> DB::getPortions(const int & id)
 {
 	Transaction;
 
-	QSqlQuery query(ta.db);
-	query.prepare(
+	QString queryStr =
 	            "SELECT "
 	              "p.id, i18n.language, i18n.description "
 	            "FROM "
 	              "portions p, portions_i18n i18n "
 	            "WHERE "
-	               "p.id = i18n.portionId"
-	            );
+	               "p.id = i18n.portionId";
+
+	if (id != -1) {
+		queryStr += " AND p.id = :id";
+	}
+
+	QSqlQuery query(ta.db);
+	query.prepare(queryStr);
+
+	if (id != -1) {
+		query.bindValue(":id", id);
+	}
 
 	QList<Portion> retval;
 	if (!execQuery(query)) return retval;
