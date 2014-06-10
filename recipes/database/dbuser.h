@@ -11,6 +11,6 @@ bool updatePassword(const QString & login, const QString & password);
 
 User getUser(const QString & login);
 bool checkPassword(const QString & login, const QString & password);
-QList<User> getAllUsers();
+QList<User> getAllUsers(const int & id = -1);
 
 }

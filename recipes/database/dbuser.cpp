@@ -86,17 +86,26 @@ bool DB::checkPassword(const QString &login, const QString &password)
 	return true;
 }
 
-QList<User> DB::getAllUsers()
+QList<User> DB::getAllUsers(const int & id)
 {
 	Transaction;
-	QSqlQuery query(ta.db);
 
-	query.prepare(
+	QString queryStr =
 	            "SELECT "
 	                "id, login, permissions, firstName, lastName, isDeleted "
 	            "FROM "
-	                "users "
-	            );
+	                "users ";
+	if (id != -1) {
+		queryStr += " AND id = :id";
+	}
+
+	QSqlQuery query(ta.db);
+	query.prepare(queryStr);
+
+	if (id != -1) {
+		query.bindValue(":id", id);
+	}
+
 	if (!execQuery(query)) return QList<User>();
 
 	QList<User> retval;
