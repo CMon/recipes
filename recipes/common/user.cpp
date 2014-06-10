@@ -35,7 +35,7 @@ QString User::toString() const
 	return QString("%1 (%2)").arg(login_).arg(id_.toString());
 }
 
-bool User::operator ==(const User & rhs)
+bool User::operator ==(const User & rhs) const
 {
 	return
 	        login_       == rhs.login_ &&
@@ -46,7 +46,7 @@ bool User::operator ==(const User & rhs)
 	        ;
 }
 
-bool User::operator !=(const User & rhs)
+bool User::operator !=(const User & rhs) const
 {
 	return !operator ==(rhs);
 }

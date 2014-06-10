@@ -39,8 +39,8 @@ public:
 	QString getLastName() const { return lastName_; }
 	bool getIsDeleted() const { return isDeleted_; }
 
-	bool operator ==(const User & rhs);
-	bool operator !=(const User & rhs);
+	bool operator ==(const User & rhs) const;
+	bool operator !=(const User & rhs) const;
 
 private:
 	UserId id_;
