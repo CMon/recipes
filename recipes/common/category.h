@@ -1,6 +1,6 @@
 #pragma once
 
-#include <common/util.h>
+#include <common/locale2string.h>
 
 class Category
 {

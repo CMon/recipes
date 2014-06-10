@@ -1,5 +1,7 @@
 #include "category.h"
 
+#include <common/util.h>
+
 void Category::updateName(const QLocale & locale, const QString & name)
 {
 	this->name[locale] = name;
@@ -7,14 +9,9 @@ void Category::updateName(const QLocale & locale, const QString & name)
 
 bool Category::operator ==(const Category & rhs) const
 {
-	bool equal = isFoodCategory_ == rhs.isFoodCategory_ &&
-	                 name.size()     == rhs.name.size();
-
-	foreach (const QLocale & locale, name) {
-		equal = equal && (rhs.name[locale] == name[locale]);
-	}
-
-	return equal;
+	return
+	        isFoodCategory_ == rhs.isFoodCategory_ &&
+	        name == rhs.name;
 }
 
 bool Category::operator !=(const Category & rhs) const
@@ -24,12 +21,7 @@ bool Category::operator !=(const Category & rhs) const
 
 QString Category::toString() const
 {
-	QString retval =
-	        "isFoodCategory: " + Util::boolToString(isFoodCategory_);
-	retval += " names: [";
-	foreach(const QLocale & locale, name.keys()) {
-		retval += locale.name() + "=" + name.value(locale) + " ";
-	}
-
-	return retval;
+	return
+	        "isFoodCategory: " + Util::boolToString(isFoodCategory_) + " "
+	        "names: ["         + name.toString() + " ";
 }

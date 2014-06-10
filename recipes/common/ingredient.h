@@ -2,7 +2,7 @@
 
 #include <common/category.h>
 #include <common/unit.h>
-#include <common/util.h>
+#include <common/locale2string.h>
 
 class Ingredient
 {
@@ -39,6 +39,14 @@ class IngredientPOD
 {
 public:
 	IngredientPOD(int c, const Unit & u, const Ingredient & i) : count(c), unit(u), ingredient(i) {}
+
+	bool operator ==(const IngredientPOD & rhs) const {
+		return count == rhs.count && unit == rhs.unit && ingredient == rhs.ingredient;
+	}
+
+	bool operator !=(const IngredientPOD & rhs) const {
+		return !operator ==(rhs);
+	}
 
 	QString toString() const
 	{

@@ -1,5 +1,7 @@
 #include "ingredient.h"
 
+#include <common/util.h>
+
 Ingredient::Ingredient()
     : isLiquid(false),
       containsGluten(false),
@@ -22,18 +24,12 @@ void Ingredient::updateName(const QLocale & locale, const QString & name)
 
 bool Ingredient::operator ==(const Ingredient & rhs) const
 {
-	bool equal =
+	return
 	        foodCategory    == rhs.foodCategory &&
 	        isLiquid        == rhs.isLiquid &&
 	        containsGluten  == rhs.containsGluten &&
 	        containsLactose == rhs.containsLactose &&
-	        name.size()     == rhs.name.size();
-
-	foreach (const QLocale & locale, name) {
-		equal = equal && (rhs.name[locale] == name[locale]);
-	}
-
-	return equal;
+	        name            == rhs.name;
 }
 
 bool Ingredient::operator !=(const Ingredient & rhs) const
@@ -43,16 +39,10 @@ bool Ingredient::operator !=(const Ingredient & rhs) const
 
 QString Ingredient::toString() const
 {
-	QString retval =
+	return
 	        "foodCategory: "    + foodCategory.toString()             + "; "
 	        "isLiquid: "        + Util::boolToString(isLiquid)        + "; "
 	        "containsGluten: "  + Util::boolToString(containsGluten)  + "; "
 	        "containsLactose: " + Util::boolToString(containsLactose) + "; "
-	        "names: [";
-	foreach(const QLocale & locale, name.keys()) {
-		retval += locale.name() + "=" + name.value(locale) + " ";
-	}
-	retval += "]";
-
-	return retval;
+	        "names: ["          + name.toString()                     + "];";
 }

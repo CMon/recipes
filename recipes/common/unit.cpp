@@ -1,5 +1,7 @@
 #include "unit.h"
 
+#include <common/util.h>
+
 Unit::Unit(int g, int m)
     : gram(g),
       ml(m),
@@ -24,22 +26,12 @@ void Unit::updateCompleteName(const QLocale & locale, const QString & name)
 
 bool Unit::operator ==(const Unit & rhs) const
 {
-	bool equal =
+	return
 	        gram  == rhs.gram &&
 	        ml    == rhs.ml &&
 	        count == rhs.count &&
-	        abbreviation.size() == rhs.abbreviation.size() &&
-	        completeName.size() == rhs.completeName.size();
-
-	foreach (const QLocale & locale, abbreviation) {
-		equal = equal && (rhs.abbreviation[locale] == abbreviation[locale]);
-	}
-
-	foreach (const QLocale & locale, completeName) {
-		equal = equal && (rhs.completeName[locale] == completeName[locale]);
-	}
-
-	return equal;
+	        abbreviation == rhs.abbreviation &&
+	        completeName == rhs.completeName;
 }
 
 bool Unit::operator !=(const Unit & rhs) const
@@ -49,18 +41,9 @@ bool Unit::operator !=(const Unit & rhs) const
 
 QString Unit::toString() const
 {
-	QString retval =
-	        "inGram: " + QString::number(gram) +
-	        " inMl: "   + QString::number(ml);
-	retval += " abbreviations: [";
-	foreach(const QLocale & locale, abbreviation.keys()) {
-		retval += locale.name() + "=" + abbreviation.value(locale);
-	}
-	retval += "] completeNames: [";
-	foreach(const QLocale & locale, completeName.keys()) {
-		retval += locale.name() + "=" + completeName.value(locale);
-	}
-	retval += "]";
-
-	return retval;
+	return
+			"inGram: " + QString::number(gram) + " "
+			"inMl: "   + QString::number(ml)   + " "
+			"abbreviations: [" + abbreviation.toString() + "] "
+			"completeNames: [" + completeName.toString() + "] ";
 }

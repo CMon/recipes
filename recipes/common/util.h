@@ -11,5 +11,4 @@ QString enterPassword(const QString & prompt);
 QString boolToString(const bool b);
 }
 
-typedef QHash<QLocale, QString> Locale2String;
 uint qHash(const QLocale & locale);
