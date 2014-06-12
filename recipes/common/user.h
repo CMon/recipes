@@ -15,6 +15,8 @@ public:
 	bool isNull() const { return id_ == -1; }
 	bool isValid() const { return id_ > 0; }
 
+	int toDatabaseValue() const { return id_; }
+
 private:
 	int id_;
 };
