@@ -125,3 +125,22 @@ QList<User> DB::getAllUsers(const int & id)
 	if (!ta.commit()) return QList<User>();
 	return retval;
 }
+
+UserId DB::getUserId(const QString & login)
+{
+	Transaction;
+	QSqlQuery query(ta.db);
+
+	query.prepare(
+	            "SELECT "
+	                "id "
+	            "FROM "
+	                "users "
+	            "WHERE "
+	                "login = :login"
+	            );
+	query.bindValue(":login", login);
+	if (!execQueryCommit(query) || !query.next()) return UserId();
+
+	return UserId(query.value(0).toInt());
+}
