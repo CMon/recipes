@@ -7,6 +7,13 @@ Portion::Portion()
 {
 }
 
+bool Portion::isNull() const
+{
+	return
+	        count == 0 &&
+	        description.isEmpty();
+}
+
 void Portion::updateDescriptions(const QLocale & locale, const QString & description)
 {
 	this->description[locale] = description;

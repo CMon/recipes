@@ -7,6 +7,8 @@ class Portion
 public:
 	Portion();
 
+	bool isNull() const;
+
 	void updateDescriptions(const QLocale & locale, const QString & description);
 	Locale2String getDescriptions() const { return description; }
 
