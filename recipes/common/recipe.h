@@ -13,7 +13,10 @@ class Recipe
 public:
 	Recipe();
 
-	bool isValid();
+	bool isValid() const;
+
+	void setExternId(const QString & eId) { externId = eId; }
+	QString getExternId() const { return externId; }
 
 	void updateTitle(const QLocale & locale, const QString & title);
 	Locale2String getTitles() const { return title; }
@@ -21,7 +24,11 @@ public:
 	Locale2String getDescriptions() const { return description; }
 
 	void setPortion(const Portion & portion);
+	Portion getPortion() const { return portion; }
 	void setCreatedByUser(const User & user);
+	User getCreatedByUser() const { return creatingUser; }
+
+	void addIngredient(const int count, const Unit & unit, const Ingredient & ingredient);
 
 	bool operator ==(const Recipe & rhs) const;
 	bool operator !=(const Recipe & rhs) const;

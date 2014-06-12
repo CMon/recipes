@@ -4,7 +4,7 @@ Recipe::Recipe()
 {
 }
 
-bool Recipe::isValid()
+bool Recipe::isValid() const
 {
 	return
 	        creatingUser.isValid()    &&
@@ -32,6 +32,11 @@ void Recipe::setPortion(const Portion & portion)
 void Recipe::setCreatedByUser(const User & user)
 {
 	creatingUser = user;
+}
+
+void Recipe::addIngredient(const int count, const Unit & unit, const Ingredient & ingredient)
+{
+	ingredients << IngredientPOD(count, unit, ingredient);
 }
 
 bool Recipe::operator ==(const Recipe & rhs) const

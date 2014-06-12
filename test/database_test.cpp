@@ -262,11 +262,35 @@ void DatabaseTest::addOrUpdatePortion_getPortions()
 
 void DatabaseTest::addOrUpdateRecipe_getRecipes()
 {
+	// adding stuff that is needed for a recipe
+	Portion portion;
+	portion.updateDescriptions(QLocale("de_DE"), "Teller");
+	DB::addOrUpdatePortion(portion);
+	portion.setCount(2);
+	const User dummy = User(-1, "addOrUpdateRecipe_getRecipes", Permission(Permission::Admin), "first", "last", false);
+	QVERIFY(DB::updateUser(dummy, "password"));
+	const User user = DB::getUser("addOrUpdateRecipe_getRecipes");
+	Unit gram(1, 1);
+	gram.updateAbbreviation(QLocale("de_DE"), "gr");
+	gram.updateCompleteName(QLocale("de_DE"), "gram");
+	DB::addOrUpdateUnit(gram);
+	Category category(false);
+	category.updateName(QLocale("de_DE"), "süss");
+	DB::addOrUpdateCategory(category);
+	Ingredient ingredient(false, false, false);
+	ingredient.updateName(QLocale("de_DE"), "Zucker");
+	ingredient.setFoodCategory(category);
+	DB::addOrUpdateIngredient(ingredient);
+
 	// initial Recipe
 	Recipe recipe;
+	recipe.setCreatedByUser(user);
+	recipe.setPortion(portion);
+	recipe.addIngredient(5, gram, ingredient);
 	{
 		recipe.updateTitle(QLocale("de_DE"), "Schokokekse");
 		recipe.updateDescription(QLocale("de_DE"), "Kekse + Schokolade mischen und schon sinds Schokokekse");
+		QVERIFY2(recipe.isValid(), qPrintable(QString("Recipe invalid: %1").arg(recipe.toString())));
 
 		DB::addOrUpdateRecipe(recipe);
 

@@ -2,6 +2,7 @@
 
 #include <database/dbuser.h>
 
+#include <cflib/crypt/util.h>
 #include <cflib/db/db.h>
 
 #include <QLocale>
@@ -606,9 +607,156 @@ QList<Portion> DB::getPortions(const int & id)
 
 // recipes
 
-void DB::addOrUpdateRecipe(const Recipe & recipe)
+static int addRecipe(Recipe & recipe)
 {
+	Transaction;
+	QSqlQuery query(ta.db);
 
+	query.prepare(
+	        "INSERT IGNORE INTO "
+	          "recipes "
+	        "("
+	          "externId, portionId, portionCount, createdByUserId"
+	        ") VALUES ("
+	          ":externId, :portionId, :portionCount, :createdByUserId"
+	        ")"
+	            );
+
+	query.bindValue(":portionId",       getPortionId(recipe.getPortion().getDescriptions()));
+	query.bindValue(":portionCount",    recipe.getPortion().getCount());
+	query.bindValue(":createdByUserId", DB::getUserId(recipe.getCreatedByUser().getLogin()).toDatabaseValue());
+	QString externId;
+	do {
+		externId = cflib::crypt::randomId();
+		query.bindValue(":externId", externId);
+		execQuery(query);
+	} while(query.numRowsAffected() == 0);
+
+	if (!ta.commit()) return -1;
+
+	recipe.setExternId(externId);
+	return query.lastInsertId().toInt();
+}
+
+static void updateRecipe(const Recipe & recipe)
+{
+	Transaction;
+	QSqlQuery query(ta.db);
+
+	query.prepare(
+	            "UPDATE "
+	              "recipes "
+	            "SET "
+	              "portionId=:portionId, "
+	              "portionCount=:portionCount, "
+	              "createdByUserId=:createdByUserId "
+	            "WHERE externId=:externId "
+	        );
+
+	query.bindValue(":externId",        recipe.getExternId());
+	query.bindValue(":portionId",       getPortionId(recipe.getPortion().getDescriptions()));
+	query.bindValue(":portionCount",    recipe.getPortion().getCount());
+	query.bindValue(":createdByUserId", DB::getUserId(recipe.getCreatedByUser().getLogin()).toDatabaseValue());
+
+	execQueryCommit(query);
+}
+
+static int getRecipeId(const QString & externId)
+{
+	Transaction;
+
+	QSqlQuery query(ta.db);
+	query.prepare(
+	            "SELECT "
+	              "id "
+	            "FROM "
+	              "recipes "
+	            "WHERE "
+	               "externId=:externId");
+
+	query.bindValue(":externId", externId);
+
+	int retval = -1;
+	if (!execQuery(query)) return retval;
+
+	if (query.next()) {
+		retval = query.value(0).toInt();
+	}
+
+	ta.commit();
+	return retval;
+}
+
+static void addOrUpdateRecipeTranslations(const Recipe & recipe)
+{
+	Transaction;
+
+	const int recipeId = getRecipeId(recipe.getExternId());
+
+	QSqlQuery query(ta.db);
+	query.prepare(
+	        "INSERT INTO "
+	          "recipes_i18n "
+	        "("
+	          "recipeId, language, title "
+	        ") VALUES ("
+	          ":recipeId, :language, :title "
+	        ") "
+	        "ON DUPLICATE KEY UPDATE "
+	          "title=VALUES(title) "
+	            );
+
+	query.bindValue(":recipeId", recipeId);
+
+	const Locale2String titles = recipe.getTitles();
+	foreach(const QLocale & locale, titles.keys()) {
+		query.bindValue(":language", locale.name());
+		query.bindValue(":title",    titles.value(locale));
+		execQuery(query);
+	}
+
+	query.prepare(
+	        "INSERT INTO "
+	          "recipes_i18n "
+	        "("
+	          "recipeId, language, description "
+	        ") VALUES ("
+	          ":recipeId, :language, :description "
+	        ") "
+	        "ON DUPLICATE KEY UPDATE "
+	          "description=VALUES(description) "
+	            );
+
+	query.bindValue(":recipeId", recipeId);
+
+	const Locale2String descriptions = recipe.getDescriptions();
+	foreach(const QLocale & locale, descriptions.keys()) {
+		query.bindValue(":language",    locale.name());
+		query.bindValue(":description", descriptions.value(locale));
+		execQuery(query);
+	}
+
+	ta.commit();
+}
+
+bool DB::addOrUpdateRecipe(const Recipe & recipe)
+{
+	if (!recipe.isValid()) {
+		logWarn("recipe is not valid: %1", recipe);
+		return false;
+	}
+
+	Transaction;
+	Recipe recipeCopy = recipe;
+	if (recipeCopy.getExternId().isEmpty()) {
+		addRecipe(recipeCopy);
+	} else {
+		updateRecipe(recipeCopy);
+	}
+
+	addOrUpdateRecipeTranslations(recipeCopy);
+
+	return ta.commit();
 }
 
 QList<Recipe> DB::getRecipes()

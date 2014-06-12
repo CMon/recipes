@@ -20,7 +20,7 @@ QList<Ingredient> getIngredients();
 void addOrUpdatePortion(const Portion & portion);
 QList<Portion> getPortions(const int & id = -1);
 
-void addOrUpdateRecipe(const Recipe & recipe);
+bool addOrUpdateRecipe(const Recipe & recipe);
 QList<Recipe> getRecipes();
 
 }
