@@ -98,9 +98,8 @@ CREATE TABLE `recipes_i18n` (
 
 CREATE TABLE `recipePictures` (
     `recipeId`    BIGINT(11) NOT NULL,
-    `language`    VARCHAR(255) NOT NULL,
     `pathToImg`   VARCHAR(255) NOT NULL,
-    PRIMARY KEY (`recipeId`, `language`),
+    PRIMARY KEY (`recipeId`, `pathToImg`),
     CONSTRAINT `recipePictures_i18n_key1` FOREIGN KEY (`recipeId`) REFERENCES `recipes` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
