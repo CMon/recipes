@@ -176,6 +176,7 @@ void DatabaseTest::addOrUpdateIngredient_getIngredients()
 	// needed for the test elements
 	Category category(false);
 	category.updateName(QLocale("de_DE"), "süss");
+	DB::addOrUpdateCategory(category);
 
 	// initial Ingredient
 	Ingredient ingredient(false, false, false);
