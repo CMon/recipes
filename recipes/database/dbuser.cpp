@@ -96,7 +96,7 @@ QList<User> DB::getAllUsers(const int & id)
 	            "FROM "
 	                "users ";
 	if (id != -1) {
-		queryStr += " AND id = :id";
+		queryStr += " WHERE id = :id";
 	}
 
 	QSqlQuery query(ta.db);
