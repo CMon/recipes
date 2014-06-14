@@ -1,8 +1,9 @@
 #pragma once
 
+#include <common/locale2string.h>
 #include <common/category.h>
 #include <common/unit.h>
-#include <common/locale2string.h>
+#include <common/util.h>
 
 class Ingredient
 {
@@ -38,10 +39,15 @@ typedef QList<Ingredient> Ingredients;
 class IngredientPOD
 {
 public:
-	IngredientPOD(int c, const Unit & u, const Ingredient & i) : count(c), unit(u), ingredient(i) {}
+	IngredientPOD(int c, const Unit & u, const Ingredient & i, const bool isOptional = false)
+	    : count(c), unit(u), ingredient(i), isOptional(isOptional) {}
 
 	bool operator ==(const IngredientPOD & rhs) const {
-		return count == rhs.count && unit == rhs.unit && ingredient == rhs.ingredient;
+		return
+		        count      == rhs.count &&
+		        unit       == rhs.unit &&
+		        ingredient == rhs.ingredient &&
+		        isOptional == rhs.isOptional;
 	}
 
 	bool operator !=(const IngredientPOD & rhs) const {
@@ -51,15 +57,18 @@ public:
 	QString toString() const
 	{
 		return
-				"Count: " + QString::number(count) + " "
-				"Unit: "  + unit.toString() + " "
-				"Ingredient: " + ingredient.toString();
+		        "Count: " + QString::number(count) + " "
+		        "Unit: "  + unit.toString() + " "
+		        "Ingredient: " + ingredient.toString() + " "
+		        "isOptional: " + Util::boolToString(isOptional)
+		        ;
 	}
 
 public:
 	int count;
 	Unit unit;
 	Ingredient ingredient;
+	bool isOptional;
 };
 
 typedef QList<IngredientPOD> IngredientPODs;

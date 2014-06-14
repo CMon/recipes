@@ -104,7 +104,7 @@ CREATE TABLE `recipePictures` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
-CREATE TABLE `receiptToIngredient` (
+CREATE TABLE `recipeToIngredient` (
     `recipeId`        BIGINT(11) NOT NULL,
     `id`              BIGINT(11) NOT NULL,
     `ingredientId`    INT(5) NOT NULL,
@@ -112,9 +112,9 @@ CREATE TABLE `receiptToIngredient` (
     `unitCount`       INT(3) NOT NULL,
     `isOptional`      TINYINT(3) DEFAULT 1,
     PRIMARY KEY (`recipeId`, `id`),
-    CONSTRAINT `receiptToIngredients_key1` FOREIGN KEY (`recipeId`) REFERENCES `recipes` (`id`),
-    CONSTRAINT `receiptToIngredients_key2` FOREIGN KEY (`ingredientId`) REFERENCES `ingredients` (`id`),
-    CONSTRAINT `receiptToIngredients_key3` FOREIGN KEY (`unitId`) REFERENCES `units` (`id`)
+    CONSTRAINT `recipeToIngredients_key1` FOREIGN KEY (`recipeId`) REFERENCES `recipes` (`id`),
+    CONSTRAINT `recipeToIngredients_key2` FOREIGN KEY (`ingredientId`) REFERENCES `ingredients` (`id`),
+    CONSTRAINT `recipeToIngredients_key3` FOREIGN KEY (`unitId`) REFERENCES `units` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 

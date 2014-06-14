@@ -34,9 +34,14 @@ void Recipe::setCreatedByUser(const User & user)
 	creatingUser = user;
 }
 
-void Recipe::addIngredient(const int count, const Unit & unit, const Ingredient & ingredient)
+void Recipe::clearIngredients()
 {
-	ingredients << IngredientPOD(count, unit, ingredient);
+	ingredients.clear();
+}
+
+void Recipe::addIngredient(const int count, const Unit & unit, const Ingredient & ingredient, const bool isOptional)
+{
+	ingredients << IngredientPOD(count, unit, ingredient, isOptional);
 }
 
 bool Recipe::operator ==(const Recipe & rhs) const

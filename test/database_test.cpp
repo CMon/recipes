@@ -264,7 +264,7 @@ void DatabaseTest::addOrUpdateRecipe_getRecipes()
 {
 	// adding stuff that is needed for a recipe
 	Portion portion;
-	portion.updateDescriptions(QLocale("de_DE"), "Teller");
+	portion.updateDescriptions(QLocale("de_DE"), "Schüssel");
 	DB::addOrUpdatePortion(portion);
 	portion.setCount(2);
 	const User dummy = User(-1, "addOrUpdateRecipe_getRecipes", Permission(Permission::Admin), "first", "last", false);
@@ -275,10 +275,10 @@ void DatabaseTest::addOrUpdateRecipe_getRecipes()
 	gram.updateCompleteName(QLocale("de_DE"), "gram");
 	DB::addOrUpdateUnit(gram);
 	Category category(false);
-	category.updateName(QLocale("de_DE"), "süss");
+	category.updateName(QLocale("de_DE"), "salzig");
 	DB::addOrUpdateCategory(category);
 	Ingredient ingredient(false, false, false);
-	ingredient.updateName(QLocale("de_DE"), "Zucker");
+	ingredient.updateName(QLocale("de_DE"), "Salz");
 	ingredient.setFoodCategory(category);
 	DB::addOrUpdateIngredient(ingredient);
 
@@ -292,7 +292,9 @@ void DatabaseTest::addOrUpdateRecipe_getRecipes()
 		recipe.updateDescription(QLocale("de_DE"), "Kekse + Schokolade mischen und schon sinds Schokokekse");
 		QVERIFY2(recipe.isValid(), qPrintable(QString("Recipe invalid: %1").arg(recipe.toString())));
 
-		DB::addOrUpdateRecipe(recipe);
+		const QString externId = DB::addOrUpdateRecipe(recipe);
+		QVERIFY(!externId.isEmpty());
+		recipe.setExternId(externId);
 
 		const QList<Recipe> recipes = DB::getRecipes();
 		QCOMPARE(recipes.size(), 1);
@@ -306,7 +308,7 @@ void DatabaseTest::addOrUpdateRecipe_getRecipes()
 		updatedRecipe.updateDescription(QLocale("en_US"), "Cookies + Choclate mix them and you get Chocolatecookies");
 		QVERIFY(recipe != updatedRecipe);
 
-		DB::addOrUpdateRecipe(updatedRecipe);
+		QVERIFY(!DB::addOrUpdateRecipe(updatedRecipe).isEmpty());
 
 		const QList<Recipe> recipes = DB::getRecipes();
 		QCOMPARE(recipes.size(), 1);
@@ -318,8 +320,14 @@ void DatabaseTest::addOrUpdateRecipe_getRecipes()
 	{
 		anotherRecipe.updateTitle(QLocale("de_DE"), "Mett");
 		anotherRecipe.updateDescription(QLocale("de_DE"), "Fleisch in den Fleischwolf => Mett");
+		anotherRecipe.setCreatedByUser(user);
+		anotherRecipe.setPortion(portion);
+		anotherRecipe.addIngredient(12, gram, ingredient);
+		QVERIFY2(anotherRecipe.isValid(), qPrintable(QString("Recipe invalid: %1").arg(anotherRecipe.toString())));
 
-		DB::addOrUpdateRecipe(anotherRecipe);
+		const QString externId = DB::addOrUpdateRecipe(anotherRecipe);
+		QVERIFY(!externId.isEmpty());
+		anotherRecipe.setExternId(externId);
 
 		const QList<Recipe> recipes = DB::getRecipes();
 		QCOMPARE(recipes.size(), 2);

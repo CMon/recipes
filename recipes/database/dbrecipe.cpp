@@ -707,11 +707,9 @@ static int getRecipeId(const QString & externId)
 	return retval;
 }
 
-static void addOrUpdateRecipeTranslations(const Recipe & recipe)
+static void addOrUpdateRecipeTranslations(const int recipeId, const Recipe & recipe)
 {
 	Transaction;
-
-	const int recipeId = getRecipeId(recipe.getExternId());
 
 	QSqlQuery query(ta.db);
 	query.prepare(
@@ -759,11 +757,58 @@ static void addOrUpdateRecipeTranslations(const Recipe & recipe)
 	ta.commit();
 }
 
-bool DB::addOrUpdateRecipe(const Recipe & recipe)
+static void addOrUpdateRecipeIngredients(const int recipeId, const Recipe & recipe)
+{
+	Transaction;
+
+	QSqlQuery delQuery(ta.db);
+	delQuery.prepare(
+	            "DELETE FROM "
+	              "recipeToIngredient "
+	            "WHERE "
+	              "recipeId = :recipeId"
+	                 );
+	delQuery.bindValue(":recipeId", recipeId);
+	execQuery(delQuery);
+
+	QSqlQuery query(ta.db);
+	query.prepare(
+	        "INSERT INTO "
+	          "recipeToIngredient "
+	        "("
+	          "recipeId, id, ingredientId, unitId, unitCount, isOptional "
+	        ") VALUES ("
+	          ":recipeId, :id, :ingredientId, :unitId, :unitCount, :isOptional "
+	        ") "
+	        "ON DUPLICATE KEY UPDATE "
+	          "recipeId=VALUES(recipeId), "
+	          "id=VALUES(id), "
+	          "ingredientId=VALUES(ingredientId), "
+	          "unitId=VALUES(unitId), "
+	          "unitCount=VALUES(unitCount), "
+	          "isOptional=VALUES(isOptional) "
+	            );
+
+	query.bindValue(":recipeId", recipeId);
+	int i = 0;
+	foreach(const IngredientPOD & pod, recipe.getIngredients()) {
+		query.bindValue(":id",           i++);
+		query.bindValue(":ingredientId", getIngredientId(pod.ingredient.getNames()));
+		query.bindValue(":unitId",       getUnitId(pod.unit.getAbbreviations()));
+		query.bindValue(":unitCount",    pod.count);
+		query.bindValue(":isOptional",   pod.isOptional);
+
+		execQuery(query);
+	}
+
+	ta.commit();
+}
+
+QString DB::addOrUpdateRecipe(const Recipe & recipe)
 {
 	if (!recipe.isValid()) {
 		logWarn("recipe is not valid: %1", recipe);
-		return false;
+		return QString();
 	}
 
 	Transaction;
@@ -774,9 +819,43 @@ bool DB::addOrUpdateRecipe(const Recipe & recipe)
 		updateRecipe(recipeCopy);
 	}
 
-	addOrUpdateRecipeTranslations(recipeCopy);
+	const int recipeId = getRecipeId(recipeCopy.getExternId());
+	addOrUpdateRecipeTranslations(recipeId, recipeCopy);
+	addOrUpdateRecipeIngredients(recipeId, recipeCopy);
 
-	return ta.commit();
+	ta.commit();
+
+	return recipeCopy.getExternId();
+}
+
+static void getIngredients(const int recipeId, Recipe & recipe)
+{
+	Transaction;
+
+	QSqlQuery query(ta.db);
+	query.prepare(
+	            "SELECT "
+	              "ingredientId, unitId, unitCount, isOptional "
+	            "FROM "
+	              "recipeToIngredient "
+	            "WHERE "
+	              "recipeId = :recipeId "
+	            "ORDER BY "
+	              "id"
+	            );
+
+	query.bindValue(":recipeId", recipeId);
+	if (!execQuery(query)) return;
+
+	recipe.clearIngredients();
+	while (query.next()) {
+		recipe.addIngredient(query.value(2).toInt(),
+		                     DB::getUnits(query.value(1).toInt()).first(),
+		                     DB::getIngredients(query.value(0).toInt()).first(),
+		                     query.value(3).toBool());
+	}
+
+	ta.commit();
 }
 
 QList<Recipe> DB::getRecipes()
@@ -786,7 +865,8 @@ QList<Recipe> DB::getRecipes()
 	QSqlQuery query(ta.db);
 	query.prepare(
 	            "SELECT "
-	              "r.id, r.portionId, r.portionCount, r.createdByUserId, i18n.language, i18n.title, i18n.description "
+	              "r.id, r.portionId, r.portionCount, r.createdByUserId, r.externId, "
+	              "i18n.language, i18n.title, i18n.description "
 	            "FROM "
 	              "recipes r, recipes_i18n i18n "
 	            "WHERE "
@@ -798,12 +878,12 @@ QList<Recipe> DB::getRecipes()
 
 	QHash<int, Recipe> dummy;
 	while (query.next()) {
-		const int id = query.value(0).toInt();
-		const QLocale lang = QLocale(query.value(4).toString());
+		const int recipeId = query.value(0).toInt();
+		const QLocale lang = QLocale(query.value(5).toString());
 
 		Recipe recipe;
-		if (dummy.contains(id)) {
-			recipe = dummy.value(id);
+		if (dummy.contains(recipeId)) {
+			recipe = dummy.value(recipeId);
 		} else {
 			Portion portion = DB::getPortions(query.value(1).toInt()).first();
 			portion.setCount(query.value(2).toInt());
@@ -811,11 +891,13 @@ QList<Recipe> DB::getRecipes()
 			recipe = Recipe();
 			recipe.setPortion(portion);
 			recipe.setCreatedByUser(users.first());
+			recipe.setExternId(query.value(4).toString());
+			getIngredients(recipeId, recipe);
 		}
-		recipe.updateTitle(lang, query.value(5).toString());
-		recipe.updateDescription(lang, query.value(6).toString());
+		recipe.updateTitle(lang, query.value(6).toString());
+		recipe.updateDescription(lang, query.value(7).toString());
 
-		dummy.insert(id, recipe);
+		dummy.insert(recipeId, recipe);
 	}
 
 	ta.commit();

@@ -28,7 +28,9 @@ public:
 	void setCreatedByUser(const User & user);
 	User getCreatedByUser() const { return creatingUser; }
 
-	void addIngredient(const int count, const Unit & unit, const Ingredient & ingredient);
+	void clearIngredients();
+	void addIngredient(const int count, const Unit & unit, const Ingredient & ingredient, const bool isOptional = false);
+	IngredientPODs getIngredients() const { return ingredients; }
 
 	bool operator ==(const Recipe & rhs) const;
 	bool operator !=(const Recipe & rhs) const;
