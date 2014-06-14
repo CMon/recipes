@@ -139,19 +139,29 @@ void DB::addOrUpdateUnit(const Unit & unit)
 	ta.commit();
 }
 
-QList<Unit> DB::getUnits()
+QList<Unit> DB::getUnits(const int & id)
 {
 	Transaction;
 
-	QSqlQuery query(ta.db);
-	query.prepare(
+	QString queryStr =
 	            "SELECT "
 	              "u.id, u.inGram, u.inMl, i18n.language, i18n.abbreviation, i18n.completeName "
 	            "FROM "
 	              "units u, units_i18n i18n "
 	            "WHERE "
 	               "u.id = i18n.unitId"
-	            );
+	            ;
+
+	if (id != -1) {
+		queryStr += " AND u.id = :id";
+	}
+
+	QSqlQuery query(ta.db);
+	query.prepare(queryStr);
+
+	if (id != -1) {
+		query.bindValue(":id", id);
+	}
 
 	QList<Unit> retval;
 	if (!execQuery(query)) return retval;
@@ -439,19 +449,29 @@ void DB::addOrUpdateIngredient(const Ingredient & ingredient)
 	ta.commit();
 }
 
-QList<Ingredient> DB::getIngredients()
+QList<Ingredient> DB::getIngredients(const int & id)
 {
 	Transaction;
 
-	QSqlQuery query(ta.db);
-	query.prepare(
+	QString queryStr =
 	            "SELECT "
 	              "i.id, i.foodCategoryId, i.isLiquid, i.containsGluten, i.containsLactose, i18n.language, i18n.name "
 	            "FROM "
 	              "ingredients i, ingredients_i18n i18n "
 	            "WHERE "
 	               "i.id = i18n.ingredientId"
-	            );
+	            ;
+
+	if (id != -1) {
+		queryStr += " AND i.id = :id";
+	}
+
+	QSqlQuery query(ta.db);
+	query.prepare(queryStr);
+
+	if (id != -1) {
+		query.bindValue(":id", id);
+	}
 
 	QList<Ingredient> retval;
 	if (!execQuery(query)) return retval;
