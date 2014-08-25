@@ -1,7 +1,10 @@
+Makefile
 bin/*
 *.a
 
 *.pro.user*
+.qmake.cache
+.qmake.stash
 
 local.pri
 
