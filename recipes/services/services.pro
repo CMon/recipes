@@ -4,7 +4,8 @@ QT -= gui
 QT += network
 
 HEADERS += \
-    userservice.h
+    userservice.h \
+    logCategory.h
 
 TARGET = services_lib
 

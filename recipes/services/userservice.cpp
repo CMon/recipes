@@ -1,10 +1,9 @@
 #include "userservice.h"
 
-#include <cflib/util/log.h>
-#include <cflib/crypt/util.h>
+#include <logCategory.h>
 #include <database/dbuser.h>
 
-USE_LOG(LogCat::User)
+#include <cflib/crypt/util.h>
 
 UserService::UserService() :
     JSService(serializeTypeInfo().typeName)
@@ -18,10 +17,8 @@ UserService::~UserService()
 
 bool UserService::login(const QString &login, const QString &password, User &user)
 {
-	logFunctionTrace
-
 	if (!DB::checkPassword(login, password)) {
-		logWarn("wrong passwort for login: %1", login);
+		qCWarning(SERVICES) << "wrong passwort for login:" << login;
 		return false;
 	}
 
@@ -43,22 +40,22 @@ bool UserService::logout()
 bool UserService::addUser(const User & user, QString password)
 {
 	if (!user_.hasPermission(Permission::Admin)) {
-		logWarn("permission not sufficient for user: %1", currentUsers_[clientId()].toString());
+		qCWarning(SERVICES) << "permission not sufficient for user:" << currentUsers_[clientId()].toString();
 		return false;
 	}
 
 	if (!user.isValid()) {
-		logWarn("invalid input chars in user: %1", user.toString());
+		qCWarning(SERVICES) << "invalid input chars in user:" << user.toString();
 		return false;
 	}
 
 	if (user.getLogin().isEmpty()) {
-		logInfo("Could not add user, no login given");
+		qCDebug(SERVICES) << "Could not add user, no login given";
 		return false;
 	}
 
 	if (password.isEmpty()) {
-		logInfo("no password given, adding random password");
+		qCDebug(SERVICES) << "no password given, adding random password";
 		password = cflib::crypt::randomId().left(6);
 	}
 
@@ -67,10 +64,8 @@ bool UserService::addUser(const User & user, QString password)
 
 QList<User> UserService::getUsers()
 {
-	logFunctionTrace
-
 	if (!user_.hasPermission(Permission::Admin)) {
-		logWarn("permission not sufficient for user: %1", currentUsers_[clientId()].toString());
+		qCWarning(SERVICES) << "permission not sufficient for user:" << currentUsers_[clientId()].toString();
 		return QList<User>();
 	}
 
