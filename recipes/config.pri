@@ -7,3 +7,5 @@ exists($${RECIPES_ROOT}/local.pri) {
 }
 
 INCLUDEPATH += $${EXT_INCLUDES} $${RECIPES_ROOT} build/gen .
+
+CONFIG += c++11
