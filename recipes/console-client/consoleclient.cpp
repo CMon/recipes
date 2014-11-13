@@ -1,12 +1,10 @@
 #include "consoleclient.h"
 
-#include <cflib/util/log.h>
+#include <console-client/logCategory.h>
 #include <console-client/remote.h>
 
 #include <QStringList>
 #include <QCoreApplication>
-
-USE_LOG(LogCat::User)
 
 ConsoleClient::ConsoleClient(QObject *parent)
     : QObject(parent),
@@ -39,7 +37,7 @@ void ConsoleClient::command(const QString &command, const QStringList &arguments
 		printf("Connecting to %s\n", qPrintable(remote_.getBaseUrl()));
 	} else if (command == "rmi") {
 		if (remote_.getBaseUrl().isEmpty()) {
-			logInfo("You need to connect first");
+			qCWarning(CONSOLE_CLIENT) << "You need to connect first";
 			return;
 		}
 		switch (arguments.count()) {
@@ -62,6 +60,6 @@ void ConsoleClient::command(const QString &command, const QStringList &arguments
 			}
 		}
 	} else {
-		logInfo("unknown command: '%1' with arguments: '%2'", command, arguments.join(", "));
+		qCWarning(CONSOLE_CLIENT) << "unknown command:" << command << "with arguments:" << arguments.join(", ");
 	}
 }

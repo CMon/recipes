@@ -1,7 +1,7 @@
 #include "remote.h"
 
-#include <cflib/util/log.h>
 #include <common/waiter.h>
+#include <console-client/logCategory.h>
 
 #include <QNetworkRequest>
 #include <QNetworkReply>
@@ -9,8 +9,6 @@
 #include <QString>
 #include <QNetworkAccessManager>
 #include <QRegExp>
-
-USE_LOG(LogCat::Network)
 
 Remote::Remote(QObject *parent)
     :
@@ -39,7 +37,7 @@ QStringList Remote::getServices()
 
 	waiter.wait(35 * 1000);
 	if (waiter.timedOut()) {
-		logInfo("Request timedout");
+		qCWarning(CONSOLE_CLIENT) << "Request timedout";
 		return QStringList();
 	}
 
@@ -56,7 +54,7 @@ QStringList Remote::getMethodSignatures(const QString &service)
 
 	waiter.wait(35 * 1000);
 	if (waiter.timedOut()) {
-		logInfo("Request timedout");
+		qCWarning(CONSOLE_CLIENT) << "Request timedout";
 		return QStringList();
 	}
 

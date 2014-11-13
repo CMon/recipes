@@ -16,8 +16,8 @@ SOURCES += \
 HEADERS += \
     consoleclient.h \
     console.h \
-    remote.h
+    remote.h \
+    logCategory.h
 
 useLibs($$RECIPES_ROOT/lib, common_lib)
-useLibs(cflib_util)
 app()

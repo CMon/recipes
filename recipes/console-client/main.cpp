@@ -1,17 +1,19 @@
-#include <cflib/util/log.h>
+#include <common/log.h>
 #include <console-client/consoleclient.h>
+#include <console-client/logCategory.h>
 
 #include <QCoreApplication>
 
-USE_LOG(LogCat::User)
+Q_LOGGING_CATEGORY(CONSOLE_CLIENT, "recipe.consoleClient")
 
 int main(int argc, char *argv[])
 {
 	QCoreApplication a(argc, argv);
 	a.setApplicationName("Receipts console client");
+	qInstallMessageHandler(Log::consoleMessageHandler);
 
 	ConsoleClient cc(0);
-	logInfo("Started %1", QCoreApplication::applicationName());
+	qCDebug(CONSOLE_CLIENT) << "Started" << QCoreApplication::applicationName();
 	cc.start();
 
 	return 0;//a.exec();
