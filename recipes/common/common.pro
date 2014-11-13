@@ -12,7 +12,8 @@ HEADERS += \
     portion.h \
     permission.h \
     waiter.h \
-    locale2string.h
+    locale2string.h \
+    log.h
 
 TARGET = common_lib
 
