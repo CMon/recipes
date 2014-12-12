@@ -1,4 +1,4 @@
-include(cflib/include.pri)
+include(recipes/config.pri)
 
 cache()
 
