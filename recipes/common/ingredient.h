@@ -1,9 +1,9 @@
 #pragma once
 
-#include <common/locale2string.h>
-#include <common/category.h>
-#include <common/unit.h>
-#include <common/util.h>
+#include <recipes/common/locale2string.h>
+#include <recipes/common/category.h>
+#include <recipes/common/unit.h>
+#include <recipes/common/util.h>
 
 class Ingredient
 {

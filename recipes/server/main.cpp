@@ -1,7 +1,7 @@
 #include <QCoreApplication>
 
-#include <common/log.h>
-#include <services/userservice.h>
+#include <recipes/common/log.h>
+#include <recipes/services/userservice.h>
 
 #include <QLoggingCategory>
 #include <QHostAddress>

@@ -1,8 +1,10 @@
 #pragma once
 
+#include <recipes/common/permission.h>
+
 #include <cflib/serialize/serialize.h>
+
 #include <QString>
-#include <common/permission.h>
 
 class UserId
 {

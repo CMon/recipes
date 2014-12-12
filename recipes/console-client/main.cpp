@@ -1,6 +1,6 @@
-#include <common/log.h>
-#include <console-client/consoleclient.h>
-#include <console-client/logCategory.h>
+#include <recipes/common/log.h>
+#include <recipes/console-client/consoleclient.h>
+#include <recipes/console-client/logCategory.h>
 
 #include <QCoreApplication>
 

@@ -1,10 +1,10 @@
 #pragma once
 
-#include <common/category.h>
-#include <common/ingredient.h>
-#include <common/portion.h>
-#include <common/user.h>
-#include <common/util.h>
+#include <recipes/common/category.h>
+#include <recipes/common/ingredient.h>
+#include <recipes/common/portion.h>
+#include <recipes/common/user.h>
+#include <recipes/common/util.h>
 
 #include <QStringList>
 

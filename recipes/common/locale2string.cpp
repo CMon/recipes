@@ -1,6 +1,6 @@
 #include "locale2string.h"
 
-#include <common/util.h>
+#include <recipes/common/util.h>
 
 bool Locale2String::operator ==(const Locale2String & rhs) const
 {

@@ -1,6 +1,6 @@
 #include "dbrecipe.h"
 
-#include <database/dbuser.h>
+#include <recipes/database/dbuser.h>
 
 #include <cflib/crypt/util.h>
 #include <cflib/db/db.h>

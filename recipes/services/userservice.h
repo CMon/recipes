@@ -2,7 +2,7 @@
 
 #include <cflib/http/jsservice.h>
 
-#include <common/user.h>
+#include <recipes/common/user.h>
 
 class UserService : public QObject, public cflib::http::JSService
 {

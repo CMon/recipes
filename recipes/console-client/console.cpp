@@ -1,7 +1,7 @@
 #include "console.h"
 
-#include <common/util.h>
-#include <console-client/logCategory.h>
+#include <recipes/common/util.h>
+#include <recipes/console-client/logCategory.h>
 
 #include <QStringList>
 

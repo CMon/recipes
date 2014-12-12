@@ -1,7 +1,7 @@
 #include "userservice.h"
 
-#include <logCategory.h>
-#include <database/dbuser.h>
+#include <recipes/database/dbuser.h>
+#include <recipes/services/logCategory.h>
 
 #include <cflib/crypt/util.h>
 

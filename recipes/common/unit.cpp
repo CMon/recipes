@@ -1,6 +1,6 @@
 #include "unit.h"
 
-#include <common/util.h>
+#include <recipes/common/util.h>
 
 Unit::Unit(int g, int m)
     : gram(g),

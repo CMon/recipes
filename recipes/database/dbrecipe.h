@@ -1,10 +1,10 @@
 #pragma once
 
-#include <common/category.h>
-#include <common/ingredient.h>
-#include <common/portion.h>
-#include <common/recipe.h>
-#include <common/unit.h>
+#include <recipes/common/category.h>
+#include <recipes/common/ingredient.h>
+#include <recipes/common/portion.h>
+#include <recipes/common/recipe.h>
+#include <recipes/common/unit.h>
 
 namespace DB {
 

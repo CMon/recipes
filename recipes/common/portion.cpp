@@ -1,6 +1,6 @@
 #include "portion.h"
 
-#include <common/util.h>
+#include <recipes/common/util.h>
 
 Portion::Portion()
     : count(0)

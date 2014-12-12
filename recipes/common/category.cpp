@@ -1,6 +1,6 @@
 #include "category.h"
 
-#include <common/util.h>
+#include <recipes/common/util.h>
 
 void Category::updateName(const QLocale & locale, const QString & name)
 {

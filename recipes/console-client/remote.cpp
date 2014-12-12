@@ -1,7 +1,7 @@
 #include "remote.h"
 
-#include <common/waiter.h>
-#include <console-client/logCategory.h>
+#include <recipes/common/waiter.h>
+#include <recipes/console-client/logCategory.h>
 
 #include <QNetworkRequest>
 #include <QNetworkReply>

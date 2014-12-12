@@ -1,4 +1,4 @@
-RECIPES_ROOT=$$PWD
+RECIPES_ROOT=$$PWD"/../"
 
 exists($${RECIPES_ROOT}/local.pri) {
     include($${RECIPES_ROOT}/local.pri)

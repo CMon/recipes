@@ -1,7 +1,7 @@
 #include "consoleclient.h"
 
-#include <console-client/logCategory.h>
-#include <console-client/remote.h>
+#include <recipes/console-client/logCategory.h>
+#include <recipes/console-client/remote.h>
 
 #include <QStringList>
 #include <QCoreApplication>

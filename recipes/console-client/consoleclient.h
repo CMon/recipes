@@ -1,7 +1,7 @@
 #pragma once
 
-#include <console-client/console.h>
-#include <console-client/remote.h>
+#include <recipes/console-client/console.h>
+#include <recipes/console-client/remote.h>
 
 class QString;
 class QStringList;

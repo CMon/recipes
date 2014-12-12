@@ -1,6 +1,6 @@
 #include "ingredient.h"
 
-#include <common/util.h>
+#include <recipes/common/util.h>
 
 Ingredient::Ingredient()
     : isLiquid(false),
