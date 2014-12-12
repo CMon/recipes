@@ -112,7 +112,7 @@ void DatabaseTest::addOrUpdateUnit_getUnits()
 
 		const QList<Unit> units = DB::getUnits();
 		QCOMPARE(units.size(), 1);
-		COMPARE(units.first(), updatedUnit);
+		QCOMPARE(units.first(), updatedUnit);
 	}
 
 	// adding another unit
@@ -154,7 +154,7 @@ void DatabaseTest::addOrUpdateCategory_getCategories()
 
 		const QList<Category> categories = DB::getCategories();
 		QCOMPARE(categories.size(), 1);
-		COMPARE(categories.first(), updatedCategory);
+		QCOMPARE(categories.first(), updatedCategory);
 	}
 
 	// adding another category
@@ -188,7 +188,7 @@ void DatabaseTest::addOrUpdateIngredient_getIngredients()
 
 		const QList<Ingredient> ingredients = DB::getIngredients();
 		QCOMPARE(ingredients.size(), 1);
-		COMPARE(ingredients.first(), ingredient);
+		QCOMPARE(ingredients.first(), ingredient);
 	}
 
 	// adding another translation to initial Ingredient
@@ -201,7 +201,7 @@ void DatabaseTest::addOrUpdateIngredient_getIngredients()
 
 		const QList<Ingredient> ingredients = DB::getIngredients();
 		QCOMPARE(ingredients.size(), 1);
-		COMPARE(ingredients.first(), updatedIngredient);
+		QCOMPARE(ingredients.first(), updatedIngredient);
 	}
 
 	// adding another Ingredient
@@ -230,7 +230,7 @@ void DatabaseTest::addOrUpdatePortion_getPortions()
 
 		const QList<Portion> portions = DB::getPortions();
 		QCOMPARE(portions.size(), 1);
-		COMPARE(portions.first(), portion);
+		QCOMPARE(portions.first(), portion);
 	}
 
 	// adding another translation to initial Portion
@@ -243,7 +243,7 @@ void DatabaseTest::addOrUpdatePortion_getPortions()
 
 		const QList<Portion> portions = DB::getPortions();
 		QCOMPARE(portions.size(), 1);
-		COMPARE(portions.first(), updatedPortion);
+		QCOMPARE(portions.first(), updatedPortion);
 	}
 
 	// adding another Portion
@@ -298,7 +298,7 @@ void DatabaseTest::addOrUpdateRecipe_getRecipes()
 
 		const QList<Recipe> recipes = DB::getRecipes();
 		QCOMPARE(recipes.size(), 1);
-		COMPARE(recipes.first(), recipe);
+		QCOMPARE(recipes.first(), recipe);
 	}
 
 	// adding another translation to initial Recipe
@@ -312,7 +312,7 @@ void DatabaseTest::addOrUpdateRecipe_getRecipes()
 
 		const QList<Recipe> recipes = DB::getRecipes();
 		QCOMPARE(recipes.size(), 1);
-		COMPARE(recipes.first(), updatedRecipe);
+		QCOMPARE(recipes.first(), updatedRecipe);
 	}
 
 	// adding another Recipe
