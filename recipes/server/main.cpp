@@ -4,6 +4,7 @@
 #include <services/userservice.h>
 
 #include <QLoggingCategory>
+#include <QHostAddress>
 
 #include <cflib/db/db.h>
 #include <cflib/http/apiserver.h>
@@ -32,7 +33,7 @@ int main(int argc, char ** argv)
 
 	cflib::http::Server serv;
 	serv.registerHandler(&api);
-	if (!serv.start(port, listenOn)) {
+	if (!serv.start(port, listenOn.toString().toLatin1())) {
 		qCCritical(RECIPE_SERVER) << "cannot start HTTP-Server (port already in use)";
 		return 1;
 	}
