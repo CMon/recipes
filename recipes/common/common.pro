@@ -17,6 +17,6 @@ HEADERS += \
 
 TARGET = common_lib
 
-useLibs(cflib_serialize cflib_util)
+useLibs(cflib_serialize cflib_util cflib_libev)
 lib($$RECIPES_ROOT/lib)
 serializeGen()

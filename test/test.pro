@@ -15,5 +15,5 @@ RESOURCES += \
     ../database.qrc
 
 useLibs($$RECIPES_ROOT/lib, database_lib common_lib)
-useLibs(cflib_db cflib_crypt cflib_util)
+useLibs(cflib_db cflib_crypt cflib_util cflib_libev)
 test()
