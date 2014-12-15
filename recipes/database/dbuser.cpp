@@ -27,7 +27,7 @@ bool DB::updateUser(const User & user, const QString password)
 	query.bindValue(":firstName",    user.getFirstName());
 	query.bindValue(":lastName",     user.getLastName());
 	query.bindValue(":passwordHash", cflib::crypt::hashPassword(password));
-	query.bindValue(":permissions",  (uint)user.getPermissions());
+	query.bindValue(":permissions",  (uint)user.getPermissions().convertToFlags());
 	query.bindValue(":isDeleted",    false);
 
 	if (!execQuery(query)) return false;
@@ -54,7 +54,7 @@ User DB::getUser(const QString & login)
 	User user(
 	            UserId(query.value(0).toInt()),
 	            query.value(1).toString(),
-	            Permission(query.value(2).toUInt()),
+	            Permissions::fromFlags(query.value(2).toUInt()),
 	            query.value(3).toString(),
 	            query.value(4).toString(),
 	            query.value(5).toBool()
@@ -113,7 +113,7 @@ QList<User> DB::getAllUsers(const int & id)
 		User user(
 		            UserId(query.value(0).toInt()),
 		            query.value(1).toString(),
-		            Permission(query.value(2).toUInt()),
+		            Permissions::fromFlags(query.value(2).toUInt()),
 		            query.value(3).toString(),
 		            query.value(4).toString(),
 		            query.value(5).toBool()

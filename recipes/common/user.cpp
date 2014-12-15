@@ -22,7 +22,7 @@ bool User::isNull() const
 
 bool User::hasPermission(const Permission &permission) const
 {
-	return permissions_.testFlag(permission);
+	return permissions_.contains(permission);
 }
 
 bool User::isValid() const

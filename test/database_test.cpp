@@ -48,7 +48,7 @@ void DatabaseTest::cleanupTestCase()
 
 void DatabaseTest::user_updateUser_getAllUsers()
 {
-	const User userToTest(-1, "user_updateUser_getAllUsers", Permission(Permission::Admin), "first user_updateUser_getAllUsers", "last user_updateUser_getAllUsers", false);
+	const User userToTest(-1, "user_updateUser_getAllUsers", Permissions(Permission::Admin), "first user_updateUser_getAllUsers", "last user_updateUser_getAllUsers", false);
 
 	QVERIFY(DB::updateUser(userToTest, "password"));
 
@@ -63,7 +63,7 @@ void DatabaseTest::user_updateUser_getAllUsers()
 
 void DatabaseTest::user_updateUser_getUser()
 {
-	const User userToTest(-1, "user_updateUser_getUser", Permission(Permission::Admin), "first user_updateUser_getUser", "last user_updateUser_getUser", false);
+	const User userToTest(-1, "user_updateUser_getUser", Permissions(Permission::Admin), "first user_updateUser_getUser", "last user_updateUser_getUser", false);
 
 	QVERIFY(DB::updateUser(userToTest, "password"));
 
@@ -77,7 +77,7 @@ void DatabaseTest::user_updateUser_getUser()
 
 void DatabaseTest::user_checkPassword()
 {
-	const User userToTest(-1, "user_checkPassword", Permission(Permission::Admin), "first user_checkPassword", "last user_checkPassword", false);
+	const User userToTest(-1, "user_checkPassword", Permissions(Permission::Admin), "first user_checkPassword", "last user_checkPassword", false);
 	QVERIFY(DB::updateUser(userToTest, "password"));
 
 	QVERIFY(DB::checkPassword("user_checkPassword", "password"));
@@ -267,7 +267,7 @@ void DatabaseTest::addOrUpdateRecipe_getRecipes()
 	portion.updateDescriptions(QLocale("de_DE"), "Schüssel");
 	DB::addOrUpdatePortion(portion);
 	portion.setCount(2);
-	const User dummy = User(-1, "addOrUpdateRecipe_getRecipes", Permission(Permission::Admin), "first", "last", false);
+	const User dummy = User(-1, "addOrUpdateRecipe_getRecipes", Permissions(Permission::Admin), "first", "last", false);
 	QVERIFY(DB::updateUser(dummy, "password"));
 	const User user = DB::getUser("addOrUpdateRecipe_getRecipes");
 	Unit gram(1, 1);
