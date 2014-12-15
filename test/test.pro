@@ -1,19 +1,21 @@
 !include(../recipes/config.pri):error("Could not find config.pri")
 
-QT += sql
+QT += sql network
 QT -= gui
 
 TARGET = tests
 
 HEADERS += \
-    database_test.h
+	database_test.h \
+	testserver.h
 
 SOURCES += \
-    database_test.cpp
+	database_test.cpp \
+	testserver.cpp
 
 RESOURCES += \
-    ../database.qrc
+	../database.qrc
 
-useLibs($$RECIPES_ROOT/lib, database_lib common_lib)
-useLibs(cflib_db cflib_crypt cflib_util cflib_libev)
+useLibs($$RECIPES_ROOT/lib, services_lib database_lib common_lib)
+useLibs(cflib_db cflib_http cflib_crypt cflib_serialize cflib_util cflib_libev)
 test()
