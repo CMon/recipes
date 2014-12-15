@@ -7,10 +7,12 @@ TARGET = tests
 
 HEADERS += \
 	database_test.h \
+	service_test.h \
 	testserver.h
 
 SOURCES += \
 	database_test.cpp \
+	service_test.cpp \
 	testserver.cpp
 
 RESOURCES += \
