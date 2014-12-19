@@ -5,6 +5,7 @@ addSubdir(common)
 CONFIG(clients) {
     message("Building clients")
     addSubdir(console-client, common)
+    addSubdir(qml-client, common)
 }
 
 CONFIG(server) {
