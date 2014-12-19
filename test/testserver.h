@@ -13,13 +13,14 @@ public:
 	TestServer();
 	~TestServer();
 
-	bool startServer();
+	bool startServer(bool resetDatabase = false);
 	void stopServer();
 
 	bool insertTestUsers();
 
 private:
 	bool isServerRunning();
+	void initTestDatabase(bool initDB);
 
 private:
 	cflib::http::Server serv_;
