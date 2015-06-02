@@ -1,8 +1,9 @@
 #include "database_test.h"
 
-#include <recipes/database/dbuser.h>
-#include <recipes/database/dbrecipe.h>
 #include <recipes/common/user.h>
+#include <recipes/database/dbrecipe.h>
+#include <recipes/database/dbuser.h>
+#include <test/testtostrings.h>
 
 #include <cflib/db/db.h>
 #include <cflib/util/test.h>
