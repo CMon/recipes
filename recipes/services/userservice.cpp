@@ -84,7 +84,7 @@ void UserService::getCurrentUser(uint clId, User & user)
 	user = currentUsers_[clId];
 }
 
-void UserService::preCallInit(const cflib::http::Request & request, uint clId)
+void UserService::preCallInit(const cflib::net::Request & request, uint clId)
 {
 	Q_UNUSED(request);
 	user_ = currentUsers_.value(clId);

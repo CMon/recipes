@@ -12,4 +12,3 @@ TARGET = services_lib
 useLibs(cflib_crypt)
 lib($$RECIPES_ROOT/lib)
 serializeGen()
-

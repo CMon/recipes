@@ -7,8 +7,8 @@
 #include <QTest>
 
 #include <cflib/db/db.h>
-#include <cflib/http/apiserver.h>
-#include <cflib/http/server.h>
+#include <cflib/net/apiserver.h>
+#include <cflib/net/httpserver.h>
 
 User fullUser = User(UserId(0), "FullUser", Permission::getAll(), "Full", "User", false);
 
@@ -33,7 +33,7 @@ bool TestServer::startServer(bool initDB)
 
 	UserService userService;
 
-	cflib::http::ApiServer api;
+	cflib::net::ApiServer api;
 	api.registerService(&userService);
 
 	const int port = 8666;

@@ -1,10 +1,10 @@
 #pragma once
 
-#include <cflib/http/jsservice.h>
+#include <cflib/net/jsservice.h>
 
 #include <recipes/common/user.h>
 
-class UserService : public QObject, public cflib::http::JSService
+class UserService : public QObject, public cflib::net::JSService
 {
 	Q_OBJECT
 	SERIALIZE_CLASS
@@ -26,7 +26,7 @@ public slots:
 	void getCurrentUser(uint clId, User & user);
 
 protected:
-	virtual void preCallInit(const cflib::http::Request & request, uint clId);
+    virtual void preCallInit(const cflib::net::Request & request, uint clId);
 
 private:
 	QHash<uint, User> currentUsers_;

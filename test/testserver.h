@@ -2,7 +2,7 @@
 
 #include <recipes/common/user.h>
 
-#include <cflib/http/server.h>
+#include <cflib/net/httpserver.h>
 
 // Test globals
 extern User fullUser;
@@ -23,5 +23,5 @@ private:
 	void initTestDatabase(bool initDB);
 
 private:
-	cflib::http::Server serv_;
+	cflib::net::HttpServer serv_;
 };

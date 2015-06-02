@@ -7,8 +7,8 @@
 #include <QHostAddress>
 
 #include <cflib/db/db.h>
-#include <cflib/http/apiserver.h>
-#include <cflib/http/server.h>
+#include <cflib/net/apiserver.h>
+#include <cflib/net/httpserver.h>
 
 Q_DECLARE_LOGGING_CATEGORY(RECIPE_SERVER)
 Q_LOGGING_CATEGORY(RECIPE_SERVER, "recipe.server")
@@ -25,13 +25,13 @@ int main(int argc, char ** argv)
 
 	UserService userService;
 
-	cflib::http::ApiServer api;
+	cflib::net::ApiServer api;
 	api.registerService(&userService);
 
 	const int port = 8080;
 	const QHostAddress listenOn = QHostAddress::LocalHost;
 
-	cflib::http::Server serv;
+	cflib::net::HttpServer serv;
 	serv.registerHandler(&api);
 	if (!serv.start(port, listenOn.toString().toLatin1())) {
 		qCCritical(RECIPE_SERVER) << "cannot start HTTP-Server (port already in use)";
