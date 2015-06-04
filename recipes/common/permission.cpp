@@ -49,3 +49,13 @@ QFlags<Permission> Permissions::convertToFlags() const
 
 	return retval;
 }
+
+QString Permissions::toString() const
+{
+	QString retval;
+	foreach(const Permission & perm, permissions_) {
+		if (!retval.isEmpty()) retval += ", ";
+		retval += perm.toString();
+	}
+	return retval;
+}

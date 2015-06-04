@@ -26,6 +26,7 @@ public:
 	bool operator!=(const Permission & rhs) const { return !operator==(rhs); }
 
 	Q_ENUM_getAll(Permission, Type)
+	Q_ENUM_toString(Permission, Type, perm)
 
 private serialized:
 	uint perm;
@@ -49,6 +50,8 @@ public:
 
 	bool operator==(const Permissions & rhs) const { return permissions_ != rhs.permissions_;}
 	bool operator!=(const Permissions & rhs) const { return !operator ==(rhs); }
+
+	QString toString() const;
 
 private serialized:
 	QSet<Permission> permissions_;
