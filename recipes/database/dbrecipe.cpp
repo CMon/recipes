@@ -814,8 +814,10 @@ QString DB::addOrUpdateRecipe(const Recipe & recipe)
 	Transaction;
 	Recipe recipeCopy = recipe;
 	if (recipeCopy.getExternId().isEmpty()) {
+		logInfo("Adding recipe");
 		addRecipe(recipeCopy);
 	} else {
+		logInfo("Updating recipe: %1", recipeCopy.getExternId());
 		updateRecipe(recipeCopy);
 	}
 
