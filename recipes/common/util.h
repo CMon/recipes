@@ -25,3 +25,8 @@ uint qHash(const QLocale & locale);
 		}\
 		return retSet;\
 	}
+
+#define Q_ENUM_toString(CLASS, ENUM, MEMBER) \
+	QString toString() const { \
+		return CLASS::staticMetaObject.enumerator(CLASS::staticMetaObject.indexOfEnumerator(#ENUM)).valueToKey(MEMBER);\
+	}
