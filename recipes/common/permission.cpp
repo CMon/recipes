@@ -50,6 +50,16 @@ QFlags<Permission> Permissions::convertToFlags() const
 	return retval;
 }
 
+bool Permissions::operator==(const Permissions & rhs) const
+{
+	return permissions_ == rhs.permissions_;
+}
+
+bool Permissions::operator!=(const Permissions & rhs) const
+{
+	return !operator ==(rhs);
+}
+
 QString Permissions::toString() const
 {
 	QString retval;

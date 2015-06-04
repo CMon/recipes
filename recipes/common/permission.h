@@ -48,8 +48,8 @@ public:
 	static Permissions fromFlags(const QFlags<Permission> permissions);
 	QFlags<Permission> convertToFlags() const;
 
-	bool operator==(const Permissions & rhs) const { return permissions_ != rhs.permissions_;}
-	bool operator!=(const Permissions & rhs) const { return !operator ==(rhs); }
+	bool operator==(const Permissions & rhs) const;
+	bool operator!=(const Permissions & rhs) const;
 
 	QString toString() const;
 
