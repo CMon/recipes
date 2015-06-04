@@ -33,8 +33,6 @@ Permissions Permissions::fromFlags(const QFlags<Permission> permissions)
 {
 	Permissions set;
 
-	QSet<Permission> foo = Permission::getAll();
-
 	foreach (const Permission & permission, Permission::getAll()) {
 		if (permissions.testFlag(permission)) set.insert(permission);
 	}
