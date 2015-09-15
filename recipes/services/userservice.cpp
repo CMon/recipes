@@ -6,7 +6,7 @@
 #include <cflib/crypt/util.h>
 
 UserService::UserService() :
-    JSService(serializeTypeInfo().typeName)
+	RMIService(serializeTypeInfo().typeName)
 {
 }
 
@@ -26,21 +26,21 @@ bool UserService::login(const QString &login, const QString &password, User &use
 
 	if (user.isNull()) return false;
 
-	currentUsers_[clientId()] = user;
+	currentUsers_[connId()] = user;
 
 	return true;
 }
 
 bool UserService::logout()
 {
-	currentUsers_[clientId()] = User();
+	currentUsers_[connId()] = User();
 	return true;
 }
 
 bool UserService::addUser(const User & user, QString password)
 {
 	if (!user_.hasPermission(Permission::Admin)) {
-		qCWarning(SERVICES) << "permission not sufficient for user:" << currentUsers_[clientId()].toString();
+		qCWarning(SERVICES) << "permission not sufficient for user:" << currentUsers_[connId()].toString();
 		return false;
 	}
 
@@ -65,7 +65,7 @@ bool UserService::addUser(const User & user, QString password)
 QList<User> UserService::getUsers()
 {
 	if (!user_.hasPermission(Permission::Admin)) {
-		qCWarning(SERVICES) << "permission not sufficient for user:" << currentUsers_[clientId()].toString();
+		qCWarning(SERVICES) << "permission not sufficient for user:" << currentUsers_[connId()].toString();
 		return QList<User>();
 	}
 
@@ -84,8 +84,7 @@ void UserService::getCurrentUser(uint clId, User & user)
 	user = currentUsers_[clId];
 }
 
-void UserService::preCallInit(const cflib::net::Request & request, uint clId)
+void UserService::preCallInit()
 {
-	Q_UNUSED(request);
-	user_ = currentUsers_.value(clId);
+	user_ = currentUsers_.value(connId());
 }

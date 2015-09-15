@@ -1,10 +1,10 @@
 #pragma once
 
-#include <cflib/net/jsservice.h>
+#include <cflib/net/rmiservice.h>
 
 #include <recipes/common/user.h>
 
-class UserService : public QObject, public cflib::net::JSService
+class UserService : public QObject, public cflib::net::RMIService<QString>
 {
 	Q_OBJECT
 	SERIALIZE_CLASS
@@ -13,7 +13,7 @@ public:
 	UserService();
 	~UserService();
 
-	rmi:
+rmi:
 	bool login(const QString & login, const QString & password, User & user);
 	bool logout();
 	bool addUser(const User & login, QString password);
@@ -26,7 +26,7 @@ public slots:
 	void getCurrentUser(uint clId, User & user);
 
 protected:
-    virtual void preCallInit(const cflib::net::Request & request, uint clId);
+	virtual void preCallInit();
 
 private:
 	QHash<uint, User> currentUsers_;

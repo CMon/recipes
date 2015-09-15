@@ -7,8 +7,12 @@
 #include <QHostAddress>
 
 #include <cflib/db/db.h>
-#include <cflib/net/apiserver.h>
 #include <cflib/net/httpserver.h>
+#include <cflib/net/rmiserver.h>
+#include <cflib/net/wscommmanager.h>
+
+using namespace cflib::net;
+using namespace cflib::util;
 
 Q_DECLARE_LOGGING_CATEGORY(RECIPE_SERVER)
 Q_LOGGING_CATEGORY(RECIPE_SERVER, "recipe.server")
@@ -25,15 +29,18 @@ int main(int argc, char ** argv)
 
 	UserService userService;
 
-	cflib::net::ApiServer api;
-	api.registerService(&userService);
+	WSCommManager<QString> commMgr("/ws");
+	RMIServer<QString> rmiServer(commMgr);
+
+	rmiServer.registerService(userService);
 
 	const int port = 8080;
 	const QHostAddress listenOn = QHostAddress::LocalHost;
 
-	cflib::net::HttpServer serv;
-	serv.registerHandler(&api);
-	if (!serv.start(port, listenOn.toString().toLatin1())) {
+	HttpServer serv;
+	serv.registerHandler(rmiServer);
+
+	if (!serv.start(listenOn.toString().toLatin1(), port)) {
 		qCCritical(RECIPE_SERVER) << "cannot start HTTP-Server (port already in use)";
 		return 1;
 	}
