@@ -17,7 +17,7 @@ int main(int argc, char ** argv)
 {
 	QCoreApplication a(argc, argv);
 	a.setApplicationName("Receipts Server");
-	qInstallMessageHandler(Log::consoleMessageHandler);
+	qInstallMessageHandler(RecipeLog::consoleMessageHandler);
 
 	QLoggingCategory::setFilterRules(QStringLiteral("recipe.server.*=true"));
 

@@ -10,7 +10,7 @@ int main(int argc, char *argv[])
 {
 	QCoreApplication a(argc, argv);
 	a.setApplicationName("Receipts console client");
-	qInstallMessageHandler(Log::consoleMessageHandler);
+	qInstallMessageHandler(RecipeLog::consoleMessageHandler);
 
 	ConsoleClient cc(0);
 	qCDebug(CONSOLE_CLIENT) << "Started" << QCoreApplication::applicationName();

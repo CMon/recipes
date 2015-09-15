@@ -2,7 +2,7 @@
 
 #include <QtMsgHandler>
 
-class Log
+class RecipeLog
 {
 public:
 	static void consoleMessageHandler(QtMsgType type, const QMessageLogContext &context, const QString &msg);

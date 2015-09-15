@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <libgen.h>
 
-void Log::consoleMessageHandler(QtMsgType type, const QMessageLogContext &context, const QString &msg)
+void RecipeLog::consoleMessageHandler(QtMsgType type, const QMessageLogContext &context, const QString &msg)
 {
 	const QDateTime now = QDateTime::currentDateTime();
 	char typeStr;
