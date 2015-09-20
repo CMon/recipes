@@ -1,10 +1,8 @@
 import QtQuick 2.2
-import QtQuick.Layouts 1.1
 import QtQuick.Controls 1.2
 
-ColumnLayout {
+Column {
     id: column
-    width: Math.max(btnLogin.width, appWindow.width / 3)
 
     signal loggedIn
 
@@ -16,13 +14,15 @@ ColumnLayout {
 
     TextField {
         id: username
-        Layout.fillWidth: true
+        width: appWindow.width / 3
+        anchors.right: column.right
         placeholderText: qsTr("Username")
         onAccepted: nextItemInFocusChain().forceActiveFocus()
     }
     TextField {
         id: password
-        Layout.fillWidth: true
+        width: appWindow.width / 3
+        anchors.right: column.right
         placeholderText: qsTr("Password")
         echoMode: TextInput.Password
         onAccepted: btnLogin.login(username.text, password.text)

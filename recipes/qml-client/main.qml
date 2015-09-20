@@ -20,9 +20,18 @@ ApplicationWindow {
         }
     }
 
-    Login {
-        id: login
+    StackView {
+        id: stackView
         anchors.centerIn: parent
-        onLoggedIn: console.log("Switch state to logged in")
+        initialItem: Login { }
+        focus: true
+        Keys.onReleased: {
+            if (event.key === Qt.Key_Back || event.key === Qt.Key_Escape) {
+                if (stackView.depth > 1) {
+                    stackView.pop()
+                    event.accepted = true
+                }
+            }
+        }
     }
 }
