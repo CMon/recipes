@@ -11,6 +11,9 @@ void RecipeLog::consoleMessageHandler(QtMsgType type, const QMessageLogContext &
 	char typeStr;
 	switch (type) {
 		case QtDebugMsg:    typeStr = 'D'; break;
+#ifdef QT_VERSION >= 0x050500
+		case QtInfoMsg:     typeStr = 'I'; break;
+#endif
 		case QtWarningMsg:  typeStr = 'W'; break;
 		case QtCriticalMsg: typeStr = 'C'; break;
 		case QtFatalMsg:    typeStr = 'F'; break;
