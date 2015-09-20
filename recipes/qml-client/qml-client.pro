@@ -5,10 +5,13 @@ TEMPLATE = app
 QT += qml quick widgets network
 
 SOURCES += \
-	main.cpp
+    main.cpp \
+
+HEADERS += \
+    logcategory.h \
 
 RESOURCES += \
-	qml.qrc
+    qml.qrc
 
 useLibs($$RECIPES_ROOT/lib, common_lib)
 
