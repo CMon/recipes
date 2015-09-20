@@ -18,12 +18,14 @@ ColumnLayout {
         id: username
         Layout.fillWidth: true
         placeholderText: qsTr("Username")
+        onAccepted: nextItemInFocusChain().forceActiveFocus()
     }
     TextField {
         id: password
         Layout.fillWidth: true
         placeholderText: qsTr("Password")
         echoMode: TextInput.Password
+        onAccepted: btnLogin.login(username.text, password.text)
     }
     Label {
         id: error
@@ -34,10 +36,13 @@ ColumnLayout {
     Button {
         id: btnLogin
         anchors.right: column.right
+        isDefault: true
 
         text: qsTr("Login");
-        onClicked: {
-            var loginOk = UserService.login(username.text, password.text);
+        onClicked: login(username.text, password.text)
+
+        function login(user, pass) {
+            var loginOk = UserService.login(user, pass);
             if (loginOk) {
                 error.visible = false;
                 loggedIn()
