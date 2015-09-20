@@ -6,9 +6,11 @@ QT += qml quick widgets network
 
 SOURCES += \
     main.cpp \
+    servicemapper.cpp \
 
 HEADERS += \
     logcategory.h \
+    servicemapper.h \
 
 RESOURCES += \
     qml.qrc

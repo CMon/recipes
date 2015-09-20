@@ -37,9 +37,9 @@ ColumnLayout {
 
         text: qsTr("Login");
         onClicked: {
-            // call remote here
-            var loginOk = true;
+            var loginOk = UserService.login(username.text, password.text);
             if (loginOk) {
+                error.visible = false;
                 loggedIn()
             } else {
                 error.visible = true;
