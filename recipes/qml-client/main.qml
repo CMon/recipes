@@ -23,7 +23,7 @@ ApplicationWindow {
     StackView {
         id: stackView
         anchors.centerIn: parent
-        initialItem: Login { }
+        initialItem: Login { onLoggedIn: /*stackView.push(Qt.resolvedUrl("StartPage.qml"))*/ console.log("go to start page") }
         focus: true
         Keys.onReleased: {
             if (event.key === Qt.Key_Back || event.key === Qt.Key_Escape) {
