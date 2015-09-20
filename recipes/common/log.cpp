@@ -19,4 +19,5 @@ void RecipeLog::consoleMessageHandler(QtMsgType type, const QMessageLogContext &
 		case QtFatalMsg:    typeStr = 'F'; break;
 	}
 	fprintf(stdout, "%s %c %20s:%4d %15s:  %s\n", qPrintable(now.toString(Qt::ISODate)), typeStr, basename((char *)context.file), context.line, context.category, msg.toLocal8Bit().constData());
+	fflush(stdout);
 }
