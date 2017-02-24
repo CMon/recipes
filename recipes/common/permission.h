@@ -57,4 +57,4 @@ private serialized:
 	QSet<Permission> permissions_;
 };
 
-namespace QtPrivate { template <> struct is_unsigned<Permission> : integral_constant<bool, true> {}; }
+namespace QtPrivate { template <> struct QIsUnsignedEnum<Permission> : std::integral_constant<bool, true> {}; }
