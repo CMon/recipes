@@ -5,8 +5,12 @@
 #include <recipes/common/unit.h>
 #include <recipes/common/util.h>
 
+#include <cflib/serialize/serialize.h>
+
 class Ingredient
 {
+	SERIALIZE_CLASS
+
 public:
 	Ingredient();
 	Ingredient(const bool isLiquid, const bool withGluten, const bool withLactose);
@@ -26,7 +30,7 @@ public:
 
 	QString toString() const;
 
-private:
+private serialized:
 	Locale2String name;
 	Category foodCategory;
 	bool isLiquid;
@@ -38,7 +42,11 @@ typedef QList<Ingredient> Ingredients;
 
 class IngredientPOD
 {
+	SERIALIZE_CLASS
+
 public:
+	IngredientPOD()
+	    : count(0), isOptional(false) {}
 	IngredientPOD(int c, const Unit & u, const Ingredient & i, const bool isOptional = false)
 	    : count(c), unit(u), ingredient(i), isOptional(isOptional) {}
 
@@ -64,7 +72,7 @@ public:
 		        ;
 	}
 
-public:
+public serialized:
 	int count;
 	Unit unit;
 	Ingredient ingredient;

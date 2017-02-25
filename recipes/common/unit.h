@@ -2,8 +2,12 @@
 
 #include <recipes/common/locale2string.h>
 
+#include <cflib/serialize/serialize.h>
+
 class Unit
 {
+	SERIALIZE_CLASS
+
 public:
 	Unit() : gram(-1), ml(-1) {}
 	Unit(int g, int m);
@@ -27,7 +31,7 @@ public:
 
 	QString toString() const;
 
-private:
+private serialized:
 	Locale2String abbreviation;
 	Locale2String completeName;
 	int gram;

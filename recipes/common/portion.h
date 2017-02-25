@@ -2,8 +2,12 @@
 
 #include <recipes/common/locale2string.h>
 
+#include <cflib/serialize/serialize.h>
+
 class Portion
 {
+	SERIALIZE_CLASS
+
 public:
 	Portion();
 
@@ -20,7 +24,7 @@ public:
 
 	QString toString() const;
 
-private:
+private serialized:
 	int count;
 	Locale2String description;
 };

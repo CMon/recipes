@@ -6,10 +6,14 @@
 #include <recipes/common/user.h>
 #include <recipes/common/util.h>
 
+#include <cflib/serialize/serialize.h>
+
 #include <QStringList>
 
 class Recipe
 {
+	SERIALIZE_CLASS
+
 public:
 	Recipe();
 
@@ -37,7 +41,7 @@ public:
 
 	QString toString() const;
 
-private:
+private serialized:
 	QString externId;
 	User creatingUser;
 	Portion portion;

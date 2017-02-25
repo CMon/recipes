@@ -2,8 +2,12 @@
 
 #include <recipes/common/locale2string.h>
 
+#include <cflib/serialize/serialize.h>
+
 class Category
 {
+	SERIALIZE_CLASS
+
 public:
 	Category(bool isFoodCategory = false) : isFoodCategory_(isFoodCategory) {}
 
@@ -17,7 +21,7 @@ public:
 
 	QString toString() const;
 
-private:
+private serialized:
 	Locale2String name;
 	bool isFoodCategory_;
 };
