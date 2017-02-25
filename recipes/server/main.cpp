@@ -1,6 +1,7 @@
 #include <QCoreApplication>
 
 #include <recipes/common/log.h>
+#include <recipes/servercommon/clientinfocache.h>
 #include <recipes/services/userservice.h>
 
 #include <QLoggingCategory>
@@ -36,6 +37,9 @@ int main(int argc, char ** argv)
 
 	const int port = 8080;
 	const QHostAddress listenOn = QHostAddress::LocalHost;
+
+	ClientInfoCache cic();
+	Q_UNUSED(cic)
 
 	HttpServer serv;
 	serv.registerHandler(rmiServer);

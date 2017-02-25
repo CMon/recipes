@@ -13,7 +13,7 @@ TEMPLATE = app
 SOURCES += \
     main.cpp
 
-useLibs($$RECIPES_ROOT/lib, services_lib database_lib common_lib)
+useLibs($$RECIPES_ROOT/lib, services_lib database_lib common_lib servercommon_lib)
 
 useLibs(cflib_db cflib_net cflib_crypt cflib_serialize cflib_util)
 app()

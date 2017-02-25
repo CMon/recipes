@@ -9,6 +9,7 @@ HEADERS += \
 
 TARGET = services_lib
 
+useLibs($$RECIPES_ROOT/lib, servercommon_lib)
 useLibs(cflib_crypt)
 lib($$RECIPES_ROOT/lib)
 serializeGen()

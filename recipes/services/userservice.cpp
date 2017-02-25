@@ -2,6 +2,7 @@
 
 #include <recipes/database/dbuser.h>
 #include <recipes/services/logCategory.h>
+#include <recipes/servercommon/clientinfocache.h>
 
 #include <cflib/crypt/util.h>
 
@@ -26,21 +27,21 @@ bool UserService::login(const QString &login, const QString &password, User &use
 
 	if (user.isNull()) return false;
 
-	currentUsers_[connId()] = user;
+	ClientInfoCache::instance().addUser(connId(), user);
 
 	return true;
 }
 
 bool UserService::logout()
 {
-	currentUsers_[connId()] = User();
+	ClientInfoCache::instance().removeUser(connId());
 	return true;
 }
 
 bool UserService::addUser(const User & user, QString password)
 {
-	if (!user_.hasPermission(Permission::Admin)) {
-		qCWarning(SERVICES) << "permission not sufficient for user:" << currentUsers_[connId()].toString();
+	if (!currentUser_.hasPermission(Permission::Admin)) {
+		qCWarning(SERVICES) << "permission not sufficient for user:" << currentUser_.toString();
 		return false;
 	}
 
@@ -64,27 +65,21 @@ bool UserService::addUser(const User & user, QString password)
 
 QList<User> UserService::getUsers()
 {
-	if (!user_.hasPermission(Permission::Admin)) {
-		qCWarning(SERVICES) << "permission not sufficient for user:" << currentUsers_[connId()].toString();
+	if (!currentUser_.hasPermission(Permission::Admin)) {
+		qCWarning(SERVICES) << "permission not sufficient for user:" << currentUser_.toString();
 		return QList<User>();
 	}
 
 	return DB::getAllUsers();
 }
 
-void UserService::clientExpired(uint clId)
+void UserService::connectionClosed(bool isLast)
 {
-	if (!verifyThreadCall(&UserService::clientExpired, clId)) return;
-	currentUsers_.remove(clId);
-}
-
-void UserService::getCurrentUser(uint clId, User & user)
-{
-	if (!verifySyncedThreadCall(&UserService::getCurrentUser, clId, user)) return;
-	user = currentUsers_[clId];
+	Q_UNUSED(isLast)
+	ClientInfoCache::instance().removeUser(connId());
 }
 
 void UserService::preCallInit()
 {
-	user_ = currentUsers_.value(connId());
+	currentUser_ = ClientInfoCache::instance().getUser(connId());
 }

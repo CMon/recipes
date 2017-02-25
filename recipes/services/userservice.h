@@ -20,15 +20,11 @@ rmi:
 	QList<User> getUsers();
 
 public:
-	virtual void clientExpired(uint clId);
-
-public slots:
-	void getCurrentUser(uint clId, User & user);
+	virtual void connectionClosed(bool isLast);
 
 protected:
 	virtual void preCallInit();
 
 private:
-	QHash<uint, User> currentUsers_;
-	User user_;
+	User currentUser_;
 };

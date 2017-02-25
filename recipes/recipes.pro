@@ -10,7 +10,8 @@ CONFIG(clients) {
 
 CONFIG(server) {
     message("Building server")
-    addSubdir(services, database, common)
+    addSubdir(servercommon)
+    addSubdir(services, database common servercommon)
     addSubdir(database)
-    addSubdir(server, services database common)
+    addSubdir(server, services database common servercommon)
 }
