@@ -5,7 +5,8 @@ QT += network
 
 HEADERS += \
     userservice.h \
-    logCategory.h
+    logCategory.h \
+    recipeservice.h
 
 TARGET = services_lib
 
