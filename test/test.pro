@@ -1,16 +1,17 @@
-!include(../recipes/config.pri):error("Could not find config.pri")
+!include(../config.pri):error("Could not find config.pri")
 
-QT += sql network
+QT += sql network testlib
 QT -= gui
 
+TEMPLATE = app
 TARGET = tests
+DESTDIR = $${BIN_OUT}
 
 HEADERS += \
     database_test.h \
     service_test.h \
     testserver.h \
     testtostrings.h \
-
 
 SOURCES += \
     database_test.cpp \
@@ -20,6 +21,4 @@ SOURCES += \
 RESOURCES += \
     ../database.qrc
 
-useLibs($$RECIPES_ROOT/lib, services_lib database_lib common_lib servercommon_lib)
-useLibs(cflib_db cflib_net cflib_crypt cflib_serialize cflib_util)
-test()
+useLibs($${LIB_OUT}, services_lib database_lib common_lib servercommon_lib)

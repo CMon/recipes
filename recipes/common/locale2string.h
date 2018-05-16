@@ -1,12 +1,13 @@
 #pragma once
 
 #include <QLocale>
-
-#include <cflib/serialize/serialize.h>
+#include <QMetaType>
 
 class Locale2String : public QHash<QLocale, QString>
 {
-	SERIALIZE_CLASS
+public:
+	QJsonValue toJson() const;
+	static Locale2String fromJson(const QJsonValue & value);
 
 public:
 	bool operator ==(const Locale2String & rhs) const;
@@ -14,3 +15,4 @@ public:
 
 	QString toString() const;
 };
+Q_DECLARE_METATYPE(Locale2String);

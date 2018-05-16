@@ -1,14 +1,18 @@
-!include(../config.pri):error("Could not find config.pri")
+!include(../../config.pri):error("Could not find config.pri")
 
 QT += sql
 QT -= gui
 
+TEMPLATE = lib
+TARGET = database_lib
+DESTDIR=$${LIB_OUT}
+
 HEADERS += \
     dbrecipe.h \
-    dbuser.h
+    dbuser.h \
 
-TARGET = database_lib
+SOURCES += \
+    dbrecipe.cpp \
+    dbuser.cpp \
 
-useLibs($$RECIPES_ROOT/lib, common_lib)
-useLibs(cflib_db cflib_crypt cflib_util)
-lib($$RECIPES_ROOT/lib)
+useLibs($${LIB_OUT}, common_lib)

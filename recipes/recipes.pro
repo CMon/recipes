@@ -1,4 +1,4 @@
-!include(config.pri):error("Could not find config.pri")
+!include(../config.pri):error("Could not find config.pri")
 
 addSubdir(common)
 

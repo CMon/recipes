@@ -1,19 +1,16 @@
-!include(../config.pri):error("Could not find config.pri")
-
-QT       += network sql
-QT       -= gui
-
-TARGET = server
+!include(../../config.pri):error("Could not find config.pri")
 
 CONFIG   += console
 CONFIG   -= app_bundle
 
+QT += network sql
+QT -= gui
+
 TEMPLATE = app
+TARGET = server
+DESTDIR=$${BIN_OUT}
 
 SOURCES += \
     main.cpp
 
-useLibs($$RECIPES_ROOT/lib, services_lib database_lib common_lib servercommon_lib)
-
-useLibs(cflib_db cflib_net cflib_crypt cflib_serialize cflib_util)
-app()
+useLibs($${LIB_OUT}, services_lib database_lib common_lib servercommon_lib)

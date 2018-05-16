@@ -1,8 +1,9 @@
-!include(../config.pri):error("Could not find config.pri")
+!include(../../config.pri):error("Could not find config.pri")
 
-TEMPLATE = app
 
 QT += qml quick widgets network
+TEMPLATE = app
+DESTDIR=$${BIN_OUT}
 
 SOURCES += \
     main.cpp \
@@ -15,7 +16,7 @@ HEADERS += \
 RESOURCES += \
     qml.qrc
 
-useLibs($$RECIPES_ROOT/lib, common_lib)
+useLibs($${LIB_OUT}, common_lib)
 
 # Additional import path used to resolve QML modules in Qt Creator's code model
 QML_IMPORT_PATH =

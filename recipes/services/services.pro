@@ -1,16 +1,19 @@
-!include(../config.pri):error("Could not find config.pri")
+!include(../../config.pri):error("Could not find config.pri")
 
 QT -= gui
 QT += network
 
-HEADERS += \
-    userservice.h \
-    logCategory.h \
-    recipeservice.h
-
+TEMPLATE = lib
 TARGET = services_lib
+DESTDIR=$${LIB_OUT}
 
-useLibs($$RECIPES_ROOT/lib, servercommon_lib)
-useLibs(cflib_crypt)
-lib($$RECIPES_ROOT/lib)
-serializeGen()
+HEADERS += \
+    logCategory.h \
+    recipeservice.h \
+    userservice.h \
+
+SOURCES += \
+    recipeservice.cpp \
+    userservice.cpp \
+
+useLibs($${LIB_OUT}, servercommon_lib)

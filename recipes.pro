@@ -1,11 +1,8 @@
-include(recipes/config.pri)
-
+include(config.pri)
 cache()
 
-addSubdir(cflib)
-addSubdir(recipes, cflib)
-
-addSubdir(test, recipes cflib)
+addSubdir(recipes)
+addSubdir(test, recipes)
 
 OTHER_FILES = \
     doc/structure.md \
