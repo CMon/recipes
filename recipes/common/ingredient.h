@@ -1,49 +1,52 @@
 #pragma once
 
+#include <rpclib/common/jsonserialize.h>
+
 #include <recipes/common/locale2string.h>
 #include <recipes/common/category.h>
 #include <recipes/common/unit.h>
 #include <recipes/common/util.h>
 
-#include <cflib/serialize/serialize.h>
-
-class Ingredient
+class Ingredient : public JsonSerialize
 {
-	SERIALIZE_CLASS
+	Q_OBJECT
+	Q_PROPERTY(Locale2String name READ getNames WRITE updateName)
+	Q_PROPERTY(Category foodCategory READ getFoodCategory WRITE setFoodCategory)
+	Q_PROPERTY(bool isLiquid READ getIsLiquid)
+	Q_PROPERTY(bool containsGluten READ getContainsGluten)
+	Q_PROPERTY(bool containsLactose READ getContainsLactose)
 
 public:
 	Ingredient();
-	Ingredient(const bool isLiquid, const bool withGluten, const bool withLactose);
+	Ingredient(const bool isLiquid_, const bool withGluten, const bool withLactose);
 
-	void setFoodCategory(const Category & category) { foodCategory = category; }
-	Category getFoodCategory() const { return foodCategory; }
+	void setFoodCategory(const Category & category) { foodCategory_ = category; }
+	Category getFoodCategory() const { return foodCategory_; }
 
-	bool getIsLiquid() const { return isLiquid; }
-	bool getContainsGluten() const { return containsGluten; }
-	bool getContainsLactose() const { return containsLactose; }
+	bool getIsLiquid() const { return isLiquid_; }
+	bool getContainsGluten() const { return containsGluten_; }
+	bool getContainsLactose() const { return containsLactose_; }
 
-	void updateName(const QLocale & locale, const QString & name);
-	Locale2String getNames() const { return name; }
+	void updateName(const QLocale & locale, const QString & name_);
+	Locale2String getNames() const { return name_; }
 
 	bool operator ==(const Ingredient & rhs) const;
 	bool operator !=(const Ingredient & rhs) const;
 
 	QString toString() const;
 
-private serialized:
-	Locale2String name;
-	Category foodCategory;
-	bool isLiquid;
-	bool containsGluten;
-	bool containsLactose;
+private:
+	Locale2String name_;
+	Category foodCategory_;
+	bool isLiquid_;
+	bool containsGluten_;
+	bool containsLactose_;
 };
 
 typedef QList<Ingredient> Ingredients;
 
-class IngredientPOD
+class IngredientPOD : public JsonSerialize
 {
-	SERIALIZE_CLASS
-
 public:
 	IngredientPOD()
 	    : count(0), isOptional(false) {}

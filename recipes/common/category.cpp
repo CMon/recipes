@@ -4,14 +4,14 @@
 
 void Category::updateName(const QLocale & locale, const QString & name)
 {
-	this->name[locale] = name;
+	name_[locale] = name;
 }
 
 bool Category::operator ==(const Category & rhs) const
 {
 	return
 	        isFoodCategory_ == rhs.isFoodCategory_ &&
-	        name == rhs.name;
+	        name_           == rhs.name_;
 }
 
 bool Category::operator !=(const Category & rhs) const
@@ -21,7 +21,7 @@ bool Category::operator !=(const Category & rhs) const
 
 QString Category::toString() const
 {
-	return
-	        "isFoodCategory: " + Util::boolToString(isFoodCategory_) + " "
-	        "names: ["         + name.toString() + " ";
+	return QString("isFoodCategory: %1 names: [%2]")
+	        .arg(Util::boolToString(isFoodCategory_))
+	        .arg(name_.toString());
 }

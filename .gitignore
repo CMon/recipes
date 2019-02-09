@@ -3,15 +3,11 @@ bin/*
 *.a
 *.o
 
-
 moc_*
 qrc_*
-*_ser.cpp
 *.pro.user*
 .qmake.cache
 .qmake.stash
-
+*.txt.user
 *.log
-
-local.pri
 

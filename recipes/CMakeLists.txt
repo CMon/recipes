@@ -1,0 +1,15 @@
+add_subdirectory(common)
+
+if (BUILD_CLIENT)
+    message("building client")
+    add_subdirectory(console-client)
+    add_subdirectory(qml-client)
+endif(BUILD_CLIENT)
+
+if (BUILD_SERVER)
+    message("building server")
+    add_subdirectory(database)
+    add_subdirectory(server)
+    add_subdirectory(servercommon)
+    add_subdirectory(services)
+endif(BUILD_SERVER)
