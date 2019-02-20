@@ -1,21 +1,14 @@
 #pragma once
 
-#include <rpclib/common/jsonserialize.h>
-
 #include <recipes/common/locale2string.h>
 #include <recipes/common/category.h>
 #include <recipes/common/unit.h>
 #include <recipes/common/util.h>
 
-class Ingredient : public JsonSerialize
-{
-	Q_OBJECT
-	Q_PROPERTY(Locale2String name READ getNames WRITE updateName)
-	Q_PROPERTY(Category foodCategory READ getFoodCategory WRITE setFoodCategory)
-	Q_PROPERTY(bool isLiquid READ getIsLiquid)
-	Q_PROPERTY(bool containsGluten READ getContainsGluten)
-	Q_PROPERTY(bool containsLactose READ getContainsLactose)
+#include <rpclib/common/types/types.h>
 
+class Ingredient
+{
 public:
 	Ingredient();
 	Ingredient(const bool isLiquid_, const bool withGluten, const bool withLactose);
@@ -35,6 +28,16 @@ public:
 
 	QString toString() const;
 
+	template <class Archive>
+	void serialize(Archive & ar) {
+		ar(cereal::make_nvp("name", name_),
+		   cereal::make_nvp("foodCategory", foodCategory_),
+		   cereal::make_nvp("isLiquid", isLiquid_),
+		   cereal::make_nvp("containsGluten", containsGluten_),
+		   cereal::make_nvp("containsLactose", containsLactose_)
+		   );
+	}
+
 private:
 	Locale2String name_;
 	Category foodCategory_;
@@ -42,10 +45,11 @@ private:
 	bool containsGluten_;
 	bool containsLactose_;
 };
+CEREAL_CLASS_VERSION(Ingredient, 1);
 
 typedef QList<Ingredient> Ingredients;
 
-class IngredientPOD : public JsonSerialize
+class IngredientPOD
 {
 public:
 	IngredientPOD()
@@ -75,11 +79,20 @@ public:
 		        ;
 	}
 
-public serialized:
+	template <class Archive>
+	void serialize(Archive & ar) {
+		ar(cereal::make_nvp("count", count),
+		   cereal::make_nvp("unit", unit),
+		   cereal::make_nvp("ingredient", ingredient),
+		   cereal::make_nvp("isOptional", isOptional));
+	}
+
+public:
 	int count;
 	Unit unit;
 	Ingredient ingredient;
 	bool isOptional;
 };
+CEREAL_CLASS_VERSION(IngredientPOD, 1);
 
 typedef QList<IngredientPOD> IngredientPODs;

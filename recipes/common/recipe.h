@@ -6,14 +6,14 @@
 #include <recipes/common/user.h>
 #include <recipes/common/util.h>
 
-#include <cflib/serialize/serialize.h>
+#include <rpclib/common/types/types.h>
+
+#include <cereal/cereal.hpp>
 
 #include <QStringList>
 
 class Recipe
 {
-	SERIALIZE_CLASS
-
 public:
 	Recipe();
 
@@ -41,7 +41,20 @@ public:
 
 	QString toString() const;
 
-private serialized:
+	template <class Archive>
+	void serialize(Archive & ar) {
+		ar(cereal::make_nvp("externId", externId),
+		   cereal::make_nvp("creatingUser", creatingUser),
+		   cereal::make_nvp("portion", portion),
+		   cereal::make_nvp("categories", categories),
+		   cereal::make_nvp("title", title),
+		   cereal::make_nvp("description", description),
+		   cereal::make_nvp("imagePaths", imagePaths),
+		   cereal::make_nvp("ingredients", ingredients)
+		   );
+	}
+
+private:
 	QString externId;
 	User creatingUser;
 	Portion portion;
@@ -51,3 +64,4 @@ private serialized:
 	QStringList imagePaths;
 	IngredientPODs ingredients;
 };
+CEREAL_CLASS_VERSION(Recipe, 1);

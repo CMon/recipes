@@ -7,7 +7,7 @@ class Waiter : public QObject
 {
 	Q_OBJECT
 public:
-	Waiter(QObject* parent = 0);
+	Waiter(QObject* parent = nullptr);
 
 	bool wait(int timeoutInMSecs = -1);
 	bool timedOut() { return timedOut_; }

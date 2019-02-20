@@ -4,44 +4,90 @@
 #include <recipes/services/logCategory.h>
 #include <recipes/servercommon/clientinfocache.h>
 
-#include <cflib/crypt/util.h>
+#include <cereal/archives/json.hpp>
+#include <rpclib/common/serializehelper.h>
+#include <rpclib/common/types/qlistcereal.h>
+#include <rpclib/server/rpcserver.h>
 
-UserService::UserService() :
-	RMIService(serializeTypeInfo().typeName)
+#include <QJsonObject>
+#include <QUuid>
+#include <QWebSocket>
+
+UserService::UserService(QObject * parent)
+    : QObject (parent)
 {
 }
 
-UserService::~UserService()
+void UserService::registerMethods(RPCServer * server)
 {
-	stopVerifyThread();
+	connect(server, &RPCServer::clientDisconnected, this, &UserService::logout);
+
+	server->addCallback("User UserService::login(QString, QString)", [=] (std::stringstream & stream, QWebSocket * sendingSocket) {
+		QString username;
+		QString password;
+		cereal::JSONInputArchive archive(stream);
+		archive(username);
+		archive(password);
+
+		const User user = login(username, password, sendingSocket);
+
+		QJsonValue retval;
+		CEREAL_2_DEST(retval, "units", getUsers(sendingSocket));
+		return retval;
+	}, "Login a user to the system" );
+
+	server->addCallback("void UserService::logout()", [=] (QWebSocket * sendingSocket) {
+		logout(sendingSocket);
+		return QJsonObject();
+	}, "logout the current user. This does not disconnect the session." );
+
+	server->addCallback("bool UserService::addUser(User, QString)", [=] (std::stringstream & stream, QWebSocket * sendingSocket) {
+		User user;
+		QString password;
+		cereal::JSONInputArchive archive(stream);
+		archive(user);
+		archive(password);
+
+		QJsonObject ret;
+		ret.insert("added", addUser(user, password, sendingSocket));
+		return ret;
+	}, "Add a user to the system" );
+
+	server->addCallback("QList<User> UserService::getUsers()", [=] (QWebSocket * sendingSocket) {
+		QJsonValue retval;
+		CEREAL_2_DEST(retval, "units", getUsers(sendingSocket));
+
+		return retval;
+	}, "Get a list of users" );
 }
 
-bool UserService::login(const QString &login, const QString &password, User &user)
+User UserService::login(const QString &login, const QString &password, QWebSocket * sendingSocket)
 {
 	if (!DB::checkPassword(login, password)) {
 		qCWarning(SERVICES) << "wrong passwort for login:" << login;
-		return false;
+		return User();
 	}
 
-	user = DB::getUser(login);
+	const User user = DB::getUser(login);
 
-	if (user.isNull()) return false;
+	if (user.isNull()) return user;
 
-	ClientInfoCache::instance().addUser(connId(), user);
+	ClientInfoCache::instance().addUser(sendingSocket, user);
 
-	return true;
+	return user;
 }
 
-bool UserService::logout()
+void UserService::logout(QWebSocket * client)
 {
-	ClientInfoCache::instance().removeUser(connId());
-	return true;
+	ClientInfoCache::instance().removeUser(client);
 }
 
-bool UserService::addUser(const User & user, QString password)
+bool UserService::addUser(const User & user, QString password, QWebSocket * sendingSocket)
 {
-	if (!currentUser_.hasPermission(Permission::Admin)) {
-		qCWarning(SERVICES) << "permission not sufficient for user:" << currentUser_.toString();
+	const User currentUser = ClientInfoCache::instance().getUser(sendingSocket);
+
+	if (!currentUser.hasPermission(Permissions::Admin)) {
+		qCWarning(SERVICES) << "permission not sufficient for user:" << currentUser.toString();
 		return false;
 	}
 
@@ -57,29 +103,25 @@ bool UserService::addUser(const User & user, QString password)
 
 	if (password.isEmpty()) {
 		qCDebug(SERVICES) << "no password given, adding random password";
-		password = cflib::crypt::randomId().left(6);
+		password = QUuid::createUuid().toString().left(8);
 	}
 
 	return DB::updateUser(user, password);
 }
 
-QList<User> UserService::getUsers()
+QList<User> UserService::getUsers(QWebSocket * sendingSocket)
 {
-	if (!currentUser_.hasPermission(Permission::Admin)) {
-		qCWarning(SERVICES) << "permission not sufficient for user:" << currentUser_.toString();
+	const User currentUser = ClientInfoCache::instance().getUser(sendingSocket);
+
+	if (!currentUser.hasPermission(Permissions::Admin)) {
+		qCWarning(SERVICES) << "permission not sufficient for user:" << currentUser.toString();
 		return QList<User>();
 	}
 
 	return DB::getAllUsers();
 }
 
-void UserService::connectionClosed(bool isLast)
+void UserService::connectionClosed(QWebSocket * client)
 {
-	Q_UNUSED(isLast)
-	ClientInfoCache::instance().removeUser(connId());
-}
-
-void UserService::preCallInit()
-{
-	currentUser_ = ClientInfoCache::instance().getUser(connId());
+	ClientInfoCache::instance().removeUser(client);
 }

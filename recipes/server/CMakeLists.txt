@@ -18,11 +18,14 @@ target_link_libraries(${TARGET_NAME}
     Qt5::Core
     Qt5::WebSockets
     Qt5::Sql
-    rpclib-client
+    rpclib-server
     common
     database
     servercommon
     services
 )
 
-include_directories(${CMAKE_SOURCE_DIR})
+include_directories(
+    ${CMAKE_SOURCE_DIR}/modules/rpclib/
+    ${CMAKE_SOURCE_DIR}
+)

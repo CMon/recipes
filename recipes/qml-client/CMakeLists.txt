@@ -27,8 +27,14 @@ add_executable(${TARGET_NAME} ${SOURCES} ${QT_RESOURCES})
 target_link_libraries(${TARGET_NAME}
     Qt5::Core
     Qt5::WebSockets
+    Qt5::Qml
+    Qt5::Quick
+    Qt5::Widgets
     rpclib-client
     common
 )
 
-include_directories(${CMAKE_SOURCE_DIR})
+include_directories(
+    ${CMAKE_SOURCE_DIR}/modules/rpclib/
+    ${CMAKE_SOURCE_DIR}
+)

@@ -26,4 +26,7 @@ target_link_libraries(${TARGET_NAME}
     common
 )
 
-include_directories(${CMAKE_SOURCE_DIR})
+include_directories(
+    ${CMAKE_SOURCE_DIR}/modules/rpclib/
+    ${CMAKE_SOURCE_DIR}
+)

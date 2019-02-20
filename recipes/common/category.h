@@ -1,15 +1,12 @@
 #pragma once
 
-#include <rpclib/common/jsonserialize.h>
-
 #include <recipes/common/locale2string.h>
 
-class Category : public JsonSerialize
-{
-	Q_OBJECT
-	Q_PROPERTY(Locale2String name READ getNames WRITE updateName)
-	Q_PROPERTY(bool isFoodCategory READ isFoodCategory)
+#include <cereal/cereal.hpp>
+#include <rpclib/common/types/types.h>
 
+class Category
+{
 public:
 	Category(bool isFoodCategory = false) : isFoodCategory_(isFoodCategory) {}
 
@@ -23,9 +20,16 @@ public:
 
 	QString toString() const;
 
+	template <class Archive>
+	void serialize(Archive & ar) {
+		ar(cereal::make_nvp("name", name_),
+		   cereal::make_nvp("isFoodCategory", isFoodCategory_));
+	}
+
 private:
 	Locale2String name_;
 	bool isFoodCategory_;
 };
+CEREAL_CLASS_VERSION(Category, 1);
 
 typedef QList<Category> Categories;

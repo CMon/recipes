@@ -2,7 +2,8 @@
 
 #include <recipes/common/permission.h>
 
-#include <cflib/serialize/serialize.h>
+#include <rpclib/common/types/types.h>
+#include <cereal/cereal.hpp>
 
 #include <QString>
 
@@ -25,14 +26,12 @@ private:
 
 class User
 {
-	SERIALIZE_CLASS
-
 public:
 	User();
 	User(const UserId & id, const QString & login, const Permissions & permissions, const QString & firstName, const QString & lastName, bool isDeleted);
 
 	bool isNull() const;
-	bool hasPermission(const Permission & permission) const;
+	bool hasPermission(const Permissions::Permission & permission) const;
 	bool isValid() const;
 
 	QString toString() const;
@@ -46,13 +45,23 @@ public:
 	bool operator ==(const User & rhs) const;
 	bool operator !=(const User & rhs) const;
 
-private:
-	UserId id_;
+	template <class Archive>
+	void serialize(Archive & ar) {
+		ar(cereal::make_nvp("login", login_),
+		   cereal::make_nvp("permissions", permissions_),
+		   cereal::make_nvp("firstName", firstName_),
+		   cereal::make_nvp("lastName", lastName_),
+		   cereal::make_nvp("isDeleted", isDeleted_));
+	}
 
-private serialized:
+private:
+	UserId id_; // do not serialize
+
+private:
 	QString login_;
 	Permissions permissions_;
 	QString firstName_;
 	QString lastName_;
 	bool    isDeleted_;
 };
+CEREAL_CLASS_VERSION(User, 1);

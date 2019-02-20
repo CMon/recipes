@@ -2,12 +2,10 @@
 
 #include <recipes/common/locale2string.h>
 
-#include <cflib/serialize/serialize.h>
+#include <cereal/cereal.hpp>
 
 class Unit
 {
-	SERIALIZE_CLASS
-
 public:
 	Unit() : gram(-1), ml(-1) {}
 	Unit(int g, int m);
@@ -31,7 +29,16 @@ public:
 
 	QString toString() const;
 
-private serialized:
+	template <class Archive>
+	void serialize(Archive & ar) {
+		ar(cereal::make_nvp("abbreviation", abbreviation),
+		   cereal::make_nvp("completeName", completeName),
+		   cereal::make_nvp("gram", gram),
+		   cereal::make_nvp("ml", ml),
+		   cereal::make_nvp("count", count));
+	}
+
+private:
 	Locale2String abbreviation;
 	Locale2String completeName;
 	int gram;

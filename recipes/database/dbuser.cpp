@@ -1,17 +1,14 @@
 #include "dbuser.h"
 
 #include <recipes/common/user.h>
-
-#include <cflib/crypt/util.h>
-#include <cflib/db/db.h>
+#include <recipes/database/database.h>
+#include <recipes/database/password.h>
 
 #include <QSqlQuery>
 
-USE_LOG(LogCat::Db) // needed by Transaction and other db methods from cflib
-
 bool DB::updateUser(const User & user, const QString password)
 {
-	Transaction;
+	TRANSACTION(ta);
 	QSqlQuery query(ta.db);
 
 	query.prepare(
@@ -26,18 +23,18 @@ bool DB::updateUser(const User & user, const QString password)
 	query.bindValue(":login",        user.getLogin());
 	query.bindValue(":firstName",    user.getFirstName());
 	query.bindValue(":lastName",     user.getLastName());
-	query.bindValue(":passwordHash", cflib::crypt::hashPassword(password));
-	query.bindValue(":permissions",  (uint)user.getPermissions().convertToFlags());
+	query.bindValue(":passwordHash", Password::hashPassword(password));
+	query.bindValue(":permissions",  uint(user.getPermissions()));
 	query.bindValue(":isDeleted",    false);
 
-	if (!execQuery(query)) return false;
+	if (!Database::executeQuery(query)) return false;
 
 	return ta.commit();
 }
 
 User DB::getUser(const QString & login)
 {
-	Transaction;
+	TRANSACTION(ta);
 	QSqlQuery query(ta.db);
 
 	query.prepare(
@@ -49,12 +46,17 @@ User DB::getUser(const QString & login)
 	                "login = :login"
 	            );
 	query.bindValue(":login", login);
-	if (!execQueryCommit(query) || !query.next()) return User();
+	if (!Database::executeQuery(query)) {
+		return User();
+	}
+	if (!query.next()) {
+		return User();
+	}
 
 	User user(
 	            UserId(query.value(0).toInt()),
 	            query.value(1).toString(),
-	            Permissions::fromFlags(query.value(2).toUInt()),
+	            Permissions(query.value(2).toUInt()),
 	            query.value(3).toString(),
 	            query.value(4).toString(),
 	            query.value(5).toBool()
@@ -65,7 +67,7 @@ User DB::getUser(const QString & login)
 
 bool DB::checkPassword(const QString &login, const QString &password)
 {
-	Transaction;
+	TRANSACTION(ta);
 	QSqlQuery query(ta.db);
 
 	query.prepare(
@@ -77,9 +79,14 @@ bool DB::checkPassword(const QString &login, const QString &password)
 	                "login = :login"
 	            );
 	query.bindValue(":login", login);
-	if (!execQueryCommit(query) || !query.next()) return false;
+	if (!Database::executeQuery(query)) {
+		return false;
+	}
+	if (!query.next()) {
+		return false;
+	}
 
-	if (!cflib::crypt::checkPassword(password, query.value(0).toByteArray())) {
+	if (!Password::checkPassword(password, query.value(0).toByteArray())) {
 		return false;
 	}
 
@@ -88,7 +95,7 @@ bool DB::checkPassword(const QString &login, const QString &password)
 
 QList<User> DB::getAllUsers(const int & id)
 {
-	Transaction;
+	TRANSACTION(ta);
 
 	QString queryStr =
 	            "SELECT "
@@ -106,14 +113,14 @@ QList<User> DB::getAllUsers(const int & id)
 		query.bindValue(":id", id);
 	}
 
-	if (!execQuery(query)) return QList<User>();
+	if (!Database::executeQuery(query)) return QList<User>();
 
 	QList<User> retval;
 	while (query.next()) {
 		User user(
 		            UserId(query.value(0).toInt()),
 		            query.value(1).toString(),
-		            Permissions::fromFlags(query.value(2).toUInt()),
+		            Permissions(query.value(2).toUInt()),
 		            query.value(3).toString(),
 		            query.value(4).toString(),
 		            query.value(5).toBool()
@@ -128,7 +135,7 @@ QList<User> DB::getAllUsers(const int & id)
 
 UserId DB::getUserId(const QString & login)
 {
-	Transaction;
+	TRANSACTION(ta);
 	QSqlQuery query(ta.db);
 
 	query.prepare(
@@ -140,7 +147,12 @@ UserId DB::getUserId(const QString & login)
 	                "login = :login"
 	            );
 	query.bindValue(":login", login);
-	if (!execQueryCommit(query) || !query.next()) return UserId();
+	if (!Database::executeQuery(query)) {
+		return UserId();
+	}
+	if (!query.next()) {
+		return UserId();
+	}
 
 	return UserId(query.value(0).toInt());
 }

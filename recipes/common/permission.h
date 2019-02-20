@@ -1,60 +1,34 @@
 #pragma once
 
-#include <recipes/common/util.h>
-
-#include <cflib/serialize/serialize.h>
-
-#include <QFlags>
-
-class Permission
-{
-	SERIALIZE_CLASS
-	Q_GADGET
-
-public:
-	enum Type {
-		NoPermission = 0,
-		Admin        = 1 << 0,
-	};
-	Q_ENUMS(Type)
-
-	Permission() : perm(NoPermission) {}
-	Permission(uint perm) : perm(perm) {}
-	operator uint() const { return perm; }
-
-	bool operator==(const Permission & rhs) const { return perm == rhs.perm; }
-	bool operator!=(const Permission & rhs) const { return !operator==(rhs); }
-
-	Q_ENUM_getAll(Permission, Type)
-	Q_ENUM_toString(Permission, Type, perm)
-
-private serialized:
-	uint perm;
-};
+#include <cereal/cereal.hpp>
 
 class Permissions
 {
-	SERIALIZE_CLASS
-
 public:
-	Permissions() {}
-	Permissions(const Permission & perm);
-	Permissions(const QSet<Permission> & permissions);
+	enum Permission {
+		NoPermission = 0,
+		Admin        = 1 << 0,
+	};
 
-	bool contains(const Permission & permission) const;
-	void insert(const Permission & permission);
-
-	static Permissions fromFlags(const uint perm);
-	static Permissions fromFlags(const QFlags<Permission> permissions);
-	QFlags<Permission> convertToFlags() const;
+	Permissions();
+	Permissions(uint perms);
 
 	bool operator==(const Permissions & rhs) const;
 	bool operator!=(const Permissions & rhs) const;
+	operator uint() const;
 
-	QString toString() const;
+	bool hasPermission(const Permissions::Permission & permission) const;
+	void addPermission(const Permissions::Permission & permission);
+	void removePermission(const Permissions::Permission & permission);
 
-private serialized:
-	QSet<Permission> permissions_;
+	uint toUint() const;
+
+	template <class Archive>
+	void serialize(Archive & ar) {
+		ar(cereal::make_nvp("perm", perms_));
+	}
+
+private:
+	uint perms_;
 };
-
-namespace QtPrivate { template <> struct QIsUnsignedEnum<Permission> : std::integral_constant<bool, true> {}; }
+CEREAL_CLASS_VERSION(Permissions, 1);

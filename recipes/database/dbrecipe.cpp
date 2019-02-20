@@ -1,20 +1,17 @@
 #include "dbrecipe.h"
 
 #include <recipes/database/dbuser.h>
-
-#include <cflib/crypt/util.h>
-#include <cflib/db/db.h>
+#include <recipes/database/database.h>
 
 #include <QLocale>
 #include <QHash>
-
-USE_LOG(LogCat::Db) // needed by Transaction and other db methods from cflib
+#include <QUuid>
 
 // units
 
 static int getUnitId(const Locale2String & abbreviations)
 {
-	Transaction;
+	TRANSACTION(ta);
 
 	QSqlQuery query(ta.db);
 	query.prepare(
@@ -27,11 +24,11 @@ static int getUnitId(const Locale2String & abbreviations)
 	            );
 
 	int retval = -1;
-	foreach (const QLocale & lang, abbreviations.keys()) {
+	for (const QLocale & lang: abbreviations.keys()) {
 		query.bindValue(":language",     lang.name());
 		query.bindValue(":abbreviation", abbreviations.value(lang));
 
-		if (!execQuery(query)) return retval;
+		if (!Database::executeQuery(query)) return retval;
 
 		if (query.next()) {
 			retval = query.value(0).toInt();
@@ -45,7 +42,7 @@ static int getUnitId(const Locale2String & abbreviations)
 
 static bool addOrUpdateUnitTranslations(const int unitId, const Unit & unit)
 {
-	Transaction;
+	TRANSACTION(ta);
 
 	QSqlQuery queryAbbrev(ta.db);
 	queryAbbrev.prepare(
@@ -63,10 +60,10 @@ static bool addOrUpdateUnitTranslations(const int unitId, const Unit & unit)
 	queryAbbrev.bindValue(":unitId", unitId);
 
 	Locale2String abbrevs = unit.getAbbreviations();
-	foreach(const QLocale & locale, abbrevs.keys()) {
+	for (const QLocale & locale: abbrevs.keys()) {
 		queryAbbrev.bindValue(":language",     locale.name());
 		queryAbbrev.bindValue(":abbreviation", abbrevs.value(locale));
-		execQuery(queryAbbrev);
+		Database::executeQuery(queryAbbrev);
 	}
 
 	QSqlQuery queryName(ta.db);
@@ -85,10 +82,10 @@ static bool addOrUpdateUnitTranslations(const int unitId, const Unit & unit)
 	queryName.bindValue(":unitId", unitId);
 
 	Locale2String names = unit.getCompleteNames();
-	foreach(const QLocale & locale, names.keys()) {
+	for (const QLocale & locale: abbrevs.keys()) {
 		queryName.bindValue(":language",     locale.name());
 		queryName.bindValue(":completeName", names.value(locale));
-		execQuery(queryName);
+		Database::executeQuery(queryName);
 	}
 
 	return ta.commit();
@@ -96,7 +93,7 @@ static bool addOrUpdateUnitTranslations(const int unitId, const Unit & unit)
 
 void DB::addOrUpdateUnit(const Unit & unit)
 {
-	Transaction;
+	TRANSACTION(ta);
 
 	int unitId = getUnitId(unit.getAbbreviations());
 
@@ -128,10 +125,10 @@ void DB::addOrUpdateUnit(const Unit & unit)
 	if (unitId != -1) {
 		query.bindValue(":unitId", unitId);
 	}
-	if(!execQuery(query)) return;
+	if(!Database::executeQuery(query)) return;
 
 	if (unitId == -1) {
-		unitId = query.lastInsertId().toUInt();
+		unitId = query.lastInsertId().toInt();
 	}
 
 	if (!addOrUpdateUnitTranslations(unitId, unit)) return;
@@ -141,7 +138,7 @@ void DB::addOrUpdateUnit(const Unit & unit)
 
 QList<Unit> DB::getUnits(const int & id)
 {
-	Transaction;
+	TRANSACTION(ta);
 
 	QString queryStr =
 	            "SELECT "
@@ -164,7 +161,7 @@ QList<Unit> DB::getUnits(const int & id)
 	}
 
 	QList<Unit> retval;
-	if (!execQuery(query)) return retval;
+	if (!Database::executeQuery(query)) return retval;
 
 	QHash<int, Unit> dummy;
 	while (query.next()) {
@@ -192,7 +189,7 @@ QList<Unit> DB::getUnits(const int & id)
 
 static int getCategoryId(const Locale2String & names)
 {
-	Transaction;
+	TRANSACTION(ta);
 
 	QSqlQuery query(ta.db);
 	query.prepare(
@@ -208,7 +205,7 @@ static int getCategoryId(const Locale2String & names)
 	foreach (const QLocale & lang, names.keys()) {
 		query.bindValue(":language", lang.name());
 		query.bindValue(":name",     names.value(lang));
-		if (!execQuery(query)) return retval;
+		if (!Database::executeQuery(query)) return retval;
 
 		if (query.next()) {
 			retval = query.value(0).toInt();
@@ -222,7 +219,7 @@ static int getCategoryId(const Locale2String & names)
 
 static bool addOrUpdateCategoryTranslation(const int categoryId, const Category & category)
 {
-	Transaction;
+	TRANSACTION(ta);
 
 	QSqlQuery queryAbbrev(ta.db);
 	queryAbbrev.prepare(
@@ -243,7 +240,7 @@ static bool addOrUpdateCategoryTranslation(const int categoryId, const Category 
 	foreach(const QLocale & locale, names.keys()) {
 		queryAbbrev.bindValue(":language", locale.name());
 		queryAbbrev.bindValue(":name",     names.value(locale));
-		execQuery(queryAbbrev);
+		Database::executeQuery(queryAbbrev);
 	}
 
 	return ta.commit();
@@ -251,7 +248,7 @@ static bool addOrUpdateCategoryTranslation(const int categoryId, const Category 
 
 void DB::addOrUpdateCategory(const Category & category)
 {
-	Transaction;
+	TRANSACTION(ta);
 
 	int categoryId = getCategoryId(category.getNames());
 
@@ -281,10 +278,10 @@ void DB::addOrUpdateCategory(const Category & category)
 	if (categoryId != -1) {
 		query.bindValue(":categoryId", categoryId);
 	}
-	if(!execQuery(query)) return;
+	if(!Database::executeQuery(query)) return;
 
 	if (categoryId == -1) {
-		categoryId = query.lastInsertId().toUInt();
+		categoryId = query.lastInsertId().toInt();
 	}
 
 	if (!addOrUpdateCategoryTranslation(categoryId, category)) return;
@@ -294,7 +291,7 @@ void DB::addOrUpdateCategory(const Category & category)
 
 QList<Category> DB::getCategories(const int & id)
 {
-	Transaction;
+	TRANSACTION(ta);
 
 	QString queryStr =
 	        "SELECT "
@@ -316,7 +313,7 @@ QList<Category> DB::getCategories(const int & id)
 	}
 
 	QList<Category> retval;
-	if (!execQuery(query)) return retval;
+	if (!Database::executeQuery(query)) return retval;
 
 	QHash<int, Category> dummy;
 	while (query.next()) {
@@ -343,7 +340,7 @@ QList<Category> DB::getCategories(const int & id)
 
 static int getIngredientId(const Locale2String & names)
 {
-	Transaction;
+	TRANSACTION(ta);
 
 	QSqlQuery query(ta.db);
 	query.prepare(
@@ -359,7 +356,7 @@ static int getIngredientId(const Locale2String & names)
 	foreach (const QLocale & lang, names.keys()) {
 		query.bindValue(":language", lang.name());
 		query.bindValue(":name",     names.value(lang));
-		if (!execQuery(query)) return retval;
+		if (!Database::executeQuery(query)) return retval;
 
 		if (query.next()) {
 			retval = query.value(0).toInt();
@@ -373,7 +370,7 @@ static int getIngredientId(const Locale2String & names)
 
 static bool addOrUpdateIngredientTranslation(const int ingredientId, const Ingredient & ingredient)
 {
-	Transaction;
+	TRANSACTION(ta);
 
 	QSqlQuery queryAbbrev(ta.db);
 	queryAbbrev.prepare(
@@ -394,7 +391,7 @@ static bool addOrUpdateIngredientTranslation(const int ingredientId, const Ingre
 	foreach(const QLocale & locale, names.keys()) {
 		queryAbbrev.bindValue(":language", locale.name());
 		queryAbbrev.bindValue(":name",     names.value(locale));
-		execQuery(queryAbbrev);
+		Database::executeQuery(queryAbbrev);
 	}
 
 	return ta.commit();
@@ -402,7 +399,7 @@ static bool addOrUpdateIngredientTranslation(const int ingredientId, const Ingre
 
 void DB::addOrUpdateIngredient(const Ingredient & ingredient)
 {
-	Transaction;
+	TRANSACTION(ta);
 
 	int ingredientId = getIngredientId(ingredient.getNames());
 
@@ -438,10 +435,10 @@ void DB::addOrUpdateIngredient(const Ingredient & ingredient)
 	if (ingredientId != -1) {
 		query.bindValue(":categoryId", ingredientId);
 	}
-	if(!execQuery(query)) return;
+	if(!Database::executeQuery(query)) return;
 
 	if (ingredientId == -1) {
-		ingredientId = query.lastInsertId().toUInt();
+		ingredientId = query.lastInsertId().toInt();
 	}
 
 	if (!addOrUpdateIngredientTranslation(ingredientId, ingredient)) return;
@@ -451,7 +448,7 @@ void DB::addOrUpdateIngredient(const Ingredient & ingredient)
 
 QList<Ingredient> DB::getIngredients(const int & id)
 {
-	Transaction;
+	TRANSACTION(ta);
 
 	QString queryStr =
 	            "SELECT "
@@ -474,7 +471,7 @@ QList<Ingredient> DB::getIngredients(const int & id)
 	}
 
 	QList<Ingredient> retval;
-	if (!execQuery(query)) return retval;
+	if (!Database::executeQuery(query)) return retval;
 
 	QHash<int, Ingredient> dummy;
 	while (query.next()) {
@@ -502,7 +499,7 @@ QList<Ingredient> DB::getIngredients(const int & id)
 
 static int getPortionId(const Locale2String & names)
 {
-	Transaction;
+	TRANSACTION(ta);
 
 	QSqlQuery query(ta.db);
 	query.prepare(
@@ -518,7 +515,7 @@ static int getPortionId(const Locale2String & names)
 	foreach (const QLocale & lang, names.keys()) {
 		query.bindValue(":language",    lang.name());
 		query.bindValue(":description", names.value(lang));
-		if (!execQuery(query)) return retval;
+		if (!Database::executeQuery(query)) return retval;
 
 		if (query.next()) {
 			retval = query.value(0).toInt();
@@ -532,7 +529,7 @@ static int getPortionId(const Locale2String & names)
 
 static bool addOrUpdatePortionTranslation(const int portionId, const Portion & portion)
 {
-	Transaction;
+	TRANSACTION(ta);
 
 	QSqlQuery queryDescriptions(ta.db);
 	queryDescriptions.prepare(
@@ -553,7 +550,7 @@ static bool addOrUpdatePortionTranslation(const int portionId, const Portion & p
 	foreach(const QLocale & locale, names.keys()) {
 		queryDescriptions.bindValue(":language",    locale.name());
 		queryDescriptions.bindValue(":description", names.value(locale));
-		execQuery(queryDescriptions);
+		Database::executeQuery(queryDescriptions);
 	}
 
 	return ta.commit();
@@ -561,7 +558,7 @@ static bool addOrUpdatePortionTranslation(const int portionId, const Portion & p
 
 void DB::addOrUpdatePortion(const Portion & portion)
 {
-	Transaction;
+	TRANSACTION(ta);
 
 	int portionId = getPortionId(portion.getDescriptions());
 
@@ -569,8 +566,8 @@ void DB::addOrUpdatePortion(const Portion & portion)
 	if (portionId == -1) {
 		QSqlQuery query(ta.db);
 		query.prepare("INSERT INTO portions () VALUES()");
-		if(!execQuery(query)) return;
-		portionId = query.lastInsertId().toUInt();
+		if(!Database::executeQuery(query)) return;
+		portionId = query.lastInsertId().toInt();
 	}
 
 	if (!addOrUpdatePortionTranslation(portionId, portion)) return;
@@ -580,7 +577,7 @@ void DB::addOrUpdatePortion(const Portion & portion)
 
 QList<Portion> DB::getPortions(const int & id)
 {
-	Transaction;
+	TRANSACTION(ta);
 
 	QString queryStr =
 	            "SELECT "
@@ -602,7 +599,7 @@ QList<Portion> DB::getPortions(const int & id)
 	}
 
 	QList<Portion> retval;
-	if (!execQuery(query)) return retval;
+	if (!Database::executeQuery(query)) return retval;
 
 	QHash<int, Portion> dummy;
 	while (query.next()) {
@@ -629,7 +626,7 @@ QList<Portion> DB::getPortions(const int & id)
 
 static int addRecipe(Recipe & recipe)
 {
-	Transaction;
+	TRANSACTION(ta);
 	QSqlQuery query(ta.db);
 
 	query.prepare(
@@ -647,9 +644,9 @@ static int addRecipe(Recipe & recipe)
 	query.bindValue(":createdByUserId", DB::getUserId(recipe.getCreatedByUser().getLogin()).toDatabaseValue());
 	QString externId;
 	do {
-		externId = cflib::crypt::randomId();
+		externId = QUuid::createUuid().toString();
 		query.bindValue(":externId", externId);
-		execQuery(query);
+		Database::executeQuery(query);
 	} while(query.numRowsAffected() == 0);
 
 	if (!ta.commit()) return -1;
@@ -660,7 +657,7 @@ static int addRecipe(Recipe & recipe)
 
 static void updateRecipe(const Recipe & recipe)
 {
-	Transaction;
+	TRANSACTION(ta);
 	QSqlQuery query(ta.db);
 
 	query.prepare(
@@ -678,12 +675,13 @@ static void updateRecipe(const Recipe & recipe)
 	query.bindValue(":portionCount",    recipe.getPortion().getCount());
 	query.bindValue(":createdByUserId", DB::getUserId(recipe.getCreatedByUser().getLogin()).toDatabaseValue());
 
-	execQueryCommit(query);
+	Database::executeQuery(query);
+	ta.commit();
 }
 
 static int getRecipeId(const QString & externId)
 {
-	Transaction;
+	TRANSACTION(ta);
 
 	QSqlQuery query(ta.db);
 	query.prepare(
@@ -697,7 +695,7 @@ static int getRecipeId(const QString & externId)
 	query.bindValue(":externId", externId);
 
 	int retval = -1;
-	if (!execQuery(query)) return retval;
+	if (!Database::executeQuery(query)) return retval;
 
 	if (query.next()) {
 		retval = query.value(0).toInt();
@@ -709,7 +707,7 @@ static int getRecipeId(const QString & externId)
 
 static void addOrUpdateRecipeTranslations(const int recipeId, const Recipe & recipe)
 {
-	Transaction;
+	TRANSACTION(ta);
 
 	QSqlQuery query(ta.db);
 	query.prepare(
@@ -730,7 +728,7 @@ static void addOrUpdateRecipeTranslations(const int recipeId, const Recipe & rec
 	foreach(const QLocale & locale, titles.keys()) {
 		query.bindValue(":language", locale.name());
 		query.bindValue(":title",    titles.value(locale));
-		execQuery(query);
+		Database::executeQuery(query);
 	}
 
 	query.prepare(
@@ -751,7 +749,7 @@ static void addOrUpdateRecipeTranslations(const int recipeId, const Recipe & rec
 	foreach(const QLocale & locale, descriptions.keys()) {
 		query.bindValue(":language",    locale.name());
 		query.bindValue(":description", descriptions.value(locale));
-		execQuery(query);
+		Database::executeQuery(query);
 	}
 
 	ta.commit();
@@ -759,7 +757,7 @@ static void addOrUpdateRecipeTranslations(const int recipeId, const Recipe & rec
 
 static void addOrUpdateRecipeIngredients(const int recipeId, const Recipe & recipe)
 {
-	Transaction;
+	TRANSACTION(ta);
 
 	QSqlQuery delQuery(ta.db);
 	delQuery.prepare(
@@ -769,7 +767,7 @@ static void addOrUpdateRecipeIngredients(const int recipeId, const Recipe & reci
 	              "recipeId = :recipeId"
 	                 );
 	delQuery.bindValue(":recipeId", recipeId);
-	execQuery(delQuery);
+	Database::executeQuery(delQuery);
 
 	QSqlQuery query(ta.db);
 	query.prepare(
@@ -798,7 +796,7 @@ static void addOrUpdateRecipeIngredients(const int recipeId, const Recipe & reci
 		query.bindValue(":unitCount",    pod.count);
 		query.bindValue(":isOptional",   pod.isOptional);
 
-		execQuery(query);
+		Database::executeQuery(query);
 	}
 
 	ta.commit();
@@ -807,17 +805,17 @@ static void addOrUpdateRecipeIngredients(const int recipeId, const Recipe & reci
 QString DB::addOrUpdateRecipe(const Recipe & recipe)
 {
 	if (!recipe.isValid()) {
-		logWarn("recipe is not valid: %1", recipe);
+		qWarning() << "recipe is not valid:" << recipe.toString();
 		return QString();
 	}
 
-	Transaction;
+	TRANSACTION(ta);
 	Recipe recipeCopy = recipe;
 	if (recipeCopy.getExternId().isEmpty()) {
-		logInfo("Adding recipe");
+		qInfo() << "Adding recipe";
 		addRecipe(recipeCopy);
 	} else {
-		logInfo("Updating recipe: %1", recipeCopy.getExternId());
+		qInfo() << "Updating recipe:" << recipeCopy.getExternId();
 		updateRecipe(recipeCopy);
 	}
 
@@ -832,7 +830,7 @@ QString DB::addOrUpdateRecipe(const Recipe & recipe)
 
 static void getIngredients(const int recipeId, Recipe & recipe)
 {
-	Transaction;
+	TRANSACTION(ta);
 
 	QSqlQuery query(ta.db);
 	query.prepare(
@@ -847,7 +845,7 @@ static void getIngredients(const int recipeId, Recipe & recipe)
 	            );
 
 	query.bindValue(":recipeId", recipeId);
-	if (!execQuery(query)) return;
+	if (!Database::executeQuery(query)) return;
 
 	recipe.clearIngredients();
 	while (query.next()) {
@@ -862,7 +860,7 @@ static void getIngredients(const int recipeId, Recipe & recipe)
 
 QList<Recipe> DB::getRecipes()
 {
-	Transaction;
+	TRANSACTION(ta);
 
 	QSqlQuery query(ta.db);
 	query.prepare(
@@ -876,7 +874,7 @@ QList<Recipe> DB::getRecipes()
 	            );
 
 	QList<Recipe> retval;
-	if (!execQuery(query)) return retval;
+	if (!Database::executeQuery(query)) return retval;
 
 	QHash<int, Recipe> dummy;
 	while (query.next()) {

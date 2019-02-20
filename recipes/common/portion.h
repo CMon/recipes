@@ -1,13 +1,10 @@
 #pragma once
 
+#include <cereal/cereal.hpp>
 #include <recipes/common/locale2string.h>
-
-#include <cflib/serialize/serialize.h>
 
 class Portion
 {
-	SERIALIZE_CLASS
-
 public:
 	Portion();
 
@@ -24,7 +21,13 @@ public:
 
 	QString toString() const;
 
-private serialized:
+	template <class Archive>
+	void serialize(Archive & ar) {
+		ar(cereal::make_nvp("count", count),
+		   cereal::make_nvp("description", description));
+	}
+
+private:
 	int count;
 	Locale2String description;
 };

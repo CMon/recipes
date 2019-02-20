@@ -6,17 +6,17 @@ ClientInfoCache &ClientInfoCache::instance()
 	return instance;
 }
 
-User ClientInfoCache::getUser(uint connId) const
+User ClientInfoCache::getUser(QWebSocket * socket) const
 {
-	return currentLoggedInUsers_.value(connId);
+	return currentLoggedInUsers_.value(socket);
 }
 
-void ClientInfoCache::removeUser(uint connId)
+void ClientInfoCache::removeUser(QWebSocket * socket)
 {
-	currentLoggedInUsers_.remove(connId);
+	currentLoggedInUsers_.remove(socket);
 }
 
-void ClientInfoCache::addUser(uint connId, const User & user)
+void ClientInfoCache::addUser(QWebSocket * socket, const User & user)
 {
-	currentLoggedInUsers_[connId] = user;
+	currentLoggedInUsers_[socket] = user;
 }

@@ -11,7 +11,10 @@ add_library(${LIB_NAME} SHARED
 target_link_libraries(${LIB_NAME}
     Qt5::Core
 )
-include_directories(${CMAKE_SOURCE_DIR}/modules/rpclib/)
+include_directories(
+    ${CMAKE_SOURCE_DIR}/modules/rpclib/
+    ${CMAKE_SOURCE_DIR}
+)
 
 set_target_properties(${LIB_NAME} PROPERTIES
     VERSION ${PROJECT_VERSION}

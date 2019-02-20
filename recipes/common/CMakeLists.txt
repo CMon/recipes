@@ -33,8 +33,8 @@ target_link_libraries(${LIB_NAME}
     rpclib-common
 )
 include_directories(
-    ${CMAKE_SOURCE_DIR}
     ${CMAKE_SOURCE_DIR}/modules/rpclib/
+    ${CMAKE_SOURCE_DIR}
 )
 
 set_target_properties(${LIB_NAME} PROPERTIES

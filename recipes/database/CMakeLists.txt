@@ -6,10 +6,16 @@ find_package(Qt5Core CONFIG REQUIRED)
 find_package(Qt5Sql CONFIG REQUIRED)
 
 add_library(${LIB_NAME} SHARED
+    database.cpp
+    database.h
     dbrecipe.cpp
     dbrecipe.h
     dbuser.cpp
     dbuser.h
+    migrator.cpp
+    migrator.h
+    password.cpp
+    password.h
 )
 target_link_libraries(${LIB_NAME}
     Qt5::Core
@@ -17,7 +23,10 @@ target_link_libraries(${LIB_NAME}
     rpclib-common
     common
 )
-include_directories(${CMAKE_SOURCE_DIR}/modules/rpclib/)
+include_directories(
+    ${CMAKE_SOURCE_DIR}/modules/rpclib/
+    ${CMAKE_SOURCE_DIR}
+)
 
 set_target_properties(${LIB_NAME} PROPERTIES
     VERSION ${PROJECT_VERSION}

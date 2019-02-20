@@ -20,9 +20,9 @@ bool User::isNull() const
 	return id_.isNull();
 }
 
-bool User::hasPermission(const Permission &permission) const
+bool User::hasPermission(const Permissions::Permission &permission) const
 {
-	return permissions_.contains(permission);
+	return permissions_.hasPermission(permission);
 }
 
 bool User::isValid() const

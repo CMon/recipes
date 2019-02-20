@@ -2,6 +2,10 @@
 
 #include <recipes/common/user.h>
 
+#include <QHash>
+
+class QWebSocket;
+
 class ClientInfoCache
 {
 public:
@@ -11,13 +15,13 @@ public:
 	ClientInfoCache(ClientInfoCache const&) = delete;
 	void operator=(ClientInfoCache const&)  = delete;
 
-	User getUser(uint connId) const;
-	void removeUser(uint connId);
-	void addUser(uint connId, const User & user);
+	User getUser(QWebSocket * sendingSocket) const;
+	void removeUser(QWebSocket * socket);
+	void addUser(QWebSocket * socket, const User & user);
 
 private:
 	ClientInfoCache() {}
 
 private:
-	QHash<uint, User> currentLoggedInUsers_;
+	QHash<QWebSocket *, User> currentLoggedInUsers_;
 };

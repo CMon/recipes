@@ -3,56 +3,55 @@
 #include <recipes/common/log.h>
 #include <recipes/servercommon/clientinfocache.h>
 #include <recipes/services/userservice.h>
+#include <recipes/services/recipeservice.h>
+#include <recipes/database/database.h>
 
+#include <rpclib/server/rpcserver.h>
+
+#include <QCommandLineOption>
+#include <QCommandLineParser>
 #include <QLoggingCategory>
 #include <QHostAddress>
-
-#include <cflib/db/db.h>
-#include <cflib/net/httpserver.h>
-#include <cflib/net/rmiserver.h>
-#include <cflib/net/wscommmanager.h>
-
-using namespace cflib::net;
-using namespace cflib::util;
 
 Q_DECLARE_LOGGING_CATEGORY(RECIPE_SERVER)
 Q_LOGGING_CATEGORY(RECIPE_SERVER, "recipe.server")
 
 int main(int argc, char ** argv)
 {
-	QCoreApplication a(argc, argv);
-	a.setApplicationName("Receipts Server");
+	QCoreApplication app(argc, argv);
+	app.setApplicationName("Receipts Server");
+	QCommandLineOption listServiceMethods(QStringList() << "l" << "listServiceMethods", QCoreApplication::translate("main", "List methods that are exported by the services"));
+	QCommandLineParser argParser;
+	argParser.addHelpOption();
+	argParser.addOption(listServiceMethods);
+	argParser.process(app);
+
 	qInstallMessageHandler(RecipeLog::consoleMessageHandler);
 
 	QLoggingCategory::setFilterRules(QStringLiteral("recipe.server.*=true"));
 
-	cflib::db::setParameter("recipes", "root", "sql");
-
-	UserService userService;
-
-	WSCommManager<QString> commMgr("/ws");
-	RMIServer<QString> rmiServer(commMgr);
-
-	rmiServer.registerService(userService);
+	Database::setCredentials("recipes", "root", "sql");
 
 	const int port = 8080;
-	const QHostAddress listenOn = QHostAddress::LocalHost;
+	const QHostAddress listenOn = QHostAddress::Any;
+	RPCServer rpcServer(listenOn, port);
 
-	ClientInfoCache cic();
-	Q_UNUSED(cic)
+	UserService userService;
+	userService.registerMethods(&rpcServer);
+	RecipeService recipeService;
+	recipeService.registerMethods(&rpcServer);
 
-	HttpServer serv;
-	serv.registerHandler(rmiServer);
-
-	if (!serv.start(listenOn.toString().toLatin1(), port)) {
-		qCCritical(RECIPE_SERVER) << "cannot start HTTP-Server (port already in use)";
-		return 1;
+	if (argParser.isSet(listServiceMethods)) {
+		for (const QPair<QString,QString> & method: rpcServer.availableServiceMethods()) {
+			qDebug() << method.first << method.second;
+		}
+		return 0;
 	}
-	const QString startedMsg = QString("Started Server. Listening on %1:%2").arg(listenOn.toString()).arg(port);
-	qCDebug(RECIPE_SERVER) << startedMsg;
-	QTextStream(stdout) << startedMsg << endl;
 
-	int retval = a.exec();
-	qCDebug(RECIPE_SERVER) << "terminating softly with retval: " << retval;
-	return retval;
+	qDebug () << "Starting server";
+	if (!rpcServer.start()) {
+		qCritical() << "Could not start server";
+	}
+
+	return app.exec();
 }

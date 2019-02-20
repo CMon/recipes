@@ -4,25 +4,21 @@
 #include <recipes/common/unit.h>
 #include <recipes/common/recipe.h>
 
-#include <cflib/net/rmiservice.h>
+class RPCServer;
+class QWebSocket;
 
-class RecipeService : public QObject, public cflib::net::RMIService<QString>
+class RecipeService : public QObject
 {
 	Q_OBJECT
-	SERIALIZE_CLASS
 
 public:
-	RecipeService();
+	RecipeService(QObject *parent = nullptr);
 
-rmi:
-	void addUnit(const Unit & unit);
-	QList<Unit> getUnits();
-	void addPortion(const Portion & portion);
-	void addRecipe(const Recipe & recipe);
+	void registerMethods(RPCServer * server);
 
-protected:
-	virtual void preCallInit();
-
-private:
-	User currentUser_;
+public: // rpc methods
+	void addUnit(const Unit & unit, QWebSocket * sendingSocket);
+	QList<Unit> getUnits(QWebSocket * sendingSocket);
+	void addPortion(const Portion & portion, QWebSocket * sendingSocket);
+	void addRecipe(const Recipe & recipe, QWebSocket * sendingSocket);
 };

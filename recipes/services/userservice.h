@@ -1,30 +1,23 @@
 #pragma once
 
-#include <cflib/net/rmiservice.h>
-
 #include <recipes/common/user.h>
 
-class UserService : public QObject, public cflib::net::RMIService<QString>
+class RPCServer;
+class QWebSocket;
+
+class UserService : public QObject
 {
-	Q_OBJECT
-	SERIALIZE_CLASS
-
 public:
-	UserService();
-	~UserService();
+	UserService(QObject *parent = nullptr);
 
-rmi:
-	bool login(const QString & login, const QString & password, User & user);
-	bool logout();
-	bool addUser(const User & login, QString password);
-	QList<User> getUsers();
+	void registerMethods(RPCServer * server);
 
-public:
-	virtual void connectionClosed(bool isLast);
+public: // rpc methods
+	User login(const QString & login, const QString & password, QWebSocket * sendingSocket);
+	void logout(QWebSocket * client);
+	bool addUser(const User & login, QString password, QWebSocket * sendingSocket);
+	QList<User> getUsers(QWebSocket * sendingSocket);
 
-protected:
-	virtual void preCallInit();
-
-private:
-	User currentUser_;
+private slots:
+	void connectionClosed(QWebSocket * client);
 };

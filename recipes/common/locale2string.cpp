@@ -5,32 +5,11 @@
 #include <QHashIterator>
 #include <QJsonObject>
 
-QJsonValue Locale2String::toJson() const
-{
-	QJsonObject retval;
-	QHashIterator<QLocale, QString> iter(*this);
-	while (iter.hasNext()) {
-		iter.next();
-		retval.insert(iter.key().bcp47Name(), iter.value());
-	}
-	return retval;
-}
-
-Locale2String Locale2String::fromJson(const QJsonValue & value)
-{
-	Locale2String retval;
-	QJsonObject hash = value.toObject();
-	for(const QString & key: hash.keys()) {
-		retval[key] = hash.value(key).toString();
-	}
-	return retval;
-}
-
 bool Locale2String::operator ==(const Locale2String & rhs) const
 {
-	bool equal = size() == rhs.size();
+	bool equal = mapping_.size() == rhs.mapping_.size();
 
-	foreach(const QLocale & locale, keys()) {
+	foreach(const QLocale & locale, mapping_.keys()) {
 		equal = equal && (value(locale) == rhs.value(locale));
 	}
 
@@ -42,13 +21,48 @@ bool Locale2String::operator !=(const Locale2String & rhs) const
 	return !operator ==(rhs);
 }
 
+QString Locale2String::operator [](const QLocale & loc) const
+{
+	return mapping_[loc];
+}
+
+const QString Locale2String::value(const QLocale & key) const
+{
+	return mapping_.value(key);
+}
+
+const QString Locale2String::value(const QLocale & key, const QString & defaultValue) const
+{
+	return mapping_.value(key, defaultValue);
+}
+
+int Locale2String::size() const
+{
+	return mapping_.size();
+}
+
+bool Locale2String::isEmpty() const
+{
+	return mapping_.isEmpty();
+}
+
+QString &Locale2String::operator [](const QLocale & loc)
+{
+	return mapping_[loc];
+}
+
 QString Locale2String::toString() const
 {
 	QStringList values;
 
-	foreach(const QLocale & locale, keys()) {
+	foreach(const QLocale & locale, mapping_.keys()) {
 		values << locale.name() + "=" + value(locale);
 	}
 
 	return values.join(";");
+}
+
+QList<QLocale> Locale2String::keys() const
+{
+	return mapping_.keys();
 }
