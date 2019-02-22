@@ -5,9 +5,21 @@
 #include <stdio.h>
 #include <libgen.h>
 
-void RecipeLog::consoleMessageHandler(QtMsgType type, const QMessageLogContext &context, const QString &msg)
+static FILE * logfile = nullptr;
+
+bool RecipeLog::initFile(const QString & filename)
 {
-	const QDateTime now = QDateTime::currentDateTime();
+	logfile = fopen(qPrintable(filename), "a");
+	if (!logfile) {
+		fprintf(stdout, "Could not open logfile: %s\n", strerror(errno));
+		return false;
+	}
+	return true;
+}
+
+static void logMessage(FILE * stream, QtMsgType type, const QMessageLogContext &context, const QString &msg)
+{
+	const QDateTime now = QDateTime::currentDateTimeUtc();
 	char typeStr;
 	switch (type) {
 		case QtDebugMsg:    typeStr = 'D'; break;
@@ -16,6 +28,22 @@ void RecipeLog::consoleMessageHandler(QtMsgType type, const QMessageLogContext &
 		case QtCriticalMsg: typeStr = 'C'; break;
 		case QtFatalMsg:    typeStr = 'F'; break;
 	}
-	fprintf(stdout, "%s %c %20s:%4d %15s:  %s\n", qPrintable(now.toString(Qt::ISODate)), typeStr, basename(const_cast<char*>(context.file)), context.line, context.category, msg.toLocal8Bit().constData());
-	fflush(stdout);
+	fprintf(stream, "%s %c %20s:%4d %15s:  %s\n", qPrintable(now.toString(Qt::ISODate)), typeStr, basename(const_cast<char*>(context.file)), context.line, context.category, msg.toLocal8Bit().constData());
+	fflush(stream);
+
+}
+
+void RecipeLog::consoleMessageHandler(QtMsgType type, const QMessageLogContext &context, const QString &msg)
+{
+	logMessage(stdout, type, context, msg);
+}
+
+void RecipeLog::fileMessageHandler(QtMsgType type, const QMessageLogContext & context, const QString & msg)
+{
+	if (!logfile) {
+		fprintf(stdout, "File logging requested, but file is not initialized\n");
+		return;
+	}
+
+	logMessage(logfile, type, context, msg);
 }

@@ -21,15 +21,27 @@ int main(int argc, char ** argv)
 	QCoreApplication app(argc, argv);
 	app.setApplicationName("Receipts Server");
 	QCommandLineOption listServiceMethods(QStringList() << "l" << "listServiceMethods", QCoreApplication::translate("main", "List methods that are exported by the services"));
+	QCommandLineOption logfileOpt(QStringList() << "L" << "log", QCoreApplication::translate("main", "The logfile to log the messages to, if not provided, logging will be done to the console"), "logfile");
+	QCommandLineOption logConsoleOpt(QStringList() << "c" << "console", QCoreApplication::translate("main", "Log to console instead of a logfile"));
 	QCommandLineParser argParser;
 	argParser.addHelpOption();
 	argParser.addOption(listServiceMethods);
+	argParser.addOption(logfileOpt);
+	argParser.addOption(logConsoleOpt);
 	argParser.process(app);
 
-	qInstallMessageHandler(RecipeLog::consoleMessageHandler);
 
 	QLoggingCategory::setFilterRules(QStringLiteral("recipe.server.*=true"));
 
+	if (argParser.isSet(logConsoleOpt)) {
+		qInstallMessageHandler(RecipeLog::consoleMessageHandler);
+	} else if (argParser.isSet(logfileOpt)) {
+		RecipeLog::initFile(argParser.value(logfileOpt));
+		qInstallMessageHandler(RecipeLog::fileMessageHandler);
+	} else {
+		RecipeLog::initFile(QString("%1.log").arg(argv[0]));
+		qInstallMessageHandler(RecipeLog::fileMessageHandler);
+	}
 	Database::setCredentials("recipes", "root", "sql");
 
 	const int port = 8080;
