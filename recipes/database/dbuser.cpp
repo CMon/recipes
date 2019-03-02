@@ -15,15 +15,18 @@ bool DB::updateUser(const User & user, const QString password)
 	            "INSERT INTO "
 	                "users "
 	            "("
-	                "login, firstName, lastName, passwordHash, permissions, isDeleted"
+	                "login, firstName, lastName, passwordHash, passwordCrypto, permissions, isDeleted"
 	            ") VALUES ("
-	                ":login, :firstName, :lastName, :passwordHash, :permissions, :isDeleted"
+	                ":login, :firstName, :lastName, :passwordHash, :passwordCrypto, :permissions, :isDeleted"
 	            ")"
 	            );
+
 	query.bindValue(":login",        user.getLogin());
 	query.bindValue(":firstName",    user.getFirstName());
 	query.bindValue(":lastName",     user.getLastName());
-	query.bindValue(":passwordHash", Password::hashPassword(password));
+	QString usedCrypto;
+	query.bindValue(":passwordHash",   Password::hashPassword(password, usedCrypto));
+	query.bindValue(":passwordCrypto", usedCrypto);
 	query.bindValue(":permissions",  uint(user.getPermissions()));
 	query.bindValue(":isDeleted",    false);
 
@@ -72,7 +75,7 @@ bool DB::checkPassword(const QString &login, const QString &password)
 
 	query.prepare(
 	            "SELECT "
-	                "passwordHash "
+	                "passwordHash, passwordCrypto "
 	            "FROM "
 	                "users "
 	            "WHERE "
@@ -86,7 +89,7 @@ bool DB::checkPassword(const QString &login, const QString &password)
 		return false;
 	}
 
-	if (!Password::checkPassword(password, query.value(0).toByteArray())) {
+	if (!Password::checkPassword(password, query.value(0).toByteArray(), query.value(1).toString())) {
 		return false;
 	}
 

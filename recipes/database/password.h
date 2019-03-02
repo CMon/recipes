@@ -5,8 +5,8 @@
 
 namespace Password {
 
-QByteArray hashPassword(const QString & password);
-bool checkPassword(const QString & password, const QByteArray & hash);
+QByteArray hashPassword(const QString & password, QString & usedCrypto);
+bool checkPassword(const QString & password, const QByteArray & originalHash, const QString & usedCrypto);
 
 }
 
