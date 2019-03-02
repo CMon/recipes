@@ -12,11 +12,9 @@ const QString Migrator::versionField = "version";
 
 Migrator::Migrator(const QString & dbName,
                    const QString & dbUser, const QString & dbPassword,
-                   const QString & schema,
                    const QString & dbHostname, quint16 dbPort,
                    const QString & dbDriver, const QString & connName)
-    : schema_(schema),
-      dbName_(dbName),
+    : dbName_(dbName),
       isInitialRun_(false),
       oldDbVersion_(0),
       newDbVersion_(0),
@@ -76,7 +74,7 @@ Migrator::Migrator(const QString & dbName,
 	}
 }
 
-bool Migrator::isLatestVersion()
+bool Migrator::isLatestVersion(const QString & schema)
 {
 	if(!db_.isOpen()) qCritical() << "Database not open";
 
@@ -86,16 +84,16 @@ bool Migrator::isLatestVersion()
 	if (!query.next()) qCritical() << "major database problem - unknown scheme_version of" << versionField << ". This might happen if you create the database by your own. Remove it and you are clear.";
 	oldDbVersion_ = query.value(0).toInt();
 
-	const QRegExp schemaRx("^-- scheme version[^\\d]*(\\d+)$");
+	const QRegExp schemaRx("-- scheme version[^\\d]*(\\d+)");
 	newDbVersion_ = 0;
 	int startPos = -1;
-	int pos = schemaRx.indexIn(schema_);
+	int pos = schemaRx.indexIn(schema);
 	while (pos != -1) {
 		newDbVersion_ = schemaRx.cap(1).toInt();
 		if (startPos == -1 && newDbVersion_ > oldDbVersion_) {
 			startPos = pos;
 		}
-		pos = schemaRx.indexIn(schema_, pos + schemaRx.matchedLength());
+		pos = schemaRx.indexIn(schema, pos + schemaRx.matchedLength());
 	}
 	startPos_ = startPos;
 
@@ -104,17 +102,26 @@ bool Migrator::isLatestVersion()
 	}
 
 	if (startPos_ == -1) {
-		qDebug() << "database from is up to date at version" << oldDbVersion_;
+		qDebug() << "database is up to date at version" << oldDbVersion_;
 		return true;
 	}
 	return false;
 }
 
-bool Migrator::update()
+bool Migrator::update(const QString & schemeFilename)
 {
-	if(isLatestVersion()) return true;
+	QFile schemeFile(schemeFilename);
 
-	foreach (QString queryStr, schema_.mid(startPos_).remove(QRegExp("--[^\n]*")).split(';'))
+	if (!schemeFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
+		qWarning() << "Could not open scheme file:" << schemeFile.fileName();
+		return false;
+	}
+
+	const QString schema = QString::fromUtf8(schemeFile.readAll());
+
+	if(isLatestVersion(schema)) return true;
+
+	foreach (QString queryStr, schema.mid(startPos_).remove(QRegExp("--[^\n]*")).split(';'))
 	{
 		queryStr = queryStr.trimmed();
 		if (queryStr.isEmpty()) continue;

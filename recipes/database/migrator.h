@@ -11,18 +11,19 @@ public:
 	static const QString versionField;
 
 	Migrator(const QString & dbName,
-	         const QString & dbUser, const QString & dbPassword, const QString & schema,
+	         const QString & dbUser, const QString & dbPassword,
 	         const QString & dbHostname = "127.0.0.1", quint16 dbPort = 0,
 	         const QString & dbDriver = "QMYSQL",
 	         const QString & connName = "migrator");
 
-	bool isLatestVersion();
-	bool update();
+	bool update(const QString & schemeFilename);
 	bool addTestData(const QString & testDataRef);
 	bool addTestData(QFile testData);
 
 private:
-	QString schema_;
+	bool isLatestVersion(const QString & schema);
+
+private:
 	QString dbName_;
 	QSqlDatabase db_;
 	bool isInitialRun_;
