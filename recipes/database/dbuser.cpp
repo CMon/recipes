@@ -90,6 +90,42 @@ bool addUser(const User & user, QString password)
 	return ta.commit();
 }
 
+bool updateUser(const User & user, const QString & password)
+{
+	TRANSACTION(ta);
+	QSqlQuery query(ta.db);
+
+	QString queryStr =
+	        "UPDATE users "
+	        "WHERE id = :id "
+	        "SET "
+	        "login            = :login"
+	        ", firstName      = :firstName"
+	        ", lastName       = :lastName"
+	        ". isDeleted      = :isDeleted";
+
+	if (!password.isEmpty()) {
+		queryStr +=
+		        ", passwordHash   = :passwordHash"
+		        ". passwordCrypto = :passwordCrypto";
+	}
+
+	query.prepare(queryStr);
+
+	query.bindValue(":id",        user.getId().toDatabaseValue());
+	query.bindValue(":login",     user.getLogin());
+	query.bindValue(":firstName", user.getFirstName());
+	query.bindValue(":lastName",  user.getLastName());
+	if (!password.isEmpty()) {
+		QString usedCrypto;
+		query.bindValue(":passwordHash",   Password::hashPassword(password, usedCrypto));
+		query.bindValue(":passwordCrypto", usedCrypto);
+	}
+	query.bindValue(":isDeleted", false);
+
+	return ta.commit();
+}
+
 bool DB::addOrUpdateUser(User & user, const QString & password)
 {
 	TRANSACTION(ta);
@@ -100,6 +136,8 @@ bool DB::addOrUpdateUser(User & user, const QString & password)
 		if (!addUser(user, password)) return false;
 		userId = DB::getUserId(user.getLogin());
 		user.setId(userId);
+	} else {
+		if (!updateUser(user, password)) return false;
 	}
 
 	if (!userId.isValid()) {

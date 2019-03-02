@@ -6,6 +6,14 @@ class User;
 class UserId;
 namespace DB {
 
+/**
+ * @brief addOrUpdateUser
+ * Add or update the given user, if the user is new the user object will be changed to contain the userId
+ *
+ * @param user The updated user object
+ * @param password The password to update if it is empty the password will not be changed or in case of a user creation it will be set to a random one
+ * @return true if successful
+ */
 bool updatePassword(const QString & login, const QString & password);
 bool addOrUpdateUser(User & user, const QString & password);
 
