@@ -1,6 +1,8 @@
 #include <QCoreApplication>
 
 #include <recipes/common/log.h>
+#include <recipes/common/util.h>
+#include <recipes/database/password.h>
 #include <recipes/server/server.h>
 
 #include <QCommandLineOption>
@@ -15,16 +17,20 @@ int main(int argc, char ** argv)
 	QCoreApplication app(argc, argv);
 	app.setApplicationName("Receipts Server");
 	QCommandLineOption listServiceMethods(QStringList() << "l" << "listServiceMethods", QCoreApplication::translate("main", "List methods that are exported by the services"));
+	QCommandLineOption createPassOpt(QStringList() << "p" << "createPass", QCoreApplication::translate("main", "create a has for the given password"), "password");
+	QCommandLineOption createPassAskOpt(QStringList() << "P" << "createPassAsk", QCoreApplication::translate("main", "Ask for a password and print its hash"));
 	QCommandLineOption logfileOpt(QStringList() << "L" << "log", QCoreApplication::translate("main", "The logfile to log the messages to, if not provided, logging will be done to the console"), "logfile");
 	QCommandLineOption logConsoleOpt(QStringList() << "c" << "console", QCoreApplication::translate("main", "Log to console instead of a logfile"));
 	QCommandLineParser argParser;
 	argParser.addHelpOption();
 	argParser.addOption(listServiceMethods);
+	argParser.addOption(createPassOpt);
+	argParser.addOption(createPassAskOpt);
 	argParser.addOption(logfileOpt);
 	argParser.addOption(logConsoleOpt);
 	argParser.process(app);
 
-
+	// todo move the filter rules to an option
 	QLoggingCategory::setFilterRules(QStringLiteral("recipe.server.*=true"));
 
 	if (argParser.isSet(logConsoleOpt)) {
@@ -44,6 +50,29 @@ int main(int argc, char ** argv)
 		for (const QPair<QString,QString> & method: server.availableServiceMethods()) {
 			qDebug() << method.first << method.second;
 		}
+		return 0;
+	}
+
+	if (argParser.isSet(createPassOpt)) {
+		QTextStream out(stdout);
+
+		const QString password = argParser.value(createPassOpt);
+		QString usedCrypto;
+		const QByteArray passHash = Password::hashPassword(password, usedCrypto);
+		out << "Hash for insertion into the db:" << endl;
+		out << "hash: " << passHash << endl << endl;
+		out << "passCrypto: " << usedCrypto << endl << endl;
+		return 0;
+	}
+
+	if (argParser.isSet(createPassAskOpt)) {
+		QTextStream out(stdout);
+		const QString password = Util::enterPassword("Please enter your password:");
+		QString usedCrypto;
+		const QByteArray passHash = Password::hashPassword(password, usedCrypto);
+		out << "Hash for insertion into the db:" << endl;
+		out << "hash: " << passHash << endl << endl;
+		out << "passCrypto: " << usedCrypto << endl << endl;
 		return 0;
 	}
 
