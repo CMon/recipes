@@ -16,10 +16,12 @@ qt5_add_resources(QT_RESOURCES
 )
 
 set(SOURCES
+    clientcontroller.cpp
+    clientcontroller.h
     logcategory.h
     main.cpp
-    servicemapper.cpp
-    servicemapper.h
+    userserviceinterface.cpp
+    userserviceinterface.h
 )
 
 add_executable(${TARGET_NAME} ${SOURCES} ${QT_RESOURCES})

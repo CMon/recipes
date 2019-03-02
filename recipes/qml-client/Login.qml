@@ -1,9 +1,11 @@
-import QtQuick 2.2
-import QtQuick.Controls 1.2
+import QtQuick 2.7
+import QtQuick.Controls 2.0
+import QtQuick.Layouts 1.0
 
-Column {
-    id: column
+import CMon.ClientController 1.0
 
+Rectangle {
+    id: root
     signal loggedIn
 
     Component.onCompleted: {
@@ -12,44 +14,72 @@ Column {
         username.focus = true;
     }
 
-    TextField {
-        id: username
-        width: appWindow.width / 3
-        anchors.right: column.right
-        placeholderText: qsTr("Username")
-        onAccepted: nextItemInFocusChain().forceActiveFocus()
-    }
-    TextField {
-        id: password
-        width: appWindow.width / 3
-        anchors.right: column.right
-        placeholderText: qsTr("Password")
-        echoMode: TextInput.Password
-        onAccepted: btnLogin.login(username.text, password.text)
-    }
-    Label {
-        id: error
-        color: "#FF0000"
-        visible: false
-    }
-
-    Button {
-        id: btnLogin
-        anchors.right: column.right
-        isDefault: true
-
-        text: qsTr("Login");
-        onClicked: login(username.text, password.text)
-
-        function login(user, pass) {
-            var loginOk = UserService.login(user, pass);
-            if (loginOk) {
-                error.visible = false;
-                loggedIn()
-            } else {
-                error.visible = true;
-                error.text = qsTr("Could not log in");
+    Connections {
+        target: UserService
+        onIsLoggedInChanged: {
+            if (UserService.isLoggedIn) {
+                console.log("logged in")
             }
+        }
+    }
+
+    ColumnLayout {
+        anchors.fill: parent
+
+        RowLayout {
+            Text { text: qsTr("Host:") }
+            TextField {
+                id: host
+                text: "localhost"
+            }
+            Text { text: qsTr("Port:") }
+            SpinBox {
+                id: port
+                stepSize: 1
+                from: 0
+                to: 65535
+                value: 8080
+                editable: true
+                textFromValue: function(value, locale) { return Number(value).toString(); }
+            }
+            CheckBox {
+                id: secure
+                checked: false
+                text: qsTr("Secure")
+            }
+            Button {
+                id: btnConnect
+                text: qsTr("&Connect");
+                onClicked: ClientController.connectToServer(host.text, port.value, secure.checked)
+            }
+        }
+
+        RowLayout {
+            Text { text: qsTr("Username:") }
+            TextField {
+                id: username
+            }
+            Text { text: qsTr("Password:") }
+            TextField {
+                id: password
+                echoMode: TextInput.Password
+            }
+            Button {
+                id: btnLogin
+                text: qsTr("Login");
+                onClicked: UserService.login(username.text, password.text)
+            }
+        }
+        Label {
+            id: error
+            color: "#FF0000"
+            visible: false
+        }
+
+        Text {
+            id: spacer
+            text: ""
+            Layout.fillHeight: true
         }
     }
 }

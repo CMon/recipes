@@ -1,11 +1,14 @@
-import QtQuick 2.4
-import QtQuick.Controls 1.3
-import QtQuick.Window 2.2
-import QtQuick.Dialogs 1.2
+import QtQuick 2.7
+import QtQuick.Controls 1.4
+import QtQuick.Controls 2.3
+import QtQuick.Layouts 1.0
+import QtQuick.Window 2.12
+
+import CMon.ClientController 1.0
 
 ApplicationWindow {
     id: appWindow
-    title: qsTr("Hello World")
+    title: qsTr("Recipes Client")
     width: 640
     height: 480
     visible: true
@@ -22,7 +25,7 @@ ApplicationWindow {
 
     StackView {
         id: stackView
-        anchors.centerIn: parent
+        anchors.fill: parent
         initialItem: Login { onLoggedIn: /*stackView.push(Qt.resolvedUrl("StartPage.qml"))*/ console.log("go to start page") }
         focus: true
         Keys.onReleased: {
@@ -33,5 +36,9 @@ ApplicationWindow {
                 }
             }
         }
+    }
+
+    footer: Text {
+        text: ClientController.status
     }
 }
