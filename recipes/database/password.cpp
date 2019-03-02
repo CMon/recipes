@@ -10,6 +10,19 @@
 #include <botan/auto_rng.h>
 #endif
 
+QString Password::getRandomPassword()
+{
+	static const int pwLength = 14;
+
+	QString str;
+	str.resize(pwLength);
+	for (int c = 0; c < pwLength ; ++c) {
+		str[c] = QChar('A' + char(QRandomGenerator::global()->generate() % ('Z' - 'A')));
+	}
+
+	return str;
+}
+
 QByteArray Password::hashPassword(const QString & password, QString & usedCrypto)
 {
 #ifdef WITH_BOTAN

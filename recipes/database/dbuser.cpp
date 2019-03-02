@@ -63,6 +63,10 @@ bool addUser(const User & user, QString password)
 	TRANSACTION(ta);
 	QSqlQuery query(ta.db);
 
+	if (password.isEmpty()) {
+		password = Password::getRandomPassword();
+	}
+
 	qInfo() << "Adding new user:" << user.getLogin();
 	query.prepare(
 	            "INSERT INTO "
