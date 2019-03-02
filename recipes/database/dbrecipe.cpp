@@ -160,29 +160,28 @@ QList<Unit> DB::getUnits(const int & id)
 		query.bindValue(":id", id);
 	}
 
-	QList<Unit> retval;
-	if (!Database::executeQuery(query)) return retval;
+	if (!Database::executeQuery(query)) return QList<Unit>();
 
-	QHash<int, Unit> dummy;
+	QHash<int, Unit> retval;
 	while (query.next()) {
 		const int id = query.value(0).toInt();
 		const QLocale lang = QLocale(query.value(3).toString());
 
 		Unit unit;
-		if (dummy.contains(id)) {
-			unit = dummy.value(id);
+		if (retval.contains(id)) {
+			unit = retval.value(id);
 		} else {
 			unit = Unit(query.value(1).toInt(), query.value(2).toInt());
 		}
 		unit.updateAbbreviation(lang, query.value(4).toString());
 		unit.updateCompleteName(lang, query.value(5).toString());
 
-		dummy.insert(id, unit);
+		retval.insert(id, unit);
 	}
 
 	ta.commit();
 
-	return dummy.values();
+	return retval.values();
 }
 
 // categories
@@ -312,28 +311,26 @@ QList<Category> DB::getCategories(const int & id)
 		query.bindValue(":id", id);
 	}
 
-	QList<Category> retval;
-	if (!Database::executeQuery(query)) return retval;
+	if (!Database::executeQuery(query)) return QList<Category>();
 
-	QHash<int, Category> dummy;
+	QHash<int, Category> retval;
 	while (query.next()) {
 		const int id = query.value(0).toInt();
 		const QLocale lang = QLocale(query.value(2).toString());
 
 		Category category;
-		if (dummy.contains(id)) {
-			category = dummy.value(id);
+		if (retval.contains(id)) {
+			category = retval.value(id);
 		} else {
 			category = Category(query.value(1).toBool());
 		}
 		category.updateName(lang, query.value(3).toString());
 
-		dummy.insert(id, category);
+		retval.insert(id, category);
 	}
 
 	ta.commit();
-
-	return dummy.values();
+	return retval.values();
 }
 
 // Ingridients
@@ -470,29 +467,28 @@ QList<Ingredient> DB::getIngredients(const int & id)
 		query.bindValue(":id", id);
 	}
 
-	QList<Ingredient> retval;
-	if (!Database::executeQuery(query)) return retval;
+	if (!Database::executeQuery(query)) return QList<Ingredient>();
 
-	QHash<int, Ingredient> dummy;
+	QHash<int, Ingredient> retval;
 	while (query.next()) {
 		const int id = query.value(0).toInt();
 		const QLocale lang = QLocale(query.value(5).toString());
 
 		Ingredient ingredient;
-		if (dummy.contains(id)) {
-			ingredient = dummy.value(id);
+		if (retval.contains(id)) {
+			ingredient = retval.value(id);
 		} else {
 			ingredient = Ingredient(query.value(2).toBool(), query.value(3).toBool(), query.value(4).toBool());
 			ingredient.setFoodCategory(DB::getCategories(query.value(1).toInt()).first());
 		}
 		ingredient.updateName(lang, query.value(6).toString());
 
-		dummy.insert(id, ingredient);
+		retval.insert(id, ingredient);
 	}
 
 	ta.commit();
 
-	return dummy.values();
+	return retval.values();
 }
 
 // portions
@@ -598,28 +594,27 @@ QList<Portion> DB::getPortions(const int & id)
 		query.bindValue(":id", id);
 	}
 
-	QList<Portion> retval;
-	if (!Database::executeQuery(query)) return retval;
+	if (!Database::executeQuery(query)) return QList<Portion>();
 
-	QHash<int, Portion> dummy;
+	QHash<int, Portion> retval;
 	while (query.next()) {
 		const int id = query.value(0).toInt();
 		const QLocale lang = QLocale(query.value(1).toString());
 
 		Portion portion;
-		if (dummy.contains(id)) {
-			portion = dummy.value(id);
+		if (retval.contains(id)) {
+			portion = retval.value(id);
 		} else {
 			portion = Portion();
 		}
 		portion.updateDescriptions(lang, query.value(2).toString());
 
-		dummy.insert(id, portion);
+		retval.insert(id, portion);
 	}
 
 	ta.commit();
+	return retval.values();
 
-	return dummy.values();
 }
 
 // recipes
