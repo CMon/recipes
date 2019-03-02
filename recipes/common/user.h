@@ -32,7 +32,8 @@ public:
 
 	bool isNull() const;
 	bool hasPermission(const Permissions::Permission & permission) const;
-	bool isValid() const;
+	bool isValidForServer() const;
+	bool isValidForClient() const;
 
 	QString toString() const;
 

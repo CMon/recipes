@@ -7,10 +7,10 @@ Recipe::Recipe()
 bool Recipe::isValid() const
 {
 	return
-	        creatingUser.isValid()    &&
-	        !portion.isNull()         &&
-	        (title.size() != 0)       &&
-	        (description.size() != 0) &&
+	        creatingUser.isValidForClient() &&
+	        !portion.isNull()               &&
+	        (title.size() != 0)             &&
+	        (description.size() != 0)       &&
 	        !ingredients.isEmpty();
 }
 

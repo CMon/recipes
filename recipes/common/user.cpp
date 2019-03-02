@@ -24,9 +24,14 @@ bool User::hasPermission(const Permissions::Permission &permission) const
 	return permissions_.hasPermission(permission);
 }
 
-bool User::isValid() const
+bool User::isValidForServer() const
 {
 	return id_.isValid() && !login_.isEmpty();
+}
+
+bool User::isValidForClient() const
+{
+	return !login_.isEmpty();
 }
 
 QString User::toString() const
