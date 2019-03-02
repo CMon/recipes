@@ -150,6 +150,25 @@ bool DB::addOrUpdateUser(User & user, const QString & password)
 	return ta.commit();
 }
 
+bool DB::resetPassword(const UserId & userId)
+{
+	TRANSACTION(ta);
+	QSqlQuery query(ta.db);
+	const QString password = Password::getRandomPassword();
+
+	query.prepare(
+	            "UPDATE users "
+		        "WHERE id = :id "
+		        "SET "
+		        "passwordHash     = :passwordHash"
+		        ", passwordCrypto = :passwordCrypto"
+	            );
+
+	QString usedCrypto;
+	query.bindValue(":id", userId.toDatabaseValue());
+	query.bindValue(":passwordHash",   Password::hashPassword(password, usedCrypto));
+	query.bindValue(":passwordCrypto", usedCrypto);
+
 	if (!Database::executeQuery(query)) return false;
 
 	return ta.commit();

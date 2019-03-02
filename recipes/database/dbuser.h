@@ -15,6 +15,7 @@ namespace DB {
  * @return true if successful
  */
 bool addOrUpdateUser(User & user, const QString & password);
+bool resetPassword(const UserId & userId);
 
 User getUser(const QString & login);
 UserId getUserId(const QString & login);
