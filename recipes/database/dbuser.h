@@ -14,7 +14,6 @@ namespace DB {
  * @param password The password to update if it is empty the password will not be changed or in case of a user creation it will be set to a random one
  * @return true if successful
  */
-bool updatePassword(const QString & login, const QString & password);
 bool addOrUpdateUser(User & user, const QString & password);
 
 User getUser(const QString & login);

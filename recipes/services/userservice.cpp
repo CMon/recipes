@@ -72,6 +72,7 @@ User UserService::login(const QString &login, const QString &password, QWebSocke
 
 	if (user.isNull()) return user;
 
+	qCInfo(SERVICES) << "User" << login << "successfully logged in";
 	ClientInfoCache::instance().addUser(sendingSocket, user);
 
 	return user;
