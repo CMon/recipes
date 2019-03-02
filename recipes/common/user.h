@@ -28,7 +28,7 @@ class User
 {
 public:
 	User();
-	User(const UserId & id, const QString & login, const Permissions & permissions, const QString & firstName, const QString & lastName, bool isDeleted);
+	User(const QString & login, const Permissions & permissions, const QString & firstName, const QString & lastName, bool isDeleted);
 
 	bool isNull() const;
 	bool hasPermission(const Permissions::Permission & permission) const;
@@ -53,6 +53,9 @@ public:
 		   cereal::make_nvp("lastName", lastName_),
 		   cereal::make_nvp("isDeleted", isDeleted_));
 	}
+
+	UserId getId() const;
+	void setId(const UserId & id);
 
 private:
 	UserId id_; // do not serialize

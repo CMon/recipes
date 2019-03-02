@@ -82,11 +82,11 @@ void UserService::logout(QWebSocket * client)
 	ClientInfoCache::instance().removeUser(client);
 }
 
-bool UserService::addUser(const User & user, QString password, QWebSocket * sendingSocket)
+bool UserService::addUser(User user, QString password, QWebSocket * sendingSocket)
 {
 	const User currentUser = ClientInfoCache::instance().getUser(sendingSocket);
 
-	if (!currentUser.hasPermission(Permissions::Admin)) {
+	if (!currentUser.hasPermission(Permissions::Administrator)) {
 		qCWarning(SERVICES) << "permission not sufficient for user:" << currentUser.toString();
 		return false;
 	}
@@ -106,14 +106,14 @@ bool UserService::addUser(const User & user, QString password, QWebSocket * send
 		password = QUuid::createUuid().toString().left(8);
 	}
 
-	return DB::updateUser(user, password);
+	return DB::addOrUpdateUser(user, password);
 }
 
 QList<User> UserService::getUsers(QWebSocket * sendingSocket)
 {
 	const User currentUser = ClientInfoCache::instance().getUser(sendingSocket);
 
-	if (!currentUser.hasPermission(Permissions::Admin)) {
+	if (!currentUser.hasPermission(Permissions::Administrator)) {
 		qCWarning(SERVICES) << "permission not sufficient for user:" << currentUser.toString();
 		return QList<User>();
 	}

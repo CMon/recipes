@@ -15,7 +15,7 @@ public:
 public: // rpc methods
 	User login(const QString & login, const QString & password, QWebSocket * sendingSocket);
 	void logout(QWebSocket * client);
-	bool addUser(const User & login, QString password, QWebSocket * sendingSocket);
+	bool addUser(User login, QString password, QWebSocket * sendingSocket);
 	QList<User> getUsers(QWebSocket * sendingSocket);
 
 private slots:

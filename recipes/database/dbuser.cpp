@@ -6,18 +6,71 @@
 
 #include <QSqlQuery>
 
-bool DB::updateUser(const User & user, const QString password)
+bool updatePermissions(const UserId & userId, const Permissions & perms)
+{
+	TRANSACTION(ta);
+	QSqlQuery removeQuery(ta.db);
+	removeQuery.prepare(
+	            "DELETE FROM "
+	                "userPermission "
+	            "WHERE "
+	                "userId = :userId"
+	            );
+	removeQuery.bindValue(":userId", userId.toDatabaseValue());
+	Database::executeQuery(removeQuery);
+
+	QSqlQuery query(ta.db);
+	query.prepare(
+	            "INSERT INTO "
+	                "userPermission "
+	            "("
+	                "userId, permissionId"
+	            ") VALUES ("
+	                ":userId, :permissionId"
+	            ")"
+	            );
+
+	for (int perm: perms) {
+		query.bindValue(":userId",       userId.toDatabaseValue());
+		query.bindValue(":permissionId", perm);
+
+		if (!Database::executeQuery(query)) return false;
+	}
+
+	return ta.commit();
+}
+
+bool getPermissions(const UserId & userId, Permissions & perms)
+{
+	TRANSACTION(ta);
+	perms = Permissions();
+	QSqlQuery query(ta.db);
+
+	query.prepare("SELECT permissionId from userPermission WHERE userId = :userId");
+	query.bindValue(":userId", userId.toDatabaseValue());
+
+	if (!Database::executeQuery(query)) return false;
+
+	while (query.next()) {
+		perms.addPermission(Permissions::Permission(query.value(0).toInt()));
+	}
+	if (!ta.commit()) return false;
+	return true;
+}
+
+bool addUser(const User & user, QString password)
 {
 	TRANSACTION(ta);
 	QSqlQuery query(ta.db);
 
+	qInfo() << "Adding new user:" << user.getLogin();
 	query.prepare(
 	            "INSERT INTO "
 	                "users "
 	            "("
-	                "login, firstName, lastName, passwordHash, passwordCrypto, permissions, isDeleted"
+	                "login, firstName, lastName, passwordHash, passwordCrypto, isDeleted"
 	            ") VALUES ("
-	                ":login, :firstName, :lastName, :passwordHash, :passwordCrypto, :permissions, :isDeleted"
+	                ":login, :firstName, :lastName, :passwordHash, :passwordCrypto, :isDeleted"
 	            ")"
 	            );
 
@@ -27,8 +80,33 @@ bool DB::updateUser(const User & user, const QString password)
 	QString usedCrypto;
 	query.bindValue(":passwordHash",   Password::hashPassword(password, usedCrypto));
 	query.bindValue(":passwordCrypto", usedCrypto);
-	query.bindValue(":permissions",  uint(user.getPermissions()));
 	query.bindValue(":isDeleted",    false);
+
+	if (!Database::executeQuery(query)) return false;
+	return ta.commit();
+}
+
+bool DB::addOrUpdateUser(User & user, const QString & password)
+{
+	TRANSACTION(ta);
+	QSqlQuery query(ta.db);
+
+	UserId userId = DB::getUserId(user.getLogin());
+	if (!userId.isValid()) {
+		if (!addUser(user, password)) return false;
+		userId = DB::getUserId(user.getLogin());
+		user.setId(userId);
+	}
+
+	if (!userId.isValid()) {
+		qInfo() << "Some error occured during changing the user with the login:" << user.getLogin();
+		return false;
+	}
+
+	if (!updatePermissions(userId, user.getPermissions())) return false;
+
+	return ta.commit();
+}
 
 	if (!Database::executeQuery(query)) return false;
 
@@ -42,7 +120,7 @@ User DB::getUser(const QString & login)
 
 	query.prepare(
 	            "SELECT "
-	                "id, login, permissions, firstName, lastName, isDeleted "
+	                "id, login, firstName, lastName, isDeleted "
 	            "FROM "
 	                "users "
 	            "WHERE "
@@ -56,14 +134,20 @@ User DB::getUser(const QString & login)
 		return User();
 	}
 
-	User user(
-	            UserId(query.value(0).toInt()),
-	            query.value(1).toString(),
-	            Permissions(query.value(2).toUInt()),
-	            query.value(3).toString(),
-	            query.value(4).toString(),
-	            query.value(5).toBool()
-	            );
+	const UserId userId = query.value(0).toInt();
+
+	Permissions perms;
+	if (!getPermissions(userId, perms)) return User();
+
+	User user(query.value(1).toString(),
+	          perms,
+	          query.value(2).toString(),
+	          query.value(3).toString(),
+	          query.value(4).toBool()
+	          );
+	user.setId(userId);
+
+	if (!ta.commit()) return User();
 
 	return user;
 }
@@ -102,7 +186,7 @@ QList<User> DB::getAllUsers(const int & id)
 
 	QString queryStr =
 	            "SELECT "
-	                "id, login, permissions, firstName, lastName, isDeleted "
+	                "id, login, firstName, lastName, isDeleted "
 	            "FROM "
 	                "users ";
 	if (id != -1) {
@@ -120,14 +204,18 @@ QList<User> DB::getAllUsers(const int & id)
 
 	QList<User> retval;
 	while (query.next()) {
-		User user(
-		            UserId(query.value(0).toInt()),
-		            query.value(1).toString(),
-		            Permissions(query.value(2).toUInt()),
-		            query.value(3).toString(),
-		            query.value(4).toString(),
-		            query.value(5).toBool()
-		            );
+		const UserId userId = query.value(0).toInt();
+
+		Permissions perms;
+		if (!getPermissions(userId, perms)) continue;
+
+		User user(query.value(1).toString(),
+		          perms,
+		          query.value(2).toString(),
+		          query.value(3).toString(),
+		          query.value(4).toBool()
+		          );
+		user.setId(userId);
 
 		retval << user;
 	}

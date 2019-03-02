@@ -1,15 +1,39 @@
+--------------------------
+-- scheme version 1     --
+--------------------------
+
 CREATE TABLE `users` (
     `id`             BIGINT(11) NOT NULL AUTO_INCREMENT,
     `login`          VARCHAR(255) NOT NULL,
     `passwordHash`   VARCHAR(255) NOT NULL,
     `passwordCrypto` VARCHAR(255) NOT NULL,
-    `permissions`  INT(10) unsigned NOT NULL,
     `firstName`      VARCHAR(255) DEFAULT NULL,
     `lastName`       VARCHAR(255) DEFAULT NULL,
     `isDeleted`      TINYINT(3) DEFAULT 1,
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `permission` (
+    `id`       INT(10) NOT NULL,
+    `techName` VARCHAR(255) NOT NULL,
     PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `permission_i18n` (
+    `permissionId` INT(11) NOT NULL,
+    `language`     VARCHAR(255) NOT NULL,
+    `title`        VARCHAR(255) DEFAULT NULL,
+    `description`  TEXT DEFAULT NULL,
+    PRIMARY KEY (`permissionId`, `language`),
+    CONSTRAINT `permission_i18n_key1` FOREIGN KEY (`permissionId`) REFERENCES `permission` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `userPermission` (
+    `userId`       BIGINT(11) NOT NULL,
+    `permissionId` INT(10) NOT NULL,
+    PRIMARY KEY (`userId`, `permissionId`),
+    CONSTRAINT `userPermission_key1` FOREIGN KEY (`userId`) REFERENCES `users` (`id`),
+    CONSTRAINT `userPermission_key2` FOREIGN KEY (`permissionId`) REFERENCES `permission` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
@@ -128,3 +152,9 @@ CREATE TABLE `receiptToCategory` (
     CONSTRAINT `receiptToCategory_key1` FOREIGN KEY (`recipeId`) REFERENCES `recipes` (`id`),
     CONSTRAINT `receiptToCategory_key2` FOREIGN KEY (`categoryId`) REFERENCES `categories` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--------------------------
+-- scheme version 2     --
+--------------------------
+
+INSERT INTO permission(`id`, `techName`) VALUES(1, 'admin');

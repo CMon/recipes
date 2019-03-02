@@ -5,13 +5,12 @@ User::User()
 {
 }
 
-User::User(const UserId &id, const QString &login, const Permissions &permissions, const QString &firstName, const QString &lastName, bool isDeleted)
-    : id_(id),
-      login_(login),
-      permissions_(permissions),
-      firstName_(firstName),
-      lastName_(lastName),
-      isDeleted_(isDeleted)
+User::User(const QString &login, const Permissions &permissions, const QString &firstName, const QString &lastName, bool isDeleted)
+    : login_(login)
+    , permissions_(permissions)
+    , firstName_(firstName)
+    , lastName_(lastName)
+    , isDeleted_(isDeleted)
 {
 }
 
@@ -49,4 +48,14 @@ bool User::operator ==(const User & rhs) const
 bool User::operator !=(const User & rhs) const
 {
 	return !operator ==(rhs);
+}
+
+UserId User::getId() const
+{
+	return id_;
+}
+
+void User::setId(const UserId & id)
+{
+	id_ = id;
 }
