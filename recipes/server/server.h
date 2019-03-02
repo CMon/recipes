@@ -16,6 +16,7 @@ public:
 
 	void init();
 	QList<QPair<QString, QString> > availableServiceMethods();
+	bool updateDatabase();
 
 	bool start();
 

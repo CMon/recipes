@@ -8,13 +8,17 @@ find_package(Qt5Core CONFIG REQUIRED)
 find_package(Qt5WebSockets CONFIG REQUIRED)
 find_package(Qt5Sql CONFIG REQUIRED)
 
+qt5_add_resources(QT_RESOURCES
+    ../../database.qrc
+)
+
 set(SOURCES
     main.cpp
     server.cpp
     server.h
 )
 
-add_executable(${TARGET_NAME} ${SOURCES})
+add_executable(${TARGET_NAME} ${SOURCES} ${QT_RESOURCES})
 
 target_link_libraries(${TARGET_NAME}
     Qt5::Core

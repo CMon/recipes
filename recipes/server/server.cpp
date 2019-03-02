@@ -29,6 +29,18 @@ QList<QPair<QString, QString>> Server::availableServiceMethods()
 	return rpcServer_.availableServiceMethods();
 }
 
+bool Server::updateDatabase()
+{
+	Migrator mig(dbName_, dbUser_, dbPass_);
+
+	if (!mig.update(":/database/db_scheme.sql")) {
+		qCritical() << "Update of database failed";
+		return false;
+	}
+
+	return true;
+}
+
 bool Server::start()
 {
 	return rpcServer_.start();

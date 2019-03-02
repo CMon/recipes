@@ -47,6 +47,13 @@ int main(int argc, char ** argv)
 		return 0;
 	}
 
+	qDebug () << "Checking database version";
+	if (!server.updateDatabase())
+	{
+		qCritical() << "Could not update database to newest version, aborting";
+		return -1;
+	}
+
 	qDebug () << "Starting server";
 	if (!server.start()) {
 		qCritical() << "Could not start server";
