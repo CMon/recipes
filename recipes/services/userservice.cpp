@@ -32,7 +32,7 @@ void UserService::registerMethods(RPCServer * server)
 		const User user = login(username, password, sendingSocket);
 
 		QJsonValue retval;
-		CEREAL_2_DEST(retval, "units", getUsers(sendingSocket));
+		CEREAL_2_DEST(retval, "units", user);
 		return retval;
 	}, "Login a user to the system" );
 
