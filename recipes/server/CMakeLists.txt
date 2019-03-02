@@ -10,6 +10,8 @@ find_package(Qt5Sql CONFIG REQUIRED)
 
 set(SOURCES
     main.cpp
+    server.cpp
+    server.h
 )
 
 add_executable(${TARGET_NAME} ${SOURCES})

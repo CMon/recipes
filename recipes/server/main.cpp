@@ -1,17 +1,11 @@
 #include <QCoreApplication>
 
 #include <recipes/common/log.h>
-#include <recipes/servercommon/clientinfocache.h>
-#include <recipes/services/userservice.h>
-#include <recipes/services/recipeservice.h>
-#include <recipes/database/database.h>
-
-#include <rpclib/server/rpcserver.h>
+#include <recipes/server/server.h>
 
 #include <QCommandLineOption>
 #include <QCommandLineParser>
 #include <QLoggingCategory>
-#include <QHostAddress>
 
 Q_DECLARE_LOGGING_CATEGORY(RECIPE_SERVER)
 Q_LOGGING_CATEGORY(RECIPE_SERVER, "recipe.server")
@@ -42,27 +36,21 @@ int main(int argc, char ** argv)
 		RecipeLog::initFile(QString("%1.log").arg(argv[0]));
 		qInstallMessageHandler(RecipeLog::fileMessageHandler);
 	}
-	Database::setCredentials("recipes", "root", "sql");
 
-	const int port = 8080;
-	const QHostAddress listenOn = QHostAddress::Any;
-	RPCServer rpcServer(listenOn, port);
-
-	UserService userService;
-	userService.registerMethods(&rpcServer);
-	RecipeService recipeService;
-	recipeService.registerMethods(&rpcServer);
+	Server server;
+	server.init();
 
 	if (argParser.isSet(listServiceMethods)) {
-		for (const QPair<QString,QString> & method: rpcServer.availableServiceMethods()) {
+		for (const QPair<QString,QString> & method: server.availableServiceMethods()) {
 			qDebug() << method.first << method.second;
 		}
 		return 0;
 	}
 
 	qDebug () << "Starting server";
-	if (!rpcServer.start()) {
+	if (!server.start()) {
 		qCritical() << "Could not start server";
+		return -1;
 	}
 
 	return app.exec();
