@@ -19,6 +19,8 @@ public:
 	bool updateDatabase();
 
 	bool start();
+	void stop();
+	bool isRunning() const;
 
 private:
 	void loadSettings();

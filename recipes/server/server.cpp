@@ -46,6 +46,16 @@ bool Server::start()
 	return rpcServer_.start();
 }
 
+void Server::stop()
+{
+	rpcServer_.stop();
+}
+
+bool Server::isRunning() const
+{
+	return rpcServer_.isRunning();
+}
+
 void Server::loadSettings()
 {
 	const QSettings settings(SETTING_ORGA_STRING, SETTING_APP_STRING);
