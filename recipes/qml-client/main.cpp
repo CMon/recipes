@@ -1,5 +1,6 @@
 #include <recipes/qml-client/clientcontroller.h>
 #include <recipes/qml-client/logcategory.h>
+#include <recipes/qml-client/recipesearchmodel.h>
 #include <recipes/qml-client/userserviceinterface.h>
 
 #include <rpclib/client/rpcclient.h>
@@ -27,7 +28,11 @@ int main(int argc, char *argv[])
 	});
 	engine.rootContext()->setContextProperty("UserService", &userService);
 
-	engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
+	RecipeSearchModel recipeSearchModel(Client.data());
+
+	engine.rootContext()->setContextProperty("recipeSearchModel", &recipeSearchModel);
+
+	engine.load(QUrl(QStringLiteral("qrc:/qml/main.qml")));
 
 	return app.exec();
 }

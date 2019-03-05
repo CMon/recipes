@@ -20,22 +20,42 @@ ClientController::ClientController(RPCClient * rpcClient, QObject * parent)
 	});
 }
 
-void ClientController::connectToServer(const QString & host, const quint16 port, const bool secure)
+bool ClientController::connectToServer(const QString url, const bool waitForConnected)
 {
 	if (rpcClient_->isConnected()) {
 		qCInfo(GUI_CLIENT_CC) << "Already connected not reconnecting";
-		return;
+		return true;
 	}
 
-	if (host.isEmpty()) return;
-
-	rpcClient_->setUrl(QString("%1://%2:%3").arg(secure ? "wss" : "ws").arg(host).arg(port));
+	rpcClient_->setUrl(url);
 	rpcClient_->connectToServer();
+
+	if(waitForConnected) {
+		return rpcClient_->waitForConnected();
+	} else {
+		return true;
+	}
+}
+
+bool ClientController::connectToServer(const QString & host, const quint16 port, const bool secure, const bool waitForConnected)
+{
+	if (host.isEmpty()) return false;
+
+	return connectToServer(QString("%1://%2:%3").arg(secure ? "wss" : "ws").arg(host).arg(port), waitForConnected);
 }
 
 QString ClientController::status() const
 {
 	return status_;
+}
+
+bool ClientController::isDebugBuild() const
+{
+#ifdef QT_DEBUG
+	return true;
+#else
+	return false;
+#endif
 }
 
 void ClientController::setStatus(QString status)

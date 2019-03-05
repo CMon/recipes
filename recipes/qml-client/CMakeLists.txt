@@ -13,6 +13,7 @@ find_package(Qt5Widgets CONFIG REQUIRED)
 
 qt5_add_resources(QT_RESOURCES
     qml.qrc
+    images.qrc
 )
 
 set(SOURCES
@@ -20,6 +21,8 @@ set(SOURCES
     clientcontroller.h
     logcategory.h
     main.cpp
+    recipesearchmodel.cpp
+    recipesearchmodel.h
     userserviceinterface.cpp
     userserviceinterface.h
 )

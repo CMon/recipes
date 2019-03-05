@@ -13,7 +13,9 @@ class ClientController : public QObject
 public:
 	explicit ClientController(RPCClient * rpcClient, QObject *parent = nullptr);
 
-	Q_INVOKABLE void connectToServer(const QString & host, const quint16 port, const bool secure);
+	Q_INVOKABLE bool connectToServer(const QString url, const bool waitForConnected);
+	Q_INVOKABLE bool connectToServer(const QString & host, const quint16 port, const bool secure, const bool waitForConnected);
+	Q_INVOKABLE bool isDebugBuild() const;
 
 	QString status() const;
 

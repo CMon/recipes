@@ -1,6 +1,11 @@
 <RCC>
     <qresource prefix="/">
-        <file>main.qml</file>
-        <file>Login.qml</file>
+        <file>qml/main.qml</file>
+        <file>qml/Login.qml</file>
+        <file>qml/createRecipe/CreateRecipe.qml</file>
+        <file>qml/StartPage.qml</file>
+        <file>qml/search/Search.qml</file>
+        <file>qml/search/RecipeListDelegate.qml</file>
+        <file>qml/ImageButton.qml</file>
     </qresource>
 </RCC>
