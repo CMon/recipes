@@ -14,8 +14,6 @@ qt5_add_resources(QT_RESOURCES
 
 set(SOURCES
     main.cpp
-    server.cpp
-    server.h
 )
 
 add_executable(${TARGET_NAME} ${SOURCES} ${QT_RESOURCES})

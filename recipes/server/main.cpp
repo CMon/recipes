@@ -3,7 +3,7 @@
 #include <recipes/common/log.h>
 #include <recipes/common/util.h>
 #include <recipes/database/password.h>
-#include <recipes/server/server.h>
+#include <recipes/servercommon/server.h>
 
 #include <QCommandLineOption>
 #include <QCommandLineParser>

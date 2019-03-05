@@ -3,13 +3,19 @@ set(LIB_NAME servercommon)
 include(GNUInstallDirs)
 set(CMAKE_AUTOMOC ON)
 find_package(Qt5Core CONFIG REQUIRED)
+find_package(Qt5WebSockets CONFIG REQUIRED)
+find_package(Qt5Sql CONFIG REQUIRED)
 
 add_library(${LIB_NAME} SHARED
     clientinfocache.cpp
     clientinfocache.h
+    server.cpp
+    server.h
 )
 target_link_libraries(${LIB_NAME}
     Qt5::Core
+    Qt5::WebSockets
+    Qt5::Sql
 )
 include_directories(
     ${CMAKE_SOURCE_DIR}/modules/rpclib/
