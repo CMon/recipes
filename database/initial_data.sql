@@ -1,4 +1,4 @@
-INSERT INTO users(`id`, `login`, `passwordHash`, `passwordCrypto`, `firstName`, `lastName`) VALUES(1, 'admin', 'hashHere', 'pwCryptoHere', 'Admin', 'User');
+INSERT INTO users(`id`, `login`, `passwordHash`, `passwordCrypto`, `firstName`, `lastName`) VALUES(1, 'admin', '$2a$12$gica7Dxxc.t.6h8FqcYOheB4KkmyfjHqS6QNPnmpMV8doF2iIWdcK', 'bcrypt', 'Admin', 'User');
 
 INSERT INTO units(`inGram`, `inMl`) VALUES(1, 1);
 INSERT INTO units_i18n(`unitId`, `language`, `abbreviation`, `completeName`) VALUES(1, 'de_DE', 'ml', 'mili Liter');
