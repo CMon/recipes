@@ -13,6 +13,9 @@ public:
 
 	QString & operator [](const QLocale & loc);
 	QString operator [](const QLocale & loc) const;
+	void add(const QLocale &loc, const QString & string);
+
+	const QString value(const QString &lang) const;
 	const QString value(const QLocale &key) const;
 	const QString value(const QLocale &key, const QString & defaultValue) const;
 

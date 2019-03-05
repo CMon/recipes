@@ -26,6 +26,16 @@ QString Locale2String::operator [](const QLocale & loc) const
 	return mapping_[loc];
 }
 
+void Locale2String::add(const QLocale & loc, const QString & string)
+{
+	mapping_[loc] = string;
+}
+
+const QString Locale2String::value(const QString & lang) const
+{
+	return mapping_.value(lang);
+}
+
 const QString Locale2String::value(const QLocale & key) const
 {
 	return mapping_.value(key);
