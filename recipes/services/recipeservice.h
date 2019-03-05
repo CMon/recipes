@@ -17,6 +17,7 @@ public:
 	void registerMethods(RPCServer * server);
 
 public: // rpc methods
+	QList<Recipe> searchRecipes(QWebSocket * sendingSocket, const QString & searchTerm);
 	void addUnit(const Unit & unit, QWebSocket * sendingSocket);
 	QList<Unit> getUnits(QWebSocket * sendingSocket);
 	void addPortion(const Portion & portion, QWebSocket * sendingSocket);

@@ -58,6 +58,29 @@ void RecipeService::registerMethods(RPCServer * server)
 
 		return retval;
 	}, "get a list of all available units from the server" );
+
+	server->addCallback("QList<Recipe> RecipeService::searchRecipes(QString)", [=] (std::stringstream & stream, QWebSocket * sendingSocket) {
+		cereal::JSONInputArchive archive(stream);
+
+		QString searchTerm;
+		archive(searchTerm);
+
+		QJsonValue retval;
+		CEREAL_2_DEST(retval, "recipes", searchRecipes(sendingSocket, searchTerm));
+
+		return retval;
+	}, "get a list of all available units from the server" );
+}
+
+QList<Recipe> RecipeService::searchRecipes(QWebSocket * sendingSocket, const QString & searchTerm)
+{
+	User currentUser = ClientInfoCache::instance().getUser(sendingSocket);
+	if (!currentUser.isValidForServer()) {
+		qWarning() << "rpc rejected because no valid user is logged in";
+		return QList<Recipe>();
+	}
+
+	return DB::getRecipes(searchTerm);
 }
 
 void RecipeService::addUnit(const Unit & unit, QWebSocket * sendingSocket)
