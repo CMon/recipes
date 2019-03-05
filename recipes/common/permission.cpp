@@ -28,3 +28,10 @@ void Permissions::removePermission(const Permissions::Permission & permission)
 {
 	perms_.remove(permission);
 }
+
+void Permissions::setAllPermissions()
+{
+	for (int i = FIRST_PERMISSION; i < LAST_PERMISSION; ++i) {
+		addPermission(Permission(i));
+	}
+}

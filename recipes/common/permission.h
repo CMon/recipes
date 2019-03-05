@@ -12,6 +12,10 @@ public:
 		Administrator = 1,
 	};
 
+private:
+	static const int FIRST_PERMISSION = Permission::Administrator;
+	static const int LAST_PERMISSION = Permission::Administrator;
+public:
 	Permissions();
 	Permissions(uint perms);
 
@@ -21,6 +25,7 @@ public:
 	bool hasPermission(const Permissions::Permission & permission) const;
 	void addPermission(const Permissions::Permission & permission);
 	void removePermission(const Permissions::Permission & permission);
+	void setAllPermissions();
 
 	template <class Archive>
 	void serialize(Archive & ar) {
