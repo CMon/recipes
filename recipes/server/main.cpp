@@ -12,6 +12,15 @@
 Q_DECLARE_LOGGING_CATEGORY(RECIPE_SERVER)
 Q_LOGGING_CATEGORY(RECIPE_SERVER, "recipe.server")
 
+/*
+ * TODO for server
+ *  - Add tests/systemtests
+ *  - Check logging, all should log to cateories
+ *
+ *  - Far future: allow different syncs:
+ *    - sync two recipes between two servers
+ */
+
 int main(int argc, char ** argv)
 {
 	QCoreApplication app(argc, argv);

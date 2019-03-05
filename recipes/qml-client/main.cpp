@@ -10,6 +10,17 @@
 
 static QScopedPointer<RPCClient> Client(new RPCClient()); // has to be global otherwise the singleton is unable to get it
 
+/*
+ * TODO for the client:
+ *  - Search in Ingredients, recipe titles and step descriptions
+ *  - Add Administration functions for the admin: User creation, User "deletion"
+ *  - Add a testuser that has all premissions within the testdata.sql. Give the admin a better password
+ *  - Add "Add recipe" logic
+ *  - Add "Change recipe" logic
+ *  - On disconnected from server, do not autoreconnect, but send the client back to the login page
+ *  - Hide add/change/admin buttons depending on user permissions
+ */
+
 int main(int argc, char *argv[])
 {
 	QApplication app(argc, argv);
