@@ -9,6 +9,8 @@ add_library(${LIB_NAME} SHARED
     category.h
     ingredient.cpp
     ingredient.h
+    instructionstep.cpp
+    instructionstep.h
     locale2string.cpp
     locale2string.h
     log.cpp

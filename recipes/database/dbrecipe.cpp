@@ -3,9 +3,10 @@
 #include <recipes/database/dbuser.h>
 #include <recipes/database/database.h>
 
-#include <QLocale>
 #include <QHash>
+#include <QLocale>
 #include <QUuid>
+#include <QVariantList>
 
 // units
 
@@ -614,7 +615,81 @@ QList<Portion> DB::getPortions(const int & id)
 
 	ta.commit();
 	return retval.values();
+}
 
+class Instructions
+{
+public:
+	void clear() { steps.clear(); }
+	void setPathToImg(quint8 pos, const QString & pathToImg) { steps[pos].setPicturePath(pathToImg); }
+	void addDescription(quint8 pos, const QString & lang, const QString & description) { steps[pos].getDescription().add(QLocale(lang), description); }
+	QList<InstructionStep> toList() const { return steps.values(); }
+private:
+	QMap<quint8, InstructionStep> steps;
+};
+
+bool getInstructionSteps(const int recipeId, Recipe & recipe)
+{
+	TRANSACTION(ta);
+	QSqlQuery query(ta.db);
+	query.prepare(
+	            "SELECT "
+	              "position, language, description, pathToImg "
+	            "FROM "
+	              "instructionStep "
+	            "WHERE "
+	              "recipeId = :recipeId"
+	            );
+	query.bindValue("recipeId", recipeId);
+
+	if (!Database::executeQuery(query)) return false;
+
+	Instructions steps;
+	while (query.next()) {
+		const quint8 position = quint8(query.value(0).toUInt());
+		steps.addDescription(position, query.value(1).toString(), query.value(2).toString());
+		steps.setPathToImg(position, query.value(3).toString());
+	}
+	recipe.setInstructionSteps(steps.toList());
+
+	return ta.commit();
+}
+
+bool setInstructionSteps(const int recipeId, const QList<InstructionStep> & steps)
+{
+	TRANSACTION(ta);
+	QSqlQuery queryRemoveOld(ta.db);
+	queryRemoveOld.prepare("DELETE FROM instructionStep WHERE recipeId = :recipeId");
+
+	if (!Database::executeQuery(queryRemoveOld)) return false;
+
+	QSqlQuery queryInsert(ta.db);
+	queryInsert.prepare(
+	            "INSERT INTO "
+	              "instructionStep "
+	            "("
+	              "recipeId, position, language, description, pathToImg "
+	            ") VALUES ("
+	              ":recipeId, :position, :language, :description, :pathToImg "
+	            ") "
+	            );
+
+	queryInsert.bindValue(":recipeId", recipeId);
+
+	for (const InstructionStep & step : steps) {
+		queryInsert.bindValue(":position", step.getPosition());
+		queryInsert.bindValue(":pathToImg", step.getPicturePath());
+
+		const Locale2String descriptions = step.getDescription();
+		for(const QLocale & locale: descriptions.keys()) {
+			queryInsert.bindValue(":language",    locale.name());
+			queryInsert.bindValue(":description", descriptions.value(locale));
+			if (!Database::executeQuery(queryInsert)) return false;
+		}
+	}
+
+	ta.commit();
+	return true;
 }
 
 // recipes
@@ -707,7 +782,7 @@ static void addOrUpdateRecipeTranslations(const int recipeId, const Recipe & rec
 	QSqlQuery query(ta.db);
 	query.prepare(
 	        "INSERT INTO "
-	          "recipes_i18n "
+	          "titles_i18n "
 	        "("
 	          "recipeId, language, title "
 	        ") VALUES ("
@@ -719,31 +794,10 @@ static void addOrUpdateRecipeTranslations(const int recipeId, const Recipe & rec
 
 	query.bindValue(":recipeId", recipeId);
 
-	const Locale2String titles = recipe.getTitles();
+	const Locale2String titles = recipe.getTitle();
 	foreach(const QLocale & locale, titles.keys()) {
 		query.bindValue(":language", locale.name());
 		query.bindValue(":title",    titles.value(locale));
-		Database::executeQuery(query);
-	}
-
-	query.prepare(
-	        "INSERT INTO "
-	          "recipes_i18n "
-	        "("
-	          "recipeId, language, description "
-	        ") VALUES ("
-	          ":recipeId, :language, :description "
-	        ") "
-	        "ON DUPLICATE KEY UPDATE "
-	          "description=VALUES(description) "
-	            );
-
-	query.bindValue(":recipeId", recipeId);
-
-	const Locale2String descriptions = recipe.getDescriptions();
-	foreach(const QLocale & locale, descriptions.keys()) {
-		query.bindValue(":language",    locale.name());
-		query.bindValue(":description", descriptions.value(locale));
 		Database::executeQuery(query);
 	}
 
@@ -853,20 +907,59 @@ static void getIngredients(const int recipeId, Recipe & recipe)
 	ta.commit();
 }
 
-QList<Recipe> DB::getRecipes()
+QList<Recipe> DB::getRecipes(const QString & searchTerm)
 {
 	TRANSACTION(ta);
 
+	// TODO: improve the searchtems by adding some kind of regexp searchTerm conversion
+
+	QSqlQuery titleSearch(ta.db);
+	titleSearch.prepare("SELECT recipeId FROM titles_i18n WHERE title LIKE :searchTerm");
+	titleSearch.bindValue(":searchTerm", "%" + searchTerm + "%");
+	if (!Database::executeQuery(titleSearch)) return QList<Recipe>();
+
+	QVariantList foundIds;
+	while(titleSearch.next()) {
+		foundIds << titleSearch.value(0).toInt();
+	}
+
+	QSqlQuery instructionStepSearch(ta.db);
+	instructionStepSearch.prepare("SELECT recipeId FROM instructionStep WHERE description LIKE :searchTerm");
+	instructionStepSearch.bindValue(":searchTerm", "%" + searchTerm + "%");
+	if (!Database::executeQuery(instructionStepSearch)) return QList<Recipe>();
+
+	while(instructionStepSearch.next()) {
+		foundIds << instructionStepSearch.value(0).toInt();
+	}
+
+	QList<Recipe> retval = getRecipes(foundIds);
+	ta.commit();
+	return retval;
+}
+
+QList<Recipe> DB::getRecipes(const QVariantList & recipeIdList)
+{
+	TRANSACTION(ta);
+
+	QString queryStr =
+	        "SELECT "
+	          "r.id, r.portionId, r.portionCount, r.createdByUserId, r.externId, "
+	          "i18n.language, i18n.title "
+	        "FROM "
+	          "recipes r, titles_i18n i18n "
+	        "WHERE "
+	          "r.id = i18n.recipeId";
+
+	if (!recipeIdList.isEmpty()) {
+		queryStr += " AND r.id in (:recipeIds)";
+	}
+
 	QSqlQuery query(ta.db);
-	query.prepare(
-	            "SELECT "
-	              "r.id, r.portionId, r.portionCount, r.createdByUserId, r.externId, "
-	              "i18n.language, i18n.title, i18n.description "
-	            "FROM "
-	              "recipes r, recipes_i18n i18n "
-	            "WHERE "
-	               "r.id = i18n.recipeId"
-	            );
+	query.prepare(queryStr);
+
+	if (!recipeIdList.isEmpty()) {
+		query.bindValue(":recipeIds", recipeIdList);
+	}
 
 	QList<Recipe> retval;
 	if (!Database::executeQuery(query)) return retval;
@@ -888,9 +981,9 @@ QList<Recipe> DB::getRecipes()
 			recipe.setCreatedByUser(users.first());
 			recipe.setExternId(query.value(4).toString());
 			getIngredients(recipeId, recipe);
+			getInstructionSteps(recipeId, recipe);
 		}
 		recipe.updateTitle(lang, query.value(6).toString());
-		recipe.updateDescription(lang, query.value(7).toString());
 
 		dummy.insert(recipeId, recipe);
 	}

@@ -10,18 +10,12 @@ bool Recipe::isValid() const
 	        creatingUser.isValidForClient() &&
 	        !portion.isNull()               &&
 	        (title.size() != 0)             &&
-	        (description.size() != 0)       &&
 	        !ingredients.isEmpty();
 }
 
 void Recipe::updateTitle(const QLocale & locale, const QString & title)
 {
 	this->title[locale] = title;
-}
-
-void Recipe::updateDescription(const QLocale & locale, const QString & description)
-{
-	this->description[locale] = description;
 }
 
 void Recipe::setPortion(const Portion & portion)
@@ -52,8 +46,7 @@ bool Recipe::operator ==(const Recipe & rhs) const
 	        portion      == rhs.portion      &&
 	        categories   == rhs.categories   &&
 	        title        == rhs.title        &&
-	        description  == rhs.description  &&
-	        imagePaths   == rhs.imagePaths   &&
+	        imagePath    == rhs.imagePath    &&
 	        ingredients  == rhs.ingredients
 	        ;
 }
@@ -74,9 +67,8 @@ QString Recipe::toString() const
 		retval += cat.toString() + " ";
 	}
 	retval +=
-	        "] title: [" + title.toString() + "] "
-	        "description: [" + description.toString() + "] "
-	        "imagePaths: [" + imagePaths.join(";") + "] "
+	        "] title: " + title.toString() + " "
+	        "imagePaths: " + imagePath + " "
 	        "ingredients: [";
 	foreach(const IngredientPOD & pod, ingredients) {
 		retval += pod.toString() + " ";
@@ -85,4 +77,24 @@ QString Recipe::toString() const
 
 	return retval;
 
+}
+
+QString Recipe::getImagePath() const
+{
+	return imagePath;
+}
+
+void Recipe::setImagePath(const QString & value)
+{
+	imagePath = value;
+}
+
+QList<InstructionStep> Recipe::getInstructionSteps() const
+{
+	return instructionSteps;
+}
+
+void Recipe::setInstructionSteps(const QList<InstructionStep> & value)
+{
+	instructionSteps = value;
 }

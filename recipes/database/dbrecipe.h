@@ -21,6 +21,7 @@ void addOrUpdatePortion(const Portion & portion);
 QList<Portion> getPortions(const int & id = -1);
 
 QString addOrUpdateRecipe(const Recipe & recipe);
-QList<Recipe> getRecipes();
+QList<Recipe> getRecipes(const QString & searchTerm);
+QList<Recipe> getRecipes(const QVariantList & recipeIdList = QVariantList());
 
 }

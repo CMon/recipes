@@ -2,6 +2,7 @@
 
 #include <recipes/common/category.h>
 #include <recipes/common/ingredient.h>
+#include <recipes/common/instructionstep.h>
 #include <recipes/common/portion.h>
 #include <recipes/common/user.h>
 #include <recipes/common/util.h>
@@ -23,9 +24,7 @@ public:
 	QString getExternId() const { return externId; }
 
 	void updateTitle(const QLocale & locale, const QString & title);
-	Locale2String getTitles() const { return title; }
-	void updateDescription(const QLocale & locale, const QString & description);
-	Locale2String getDescriptions() const { return description; }
+	Locale2String getTitle() const { return title; }
 
 	void setPortion(const Portion & portion);
 	Portion getPortion() const { return portion; }
@@ -41,6 +40,12 @@ public:
 
 	QString toString() const;
 
+	QString getImagePath() const;
+	void setImagePath(const QString & value);
+
+	QList<InstructionStep> getInstructionSteps() const;
+	void setInstructionSteps(const QList<InstructionStep> & value);
+
 	template <class Archive>
 	void serialize(Archive & ar) {
 		ar(cereal::make_nvp("externId", externId),
@@ -48,8 +53,7 @@ public:
 		   cereal::make_nvp("portion", portion),
 		   cereal::make_nvp("categories", categories),
 		   cereal::make_nvp("title", title),
-		   cereal::make_nvp("description", description),
-		   cereal::make_nvp("imagePaths", imagePaths),
+		   cereal::make_nvp("imagePath", imagePath),
 		   cereal::make_nvp("ingredients", ingredients)
 		   );
 	}
@@ -60,8 +64,8 @@ private:
 	Portion portion;
 	Categories categories;
 	Locale2String title;
-	Locale2String description;
-	QStringList imagePaths;
+	QString imagePath;
 	IngredientPODs ingredients;
+	QList<InstructionStep> instructionSteps;
 };
 CEREAL_CLASS_VERSION(Recipe, 1);

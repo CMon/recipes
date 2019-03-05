@@ -114,11 +114,10 @@ CREATE TABLE `recipes` (
     CONSTRAINT `recipes_key3` FOREIGN KEY (`createdByUserId`) REFERENCES `users` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE `recipes_i18n` (
+CREATE TABLE `titles_i18n` (
     `recipeId`    BIGINT(11) NOT NULL,
     `language`    VARCHAR(255) NOT NULL,
     `title`       VARCHAR(255) DEFAULT NULL,
-    `description` TEXT DEFAULT NULL,
     PRIMARY KEY (`recipeId`, `language`),
     CONSTRAINT `recipeTitle_i18n_key1` FOREIGN KEY (`recipeId`) REFERENCES `recipes` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -151,6 +150,16 @@ CREATE TABLE `receiptToCategory` (
     PRIMARY KEY (`recipeId`, `categoryId`),
     CONSTRAINT `receiptToCategory_key1` FOREIGN KEY (`recipeId`) REFERENCES `recipes` (`id`),
     CONSTRAINT `receiptToCategory_key2` FOREIGN KEY (`categoryId`) REFERENCES `categories` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `instructionStep` (
+    `recipeId`    BIGINT(11) NOT NULL,
+    `position`    INT(10) NOT NULL,
+    `language`    VARCHAR(255) NOT NULL,
+    `description` TEXT DEFAULT NULL,
+    `pathToImg`   VARCHAR(255) NOT NULL,
+    PRIMARY KEY (`recipeId`, `position`, `language`),
+    CONSTRAINT `instructionStep_key2` FOREIGN KEY (`recipeId`) REFERENCES `recipes` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --------------------------
