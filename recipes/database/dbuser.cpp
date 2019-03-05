@@ -233,6 +233,7 @@ bool DB::checkPassword(const QString &login, const QString &password)
 	if (!query.next()) {
 		return false;
 	}
+	if (!ta.commit()) return false;
 
 	if (!Password::checkPassword(password, query.value(0).toByteArray(), query.value(1).toString())) {
 		return false;
