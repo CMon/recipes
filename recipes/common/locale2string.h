@@ -8,12 +8,17 @@
 class Locale2String
 {
 public:
+	Locale2String();
+	Locale2String(const QLocale & loc, const QString & value);
+
 	bool operator ==(const Locale2String & rhs) const;
 	bool operator !=(const Locale2String & rhs) const;
 
 	QString & operator [](const QLocale & loc);
 	QString operator [](const QLocale & loc) const;
+	void add(const Locale2String & loc2s);
 	void add(const QLocale &loc, const QString & string);
+	bool contains(const QLocale & loc);
 
 	const QString value(const QString &lang) const;
 	const QString value(const QLocale &key) const;

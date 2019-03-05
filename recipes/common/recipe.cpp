@@ -89,6 +89,21 @@ void Recipe::setImagePath(const QString & value)
 	imagePath = value;
 }
 
+void Recipe::addInstructionStep(InstructionStep step)
+{
+	const quint8 position = step.getPosition();
+	if (position >= ingredients.size()) {
+		step.setPosition(static_cast<quint8>(ingredients.size()));
+		instructionSteps.append(step);
+	} else {
+		InstructionStep origStep = instructionSteps.at(position);
+		origStep.addDescription(step.getDescription());
+		if (!step.getPicturePath().isEmpty()) origStep.setPicturePath(step.getPicturePath());
+
+		instructionSteps.insert(position, origStep);
+	}
+}
+
 QList<InstructionStep> Recipe::getInstructionSteps() const
 {
 	return instructionSteps;

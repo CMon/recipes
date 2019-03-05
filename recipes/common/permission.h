@@ -17,7 +17,7 @@ private:
 	static const int LAST_PERMISSION = Permission::Administrator;
 public:
 	Permissions();
-	Permissions(uint perms);
+	Permissions(const Permission & perm);
 
 	bool operator==(const Permissions & rhs) const;
 	bool operator!=(const Permissions & rhs) const;

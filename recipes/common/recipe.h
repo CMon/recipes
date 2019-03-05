@@ -43,6 +43,15 @@ public:
 	QString getImagePath() const;
 	void setImagePath(const QString & value);
 
+	/**
+	 * @brief addInstructionStep
+	 * add an instruction, if the position of the step is larger then the actual amount of steps
+	 * it will be appended. if the position is one of the existing ones then the description will
+	 * replace extend the existing one
+	 *
+	 * @param step
+	 */
+	void addInstructionStep(InstructionStep step);
 	QList<InstructionStep> getInstructionSteps() const;
 	void setInstructionSteps(const QList<InstructionStep> & value);
 

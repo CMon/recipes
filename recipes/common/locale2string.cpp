@@ -5,6 +5,15 @@
 #include <QHashIterator>
 #include <QJsonObject>
 
+Locale2String::Locale2String()
+{
+}
+
+Locale2String::Locale2String(const QLocale & loc, const QString & value)
+{
+	mapping_[loc] = value;
+}
+
 bool Locale2String::operator ==(const Locale2String & rhs) const
 {
 	bool equal = mapping_.size() == rhs.mapping_.size();
@@ -26,9 +35,21 @@ QString Locale2String::operator [](const QLocale & loc) const
 	return mapping_[loc];
 }
 
+void Locale2String::add(const Locale2String & loc2s)
+{
+	for (const QLocale & key: loc2s.keys()) {
+		mapping_[key] = loc2s.value(key);
+	}
+}
+
 void Locale2String::add(const QLocale & loc, const QString & string)
 {
 	mapping_[loc] = string;
+}
+
+bool Locale2String::contains(const QLocale & loc)
+{
+	return mapping_.contains(loc);
 }
 
 const QString Locale2String::value(const QString & lang) const

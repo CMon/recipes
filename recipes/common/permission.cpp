@@ -4,6 +4,11 @@ Permissions::Permissions()
 {
 }
 
+Permissions::Permissions(const Permissions::Permission & perm)
+{
+	addPermission(perm);
+}
+
 bool Permissions::operator==(const Permissions & rhs) const
 {
 	return perms_ == rhs.perms_;

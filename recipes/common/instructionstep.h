@@ -11,6 +11,7 @@ class InstructionStep
 {
 public:
 	InstructionStep();
+	InstructionStep(quint8 position, const Locale2String & description, const QString & picturePath = QString());
 
 	quint8 getPosition() const;
 	void setPosition(const quint8 & value);
@@ -20,6 +21,7 @@ public:
 
 	Locale2String getDescription() const;
 	Locale2String & getDescription();
+	void addDescription(const Locale2String & value);
 	void setDescription(const Locale2String & value);
 
 	bool operator ==(const InstructionStep & rhs) const;

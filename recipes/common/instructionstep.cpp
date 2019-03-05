@@ -4,6 +4,13 @@ InstructionStep::InstructionStep()
 {
 }
 
+InstructionStep::InstructionStep(quint8 position, const Locale2String & description, const QString & picturePath)
+    : position(position)
+    , picturePath(picturePath)
+    , description(description)
+{
+}
+
 quint8 InstructionStep::getPosition() const
 {
 	return position;
@@ -32,6 +39,11 @@ Locale2String InstructionStep::getDescription() const
 Locale2String &InstructionStep::getDescription()
 {
 	return description;
+}
+
+void InstructionStep::addDescription(const Locale2String & value)
+{
+	description.add(value);
 }
 
 void InstructionStep::setDescription(const Locale2String & value)

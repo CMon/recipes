@@ -19,7 +19,7 @@ add_subdirectory(recipes)
 add_subdirectory(modules/rpclib/rpclib)
 
 if (BUILD_TEST)
-    add_subdirectory(tests)
+    add_subdirectory(test)
 endif(BUILD_TEST)
 
 set(DB_FILES
