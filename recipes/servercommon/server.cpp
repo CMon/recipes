@@ -48,6 +48,21 @@ bool Server::updateDatabase()
 	return true;
 }
 
+bool Server::insertTestData()
+{
+#ifndef NDEBUG
+	Migrator mig(dbName_, dbUser_, dbPass_);
+
+	if (!mig.update(":/database/test_data.sql")) {
+		qCritical() << "Update of database failed";
+		return false;
+	}
+	return true;
+#else
+	return false;
+#endif
+}
+
 bool Server::start()
 {
 	return rpcServer_.start();

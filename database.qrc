@@ -1,6 +1,6 @@
 <RCC>
     <qresource prefix="/">
         <file>database/db_scheme.sql</file>
-        <file>database/initial_data.sql</file>
+        <file>database/test_data.sql</file>
     </qresource>
 </RCC>

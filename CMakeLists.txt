@@ -25,7 +25,7 @@ endif(BUILD_TEST)
 set(DB_FILES
     doc/structure.md
     database/db_scheme.sql
-    database/initial_data.sql
+    database/test_data.sql
 )
 
 add_custom_target(databaseFiles SOURCES ${DB_FILES})

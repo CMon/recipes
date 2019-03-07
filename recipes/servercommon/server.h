@@ -20,6 +20,8 @@ public:
 	void setDbCredentials(const QString & databaseName, const QString & user, const QString & password);
 	bool updateDatabase();
 
+	bool insertTestData();
+
 	bool start();
 	void stop();
 	bool isRunning() const;

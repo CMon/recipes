@@ -50,12 +50,7 @@ bool TestServer::insertTestUsers()
 {
 	if (!isServerRunning()) return false;
 
-	// directly add users to table, because we do not have any to login and use the services
-	Permissions perms;
-	perms.setAllPermissions();
-	User fullUser = User("FullUser", perms, "Full", "User", false);
-
-	return DB::addOrUpdateUser(fullUser, "1234");
+	return server_.insertTestData();
 }
 
 static void resetDatabase()
