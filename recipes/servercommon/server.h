@@ -16,6 +16,8 @@ public:
 
 	void init();
 	QList<QPair<QString, QString> > availableServiceMethods();
+
+	void setDbCredentials(const QString & databaseName, const QString & user, const QString & password);
 	bool updateDatabase();
 
 	bool start();

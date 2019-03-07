@@ -29,6 +29,13 @@ QList<QPair<QString, QString>> Server::availableServiceMethods()
 	return rpcServer_.availableServiceMethods();
 }
 
+void Server::setDbCredentials(const QString & databaseName, const QString & user, const QString & password)
+{
+	dbName_ = databaseName;
+	dbUser_ = user;
+	dbPass_ = password;
+}
+
 bool Server::updateDatabase()
 {
 	Migrator mig(dbName_, dbUser_, dbPass_);
