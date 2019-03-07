@@ -304,8 +304,11 @@ UserId DB::getUserId(const QString & login)
 		return UserId();
 	}
 	if (!query.next()) {
+		ta.commit();
 		return UserId();
 	}
 
-	return UserId(query.value(0).toInt());
+	const UserId retval = UserId(query.value(0).toInt());
+	ta.commit();
+	return retval;
 }
