@@ -60,9 +60,7 @@ Migrator::Migrator(const QString & dbName,
 			return;
 		}
 
-		if (!db_.exec("CREATE TABLE `scheme_version` ( `" + versionField + "` INTEGER unsigned NOT NULL DEFAULT 0);").isActive()) {
-			qCritical() << "could not create table scheme_version";
-			db_.close();
+		if (!createSchemeVersionTable()) {
 			return;
 		}
 
@@ -81,8 +79,14 @@ bool Migrator::isLatestVersion(const QString & schema)
 	// get current version
 	QSqlQuery query = db_.exec("SELECT `" + versionField + "` FROM scheme_version LIMIT 1;");
 
-	if (!query.next()) qCritical() << "major database problem - unknown scheme_version of" << versionField << ". This might happen if you create the database by your own. Remove it and you are clear.";
-	oldDbVersion_ = query.value(0).toInt();
+	if (!query.next()) {
+		if (!createSchemeVersionTable()) {
+			return false;
+		}
+		oldDbVersion_ = -1;
+	} else {
+		oldDbVersion_ = query.value(0).toInt();
+	}
 
 	const QRegExp schemaRx("-- scheme version[^\\d]*(\\d+)");
 	newDbVersion_ = 0;
@@ -106,6 +110,16 @@ bool Migrator::isLatestVersion(const QString & schema)
 		return true;
 	}
 	return false;
+}
+
+bool Migrator::createSchemeVersionTable()
+{
+	if (!db_.exec("CREATE TABLE `scheme_version` ( `" + versionField + "` INTEGER unsigned NOT NULL DEFAULT 0);").isActive()) {
+		qCritical() << "could not create table scheme_version";
+		db_.close();
+		return false;
+	}
+	return true;
 }
 
 bool Migrator::update(const QString & schemeFilename)
