@@ -3,12 +3,10 @@
 #include <recipes/common/user.h>
 #include <recipes/database/dbrecipe.h>
 #include <recipes/database/dbuser.h>
-#include <test/testtostrings.h>
+#include <recipes/database/database.h>
+#include <recipes/database/migrator.h>
 
-#include <cflib/db/db.h>
-#include <cflib/util/test.h>
-
-USE_LOG(LogCat::Db) // needed by Transaction and other db methods from cflib
+#include <QSqlDatabase>
 
 namespace {
 	const QString databaseTestName = "recipes_database_test";
@@ -30,33 +28,27 @@ void DatabaseTest::initTestCase()
 {
 	resetDatabase();
 
-	cflib::util::Log::start(databaseTestName + ".log");
+	Database::setCredentials(databaseTestName, "root", "sql");
+	Migrator mig(databaseTestName, "root", "sql");
 
-	cflib::db::setParameter(databaseTestName, "root", "sql");
-
-	QFile file(":/database/db_scheme.sql");
-	QVERIFY(file.open(QIODevice::ReadOnly));
-
-	Transaction;
-	ta.db.exec(file.readAll());
-	ta.commit();
+	QVERIFY(mig.update(":/database/db_scheme.sql"));
 }
 
 void DatabaseTest::cleanupTestCase()
 {
-	cflib::db::closeDBConnection();
+	Database::closeThreadStoredDatabase();
 }
 
 void DatabaseTest::user_updateUser_getAllUsers()
 {
-	const User userToTest(-1, "user_updateUser_getAllUsers", Permissions(Permission::Admin), "first user_updateUser_getAllUsers", "last user_updateUser_getAllUsers", false);
+	User userToTest("user_updateUser_getAllUsers", Permissions(Permissions::Administrator), "first user_updateUser_getAllUsers", "last user_updateUser_getAllUsers", false);
 
-	QVERIFY(DB::updateUser(userToTest, "password"));
+	QVERIFY(DB::addOrUpdateUser(userToTest, "password"));
 
 	const QList<User> users = DB::getAllUsers();
 	QVERIFY(users.count() > 0);
 	QCOMPARE(users.first().getLogin(),     userToTest.getLogin());
-	QVERIFY(users.first().hasPermission(Permission::Admin));
+	QVERIFY(users.first().hasPermission(Permissions::Administrator));
 	QCOMPARE(users.first().getFirstName(), userToTest.getFirstName());
 	QCOMPARE(users.first().getLastName(),  userToTest.getLastName());
 	QCOMPARE(users.first().getIsDeleted(), userToTest.getIsDeleted());
@@ -64,13 +56,13 @@ void DatabaseTest::user_updateUser_getAllUsers()
 
 void DatabaseTest::user_updateUser_getUser()
 {
-	const User userToTest(-1, "user_updateUser_getUser", Permissions(Permission::Admin), "first user_updateUser_getUser", "last user_updateUser_getUser", false);
+	User userToTest("user_updateUser_getUser", Permissions(Permissions::Administrator), "first user_updateUser_getUser", "last user_updateUser_getUser", false);
 
-	QVERIFY(DB::updateUser(userToTest, "password"));
+	QVERIFY(DB::addOrUpdateUser(userToTest, "password"));
 
 	const User user = DB::getUser("user_updateUser_getUser");
 	QCOMPARE(user.getLogin(),     userToTest.getLogin());
-	QVERIFY(user.hasPermission(Permission::Admin));
+	QVERIFY(user.hasPermission(Permissions::Administrator));
 	QCOMPARE(user.getFirstName(), userToTest.getFirstName());
 	QCOMPARE(user.getLastName(),  userToTest.getLastName());
 	QCOMPARE(user.getIsDeleted(), userToTest.getIsDeleted());
@@ -78,8 +70,8 @@ void DatabaseTest::user_updateUser_getUser()
 
 void DatabaseTest::user_checkPassword()
 {
-	const User userToTest(-1, "user_checkPassword", Permissions(Permission::Admin), "first user_checkPassword", "last user_checkPassword", false);
-	QVERIFY(DB::updateUser(userToTest, "password"));
+	User userToTest("user_checkPassword", Permissions(Permissions::Administrator), "first user_checkPassword", "last user_checkPassword", false);
+	QVERIFY(DB::addOrUpdateUser(userToTest, "password"));
 
 	QVERIFY(DB::checkPassword("user_checkPassword", "password"));
 	QVERIFY(!DB::checkPassword("user_checkPassword", "hallo welt"));
@@ -268,8 +260,8 @@ void DatabaseTest::addOrUpdateRecipe_getRecipes()
 	portion.updateDescriptions(QLocale("de_DE"), "Schüssel");
 	DB::addOrUpdatePortion(portion);
 	portion.setCount(2);
-	const User dummy = User(-1, "addOrUpdateRecipe_getRecipes", Permissions(Permission::Admin), "first", "last", false);
-	QVERIFY(DB::updateUser(dummy, "password"));
+	User dummy = User("addOrUpdateRecipe_getRecipes", Permissions(Permissions::Administrator), "first", "last", false);
+	QVERIFY(DB::addOrUpdateUser(dummy, "password"));
 	const User user = DB::getUser("addOrUpdateRecipe_getRecipes");
 	Unit gram(1, 1);
 	gram.updateAbbreviation(QLocale("de_DE"), "gr");
@@ -290,7 +282,8 @@ void DatabaseTest::addOrUpdateRecipe_getRecipes()
 	recipe.addIngredient(5, gram, ingredient);
 	{
 		recipe.updateTitle(QLocale("de_DE"), "Schokokekse");
-		recipe.updateDescription(QLocale("de_DE"), "Kekse + Schokolade mischen und schon sinds Schokokekse");
+
+		recipe.addInstructionStep(InstructionStep(0xFF, Locale2String(QLocale("de_DE"), "Kekse + Schokolade mischen und schon sinds Schokokekse")));
 		QVERIFY2(recipe.isValid(), qPrintable(QString("Recipe invalid: %1").arg(recipe.toString())));
 
 		const QString externId = DB::addOrUpdateRecipe(recipe);
@@ -306,7 +299,7 @@ void DatabaseTest::addOrUpdateRecipe_getRecipes()
 	Recipe updatedRecipe = recipe;
 	{
 		updatedRecipe.updateTitle(QLocale("en_US"), "Chocolatecookies");
-		updatedRecipe.updateDescription(QLocale("en_US"), "Cookies + Choclate mix them and you get Chocolatecookies");
+		recipe.addInstructionStep(InstructionStep(0, Locale2String(QLocale("en_US"), "Cookies + Choclate mix them and you get Chocolatecookies")));
 		QVERIFY(recipe != updatedRecipe);
 
 		QVERIFY(!DB::addOrUpdateRecipe(updatedRecipe).isEmpty());
@@ -320,7 +313,7 @@ void DatabaseTest::addOrUpdateRecipe_getRecipes()
 	Recipe anotherRecipe;
 	{
 		anotherRecipe.updateTitle(QLocale("de_DE"), "Mett");
-		anotherRecipe.updateDescription(QLocale("de_DE"), "Fleisch in den Fleischwolf => Mett");
+		recipe.addInstructionStep(InstructionStep(0, Locale2String(QLocale("de_DE"), "Fleisch in den Fleischwolf => Mett")));
 		anotherRecipe.setCreatedByUser(user);
 		anotherRecipe.setPortion(portion);
 		anotherRecipe.addIngredient(12, gram, ingredient);
@@ -337,5 +330,5 @@ void DatabaseTest::addOrUpdateRecipe_getRecipes()
 	}
 }
 
+QTEST_MAIN(DatabaseTest)
 #include "moc_database_test.cpp"
-ADD_TEST(DatabaseTest)

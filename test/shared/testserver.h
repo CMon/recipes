@@ -1,8 +1,7 @@
 #pragma once
 
 #include <recipes/common/user.h>
-
-#include <cflib/net/httpserver.h>
+#include <recipes/servercommon/server.h>
 
 // Test globals
 extern User fullUser;
@@ -23,5 +22,5 @@ private:
 	void initTestDatabase(bool initDB);
 
 private:
-	cflib::net::HttpServer serv_;
+	Server server_;
 };
