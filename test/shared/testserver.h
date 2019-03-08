@@ -12,10 +12,10 @@ public:
 	TestServer();
 	~TestServer();
 
-	bool startServer(bool resetDatabase = false);
+	bool startServer(bool initDB);
 	void stopServer();
 
-	bool insertTestUsers();
+	bool insertTestData();
 
 private:
 	bool isServerRunning();

@@ -158,38 +158,26 @@ bool Migrator::update(const QString & schemeFilename)
 	return true;
 }
 
-bool Migrator::addTestData(const QString & testDataRef)
+bool Migrator::addTestData(const QString & filename)
 {
-	if (isInitialRun_) {
-		QString testData = testDataRef;
-		qDebug("inserting testdata into database");
+	QFile file(filename);
+	if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+		qWarning() << "Could not open testdata file:" << file.fileName();
+		return false;
+	}
 
-		foreach (QString queryStr, testData.remove(QRegExp("--[^\n]*")).split(';')) {
-			queryStr = queryStr.trimmed();
-			if (queryStr.isEmpty()) continue;
-			db_.exec(queryStr);
-			if (db_.lastError().isValid()) {
-				qCritical() << "could not add testdata";
-				qCritical() << "query was:" << queryStr;
-				return false;
-			}
+	QString testData = file.readAll();
+	qDebug("inserting testdata into database");
+
+	foreach (QString queryStr, testData.remove(QRegExp("--[^\n]*")).split(';')) {
+		queryStr = queryStr.trimmed();
+		if (queryStr.isEmpty()) continue;
+		db_.exec(queryStr);
+		if (db_.lastError().isValid()) {
+			qCritical() << "could not add testdata" << dbName_ << ":" << db_.lastError().text();
+			qCritical() << "query was:" << queryStr;
+			return false;
 		}
-	} else {
-		qWarning() << "testdata can only be added on initial run";
-		return false;
 	}
-
 	return true;
-}
-
-bool Migrator::addTestData(QFile testData)
-{
-	if (!testData.open(QIODevice::ReadOnly | QIODevice::Text)) {
-		qWarning() << "Could not open testdata file:" << testData.fileName();
-		return false;
-	}
-
-	const bool ok = addTestData(testData.readAll());
-	testData.close();
-	return ok;
 }

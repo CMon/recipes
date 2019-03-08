@@ -53,7 +53,7 @@ bool Server::insertTestData()
 #ifndef NDEBUG
 	Migrator mig(dbName_, dbUser_, dbPass_);
 
-	if (!mig.update(":/database/test_data.sql")) {
+	if (!mig.addTestData(":/database/test_data.sql")) {
 		qCritical() << "Update of database failed";
 		return false;
 	}

@@ -17,8 +17,8 @@ public:
 	         const QString & connName = "migrator");
 
 	bool update(const QString & schemeFilename);
-	bool addTestData(const QString & testDataRef);
-	bool addTestData(QFile testData);
+	bool addTestData(const QString & filename);
+	bool applyFileToDb(const QString & filename);
 
 private:
 	bool isLatestVersion(const QString & schema);

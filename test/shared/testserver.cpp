@@ -46,7 +46,7 @@ bool TestServer::isServerRunning()
 	return server_.isRunning();
 }
 
-bool TestServer::insertTestUsers()
+bool TestServer::insertTestData()
 {
 	if (!isServerRunning()) return false;
 
