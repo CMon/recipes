@@ -1,12 +1,12 @@
-#include <recipes/qml-client/clientcontroller.h>
-#include <recipes/qml-client/logcategory.h>
-#include <recipes/qml-client/recipesearchmodel.h>
-#include <recipes/qml-client/userserviceinterface.h>
+#include <recipes/clientcommon/clientcontroller.h>
+#include <recipes/clientcommon/recipesearchmodel.h>
+#include <recipes/clientcommon/userserviceinterface.h>
 
-#include <rpclib/client/rpcclient.h>
 #include <QApplication>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
+#include <recipes/common/log.h>
+#include <rpclib/client/rpcclient.h>
 
 static QScopedPointer<RPCClient> Client(new RPCClient()); // has to be global otherwise the singleton is unable to get it
 
@@ -27,7 +27,7 @@ int main(int argc, char *argv[])
 	app.setApplicationName("Recipe gui client");
 	qInstallMessageHandler(RecipeLog::consoleMessageHandler);
 
-	qCDebug(GUI_CLIENT) << "Started" << QCoreApplication::applicationName();
+	qDebug() << "Started" << QCoreApplication::applicationName();
 
 	UserServiceInterface userService(Client.data());
 

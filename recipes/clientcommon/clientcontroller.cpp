@@ -1,6 +1,6 @@
 #include "clientcontroller.h"
 
-#include <recipes/qml-client/logcategory.h>
+#include <recipes/clientcommon/logcategory.h>
 #include <rpclib/client/rpcclient.h>
 
 #include <QJsonObject>

@@ -1,14 +1,14 @@
 #include "userserviceinterface.h"
 
 #include <recipes/common/user.h>
-#include <recipes/qml-client/logcategory.h>
+#include <recipes/clientcommon/logcategory.h>
 
 #include <rpclib/client/rpcclient.h>
 #include <cereal/archives/json.hpp>
 #include <QJsonObject>
 #include <QJsonDocument>
 
-Q_LOGGING_CATEGORY(GUI_CLIENT, "client.services")
+Q_LOGGING_CATEGORY(GUI_CLIENT, "clientcommon.services")
 
 UserServiceInterface::UserServiceInterface(RPCClient * rpcClient, QObject * parent)
     : QObject(parent)

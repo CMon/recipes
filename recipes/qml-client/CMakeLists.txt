@@ -17,14 +17,7 @@ qt5_add_resources(QT_RESOURCES
 )
 
 set(SOURCES
-    clientcontroller.cpp
-    clientcontroller.h
-    logcategory.h
     main.cpp
-    recipesearchmodel.cpp
-    recipesearchmodel.h
-    userserviceinterface.cpp
-    userserviceinterface.h
 )
 
 add_executable(${TARGET_NAME} ${SOURCES} ${QT_RESOURCES})
@@ -37,6 +30,7 @@ target_link_libraries(${TARGET_NAME}
     Qt5::Widgets
     rpclib-client
     common
+    clientcommon
 )
 
 include_directories(
