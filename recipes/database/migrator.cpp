@@ -127,7 +127,7 @@ bool Migrator::update(const QString & schemeFilename)
 	QFile schemeFile(schemeFilename);
 
 	if (!schemeFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
-		qWarning() << "Could not open scheme file:" << schemeFile.fileName();
+		qWarning() << "Could not open scheme file:" << schemeFile.fileName() << schemeFile.errorString();
 		return false;
 	}
 
