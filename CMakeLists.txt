@@ -5,11 +5,16 @@ option(BUILD_CLIENT "build client" ON)
 option(BUILD_SERVER "build server" ON)
 option(BUILD_TEST "build tests" OFF)
 option(CREATE_COVERAGE "run tests and create coverage output" OFF)
+option(SCAN_BUILD "create a target to run the static code analysis through scan-build" OFF)
 
 if (CREATE_COVERAGE)
     set(BUILD_TEST ON)
     include("${CMAKE_SOURCE_DIR}/cmake/modules/coverage-build.cmake")
 endif (CREATE_COVERAGE)
+
+if (SCAN_BUILD)
+    include("${CMAKE_SOURCE_DIR}/cmake/modules/scan-build.cmake")
+endif(SCAN_BUILD)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
