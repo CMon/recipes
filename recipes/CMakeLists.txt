@@ -2,7 +2,6 @@ add_subdirectory(common)
 
 if (BUILD_CLIENT)
     message("building client")
-    add_subdirectory(console-client)
     add_subdirectory(clientcommon)
     add_subdirectory(qml-client)
 endif(BUILD_CLIENT)
