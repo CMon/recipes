@@ -92,7 +92,7 @@ bool UserService::addUser(User user, QString password, QWebSocket * sendingSocke
 		return false;
 	}
 
-	if (!user.isValidForServer()) {
+	if (!user.isValidForClient()) {
 		qCWarning(SERVICES) << "invalid input chars in user:" << user.toString();
 		return false;
 	}
