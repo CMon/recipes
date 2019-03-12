@@ -4,7 +4,12 @@ project(Recipes VERSION 1.0 DESCRIPTION "A Server client app to store recipes")
 option(BUILD_CLIENT "build client" ON)
 option(BUILD_SERVER "build server" ON)
 option(BUILD_TEST "build tests" OFF)
+option(CREATE_COVERAGE "run tests and create coverage output" OFF)
 
+if (CREATE_COVERAGE)
+    set(BUILD_TEST ON)
+    include("${CMAKE_SOURCE_DIR}/cmake/modules/coverage-build.cmake")
+endif (CREATE_COVERAGE)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
