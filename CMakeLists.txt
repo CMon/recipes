@@ -19,6 +19,7 @@ add_subdirectory(recipes)
 add_subdirectory(modules/rpclib/rpclib)
 
 if (BUILD_TEST)
+    enable_testing()
     add_subdirectory(test)
 endif(BUILD_TEST)
 

@@ -17,6 +17,7 @@ set(SOURCES
 )
 
 add_executable(${TARGET_NAME} ${SOURCES} ${QT_RESOURCES})
+add_test(NAME ${TARGET_NAME} COMMAND ${TARGET_NAME})
 
 target_link_libraries(${TARGET_NAME}
     clientcommon
