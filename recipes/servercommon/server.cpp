@@ -78,6 +78,11 @@ bool Server::isRunning() const
 	return rpcServer_.isRunning();
 }
 
+QUrl Server::getUrl() const
+{
+	return rpcServer_.getServerUrl();
+}
+
 void Server::loadSettings()
 {
 	const QSettings settings(SETTING_ORGA_STRING, SETTING_APP_STRING);

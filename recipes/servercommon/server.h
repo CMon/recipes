@@ -8,6 +8,7 @@
 #include <QHostAddress>
 #include <QPointer>
 #include <QString>
+#include <QUrl>
 
 class Server
 {
@@ -25,6 +26,8 @@ public:
 	bool start();
 	void stop();
 	bool isRunning() const;
+
+	QUrl getUrl() const;
 
 private:
 	void loadSettings();
