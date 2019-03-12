@@ -81,6 +81,7 @@ User UserService::login(const QString &login, const QString &password, QWebSocke
 void UserService::logout(QWebSocket * client)
 {
 	ClientInfoCache::instance().removeUser(client);
+	client->close(QWebSocketProtocol::CloseCodeGoingAway);
 }
 
 bool UserService::addUser(User user, QString password, QWebSocket * sendingSocket)
