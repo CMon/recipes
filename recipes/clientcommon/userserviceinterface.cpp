@@ -3,10 +3,11 @@
 #include <recipes/common/user.h>
 #include <recipes/clientcommon/logcategory.h>
 
-#include <rpclib/client/rpcclient.h>
 #include <cereal/archives/json.hpp>
-#include <QJsonObject>
 #include <QJsonDocument>
+#include <QJsonObject>
+#include <rpclib/client/rpcclient.h>
+#include <rpclib/common/serializehelper.h>
 
 Q_LOGGING_CATEGORY(GUI_CLIENT, "clientcommon.services")
 
@@ -16,7 +17,13 @@ UserServiceInterface::UserServiceInterface(RPCClient * rpcClient, QObject * pare
     , rpcClient_(rpcClient)
 {
 	connect(rpcClient_, &RPCClient::newMessageArrived, this, &UserServiceInterface::handleMessageFromServer);
-	connect(rpcClient_, &RPCClient::disconnected, this, &UserServiceInterface::logout);
+	connect(rpcClient_, &RPCClient::disconnected, this, &UserServiceInterface::onDisconnected);
+}
+
+UserServiceInterface::~UserServiceInterface()
+{
+	logout();
+	onDisconnected();
 }
 
 void UserServiceInterface::login(const QString & username, const QString & password) const
@@ -39,6 +46,29 @@ void UserServiceInterface::login(const QString & username, const QString & passw
 }
 
 void UserServiceInterface::logout()
+{
+	rpcClient_->messageToServer("void UserService::logout()", QJsonValue());
+}
+
+void UserServiceInterface::addUser(const User & user, const QString & password)
+{
+	std::stringstream destStream;
+	{
+		cereal::JSONOutputArchive archive(destStream);
+		archive(user);
+		archive(password);
+	}
+	const std::string str = destStream.str();
+
+	rpcClient_->messageToServer("bool UserService::addUser(User, QString)", QJsonDocument::fromJson(QByteArray::fromStdString(str)).object());
+}
+
+void UserServiceInterface::getAllUsers()
+{
+	rpcClient_->messageToServer("QList<User> UserService::getUsers()", QJsonValue());
+}
+
+void UserServiceInterface::onDisconnected()
 {
 	isLoggedIn_ = false;
 	emit loggedInChanged();
@@ -69,6 +99,16 @@ void UserServiceInterface::handleCallbackResponse(const QString & signature, con
 		User user;
 		archive(user);
 		handleLogin(user);
+	} else if (signature == "bool UserService::addUser(User, QString)") {
+		bool added = false;
+		archive(added);
+
+		emit couldAddUser(added);
+	} else if (signature == "QList<User> UserService::getUsers()") {
+		QList<User> users;
+		archive(users);
+
+		emit listOfUsersReceived(users);
 	}
 }
 
