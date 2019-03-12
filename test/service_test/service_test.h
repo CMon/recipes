@@ -1,6 +1,7 @@
 #pragma once
 
-#include <test/testserver.h>
+#include <test/shared/testserver.h>
+#include <rpclib/client/rpcclient.h>
 
 #include <QTest>
 
@@ -15,4 +16,5 @@ private slots:
 
 private:
 	TestServer testServer_;
+	RPCClient rpcClient_;
 };
