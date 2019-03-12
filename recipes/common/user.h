@@ -28,7 +28,7 @@ class User
 {
 public:
 	User();
-	User(const QString & login, const Permissions & permissions, const QString & firstName, const QString & lastName, bool isDeleted);
+	User(const QString & login, const Permissions & permissions, const QString & firstName, const QString & lastName, bool isDeleted = false);
 
 	bool isNull() const;
 	bool hasPermission(const Permissions::Permission & permission) const;
