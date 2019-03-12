@@ -53,6 +53,11 @@ bool TestServer::insertTestData()
 	return server_.insertTestData();
 }
 
+QUrl TestServer::getUrl() const
+{
+	return server_.getUrl();
+}
+
 static void resetDatabase()
 {
 	QSqlDatabase db = QSqlDatabase::addDatabase("QMYSQL");

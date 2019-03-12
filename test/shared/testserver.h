@@ -17,6 +17,8 @@ public:
 
 	bool insertTestData();
 
+	QUrl getUrl() const;
+
 private:
 	bool isServerRunning();
 	void initTestDatabase(bool initDB);
