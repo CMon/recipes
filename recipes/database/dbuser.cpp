@@ -40,7 +40,7 @@ bool updatePermissions(const UserId & userId, const Permissions & perms)
 	return ta.commit();
 }
 
-bool getPermissions(const UserId & userId, Permissions & perms)
+bool getUserPermissions(const UserId & userId, Permissions & perms)
 {
 	TRANSACTION(ta);
 	perms = Permissions();
@@ -122,6 +122,7 @@ bool updateUser(const User & user, const QString & password)
 		query.bindValue(":passwordCrypto", usedCrypto);
 	}
 	query.bindValue(":isDeleted", false);
+	if (!Database::executeQuery(query)) return false;
 
 	return ta.commit();
 }
@@ -198,7 +199,7 @@ User DB::getUser(const QString & login)
 	const UserId userId = query.value(0).toInt();
 
 	Permissions perms;
-	if (!getPermissions(userId, perms)) return User();
+	if (!getUserPermissions(userId, perms)) return User();
 
 	User user(query.value(1).toString(),
 	          perms,
@@ -269,7 +270,7 @@ QList<User> DB::getAllUsers(const int & id)
 		const UserId userId = query.value(0).toInt();
 
 		Permissions perms;
-		if (!getPermissions(userId, perms)) continue;
+		if (!getUserPermissions(userId, perms)) continue;
 
 		User user(query.value(1).toString(),
 		          perms,
