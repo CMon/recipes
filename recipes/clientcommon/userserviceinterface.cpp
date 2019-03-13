@@ -68,10 +68,14 @@ void UserServiceInterface::getAllUsers()
 	rpcClient_->messageToServer("QList<User> UserService::getUsers()", QJsonValue());
 }
 
+bool UserServiceInterface::loggedIn()
+{
+	return isLoggedIn_;
+}
+
 void UserServiceInterface::onDisconnected()
 {
-	isLoggedIn_ = false;
-	emit loggedInChanged();
+	setLoggedIn(false);
 }
 
 void UserServiceInterface::handleMessageFromServer(const QVariantHash & map)
@@ -121,6 +125,16 @@ void UserServiceInterface::handleNotificationResponse(const QString & notificati
 	Q_UNUSED(notification);
 //	if (notification == "ChatService::newMessage(Message)") {
 //	}
+}
+
+void UserServiceInterface::setLoggedIn(bool loggedIn)
+{
+	if (loggedIn == isLoggedIn_) {
+		return;
+	}
+
+	isLoggedIn_ = false;
+	emit loggedInChanged();
 }
 
 void UserServiceInterface::handleLogin(const User & user)

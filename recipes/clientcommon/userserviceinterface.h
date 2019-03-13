@@ -18,7 +18,7 @@ public:
 	Q_INVOKABLE void addUser(const User & user, const QString & password);
 	Q_INVOKABLE void getAllUsers();
 
-	bool loggedIn() { return isLoggedIn_; }
+	bool loggedIn();
 
 signals:
 	void loggedInChanged();
@@ -33,6 +33,7 @@ private slots:
 private:
 	void handleCallbackResponse(const QString & signature, const std::string & string);
 	void handleNotificationResponse(const QString & notification, const std::string & string);
+	void setLoggedIn(bool loggedIn);
 
 private:
 	void handleLogin(const User & user);

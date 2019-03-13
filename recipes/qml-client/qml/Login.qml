@@ -32,6 +32,14 @@ Rectangle {
         }
     }
 
+    Connections {
+        target: ClientController
+        onStatusChanged: {
+            error.text = ClientController.status;
+            error.visible = true
+        }
+    }
+
     ColumnLayout {
         anchors.centerIn: parent
 
@@ -61,6 +69,8 @@ Rectangle {
                 id: btnLogin
                 text: qsTr("Login");
                 onClicked: {
+                    error.text = ""
+                    error.visible = false
                     if (ClientController.connectToServer(host.currentText, true)) {
                         UserService.login(username.text, password.text)
                     } else {
