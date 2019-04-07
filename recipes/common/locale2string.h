@@ -3,7 +3,6 @@
 #include <rpclib/common/types/types.h>
 #include <cereal/cereal.hpp>
 #include <QLocale>
-#include <QMetaType>
 
 class Locale2String
 {

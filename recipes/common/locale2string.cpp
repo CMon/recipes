@@ -1,10 +1,5 @@
 #include "locale2string.h"
 
-#include <recipes/common/util.h>
-
-#include <QHashIterator>
-#include <QJsonObject>
-
 Locale2String::Locale2String()
 {
 }
@@ -16,13 +11,13 @@ Locale2String::Locale2String(const QLocale & loc, const QString & value)
 
 bool Locale2String::operator ==(const Locale2String & rhs) const
 {
-	bool equal = mapping_.size() == rhs.mapping_.size();
+	if (mapping_.size() != rhs.mapping_.size()) return false;
 
 	foreach(const QLocale & locale, mapping_.keys()) {
-		equal = equal && (value(locale) == rhs.value(locale));
+		if (value(locale) != rhs.value(locale)) return false;
 	}
 
-	return equal;
+	return true;
 }
 
 bool Locale2String::operator !=(const Locale2String & rhs) const
