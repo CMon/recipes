@@ -10,6 +10,10 @@
 
 #include <QJsonObject>
 
+#include <QLoggingCategory>
+Q_DECLARE_LOGGING_CATEGORY(RECIPE_SERVICES)
+Q_LOGGING_CATEGORY(RECIPE_SERVICES, "recipe.services.recipe")
+
 RecipeService::RecipeService(QObject * parent)
     : QObject(parent)
 {

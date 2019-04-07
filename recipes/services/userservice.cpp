@@ -1,7 +1,6 @@
 #include "userservice.h"
 
 #include <recipes/database/dbuser.h>
-#include <recipes/services/logCategory.h>
 #include <recipes/servercommon/clientinfocache.h>
 
 #include <cereal/archives/json.hpp>
@@ -12,6 +11,10 @@
 #include <QJsonObject>
 #include <QUuid>
 #include <QWebSocket>
+
+#include <QLoggingCategory>
+Q_DECLARE_LOGGING_CATEGORY(USER_SERVICES)
+Q_LOGGING_CATEGORY(USER_SERVICES, "recipe.services.user")
 
 UserService::UserService(QObject * parent)
     : QObject (parent)
@@ -64,7 +67,7 @@ void UserService::registerMethods(RPCServer * server)
 User UserService::login(const QString &login, const QString &password, QWebSocket * sendingSocket)
 {
 	if (!DB::checkPassword(login, password)) {
-		qCWarning(SERVICES) << "wrong passwort for login:" << login;
+		qCWarning(USER_SERVICES) << "wrong passwort for login:" << login;
 		return User();
 	}
 
@@ -72,7 +75,7 @@ User UserService::login(const QString &login, const QString &password, QWebSocke
 
 	if (user.isNull()) return user;
 
-	qCInfo(SERVICES) << "User" << login << "successfully logged in";
+	qCInfo(USER_SERVICES) << "User" << login << "successfully logged in";
 	ClientInfoCache::instance().addUser(sendingSocket, user);
 
 	return user;
@@ -89,22 +92,22 @@ bool UserService::addUser(User user, QString password, QWebSocket * sendingSocke
 	const User currentUser = ClientInfoCache::instance().getUser(sendingSocket);
 
 	if (!currentUser.hasPermission(Permissions::Administrator)) {
-		qCWarning(SERVICES) << "permission not sufficient for user:" << currentUser.toString();
+		qCWarning(USER_SERVICES) << "permission not sufficient for user:" << currentUser.toString();
 		return false;
 	}
 
 	if (!user.isValidForClient()) {
-		qCWarning(SERVICES) << "invalid input chars in user:" << user.toString();
+		qCWarning(USER_SERVICES) << "invalid input chars in user:" << user.toString();
 		return false;
 	}
 
 	if (user.getLogin().isEmpty()) {
-		qCDebug(SERVICES) << "Could not add user, no login given";
+		qCDebug(USER_SERVICES) << "Could not add user, no login given";
 		return false;
 	}
 
 	if (password.isEmpty()) {
-		qCDebug(SERVICES) << "no password given, adding random password";
+		qCDebug(USER_SERVICES) << "no password given, adding random password";
 		password = QUuid::createUuid().toString().left(8);
 	}
 
@@ -116,7 +119,7 @@ QList<User> UserService::getUsers(QWebSocket * sendingSocket)
 	const User currentUser = ClientInfoCache::instance().getUser(sendingSocket);
 
 	if (!currentUser.hasPermission(Permissions::Administrator)) {
-		qCWarning(SERVICES) << "permission not sufficient for user:" << currentUser.toString();
+		qCWarning(USER_SERVICES) << "permission not sufficient for user:" << currentUser.toString();
 		return QList<User>();
 	}
 

@@ -6,7 +6,6 @@ find_package(Qt5Core CONFIG REQUIRED)
 find_package(Qt5WebSockets CONFIG REQUIRED)
 
 set(PUBLIC_HEADER
-    logCategory.h
     recipeservice.h
     userservice.h
 )
