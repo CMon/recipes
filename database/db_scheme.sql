@@ -14,7 +14,7 @@ CREATE TABLE `users` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `permission` (
-    `id`       INT(10) NOT NULL,
+    `id`       INT(10) NOT NULL AUTO_INCREMENT,
     `techName` VARCHAR(255) NOT NULL,
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

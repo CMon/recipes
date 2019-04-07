@@ -17,6 +17,8 @@ add_library(${LIB_NAME} SHARED
     log.h
     permission.cpp
     permission.h
+    permissiondata.cpp
+    permissiondata.h
     portion.cpp
     portion.h
     recipe.cpp

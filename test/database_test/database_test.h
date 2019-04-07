@@ -18,4 +18,14 @@ private slots:
 	void addOrUpdateIngredient_getIngredients();
 	void addOrUpdatePortion_getPortions();
 	void addOrUpdateRecipe_getRecipes();
+
+	void permission_addPermission_data();
+	void permission_addPermission();
+	void permission_setDescription_data();
+	void permission_setDescription();
+	void permission_setTitle_data();
+	void permission_setTitle();
+
+	void permission_setTitleAndDescription_data();
+	void permission_setTitleAndDescription();
 };

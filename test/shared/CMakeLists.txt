@@ -11,6 +11,7 @@ find_package(Qt5WebSockets CONFIG REQUIRED)
 add_library(${LIB_NAME} SHARED
     testserver.cpp
     testserver.h
+    util.h
 )
 
 qt5_add_resources(QT_RESOURCES

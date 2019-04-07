@@ -45,4 +45,5 @@ public:
 private:
 	QHash<QLocale, QString> mapping_;
 };
+Q_DECLARE_METATYPE(Locale2String);
 CEREAL_CLASS_VERSION(Locale2String, 1);

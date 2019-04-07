@@ -1,10 +1,13 @@
 #include "database_test.h"
 
 #include <recipes/common/user.h>
+#include <recipes/database/database.h>
+#include <recipes/database/dbpermission.h>
 #include <recipes/database/dbrecipe.h>
 #include <recipes/database/dbuser.h>
-#include <recipes/database/database.h>
 #include <recipes/database/migrator.h>
+
+#include <shared/util.h>
 
 #include <QSqlDatabase>
 
@@ -328,6 +331,181 @@ void DatabaseTest::addOrUpdateRecipe_getRecipes()
 		QVERIFY(recipes.contains(updatedRecipe));
 		QVERIFY(recipes.contains(anotherRecipe));
 	}
+}
+
+void DatabaseTest::permission_addPermission_data()
+{
+	QTest::addColumn<QString>("techName");
+	QTest::addColumn<bool>("valid");
+
+	QTest::addRow("empty1") << QString()  << false;
+	QTest::addRow("empty2") << ""         << false;
+	QTest::addRow("name")   << "testName" <<  true;
+}
+
+void DatabaseTest::permission_addPermission()
+{
+	QFETCH(QString, techName);
+	QFETCH(bool, valid);
+
+	const int expectedPerms = DB::getPermissions().size() + (valid ? 1 : 0);
+
+	const int permissionId = DB::addPermission(techName);
+	const bool createdPermissionValid = permissionId > 0;
+	QCOMPARE(createdPermissionValid, valid);
+
+	const QList<PermissionData> perms = DB::getPermissions();
+	QCOMPARE(perms.size(), expectedPerms);
+
+	bool contained = false;
+	for(const PermissionData & pData: perms) {
+		if (pData.techName() == techName) {
+			contained = true;
+		}
+	}
+	QCOMPARE(contained, valid);
+}
+
+void DatabaseTest::permission_setDescription_data()
+{
+	QTest::addColumn<Locale2String>("description");
+	QTest::addColumn<bool>("valid");
+
+	Locale2String multi(QLocale("de_DE"), "Beschreibung auf Deutsch");
+	multi.add(QLocale("en_US"), "Description in simplified English");
+
+	QTest::addRow("empty")   << Locale2String()                                             << false;
+	QTest::addRow("filled1") << Locale2String(QLocale("de_DE"), "Beschreibung auf Deutsch") <<  true;
+	QTest::addRow("filled2") << multi                                                       <<  true;
+}
+
+void DatabaseTest::permission_setDescription()
+{
+	QFETCH(Locale2String, description);
+	QFETCH(bool, valid);
+
+	const int expectedPerms = DB::getPermissions().size() + 1;
+	const QString techName = QString("techName_%1__%2").arg(__FUNCTION__).arg(QTest::currentDataTag());
+
+	const int permissionId = DB::addPermission(techName);
+	QVERIFY(permissionId > 0);
+
+	QCOMPARE(DB::setPermissionDescription(permissionId, description), valid);
+
+	QList<PermissionData> perms = DB::getPermissions();
+	QCOMPARE(perms.size(), expectedPerms);
+
+	if (valid) {
+		bool contained = false;
+		for(const PermissionData & pData: perms) {
+			if (pData.techName() == techName) {
+				for (const QLocale & addedLoc: description.keys()) {
+					const QString actualDesc = pData.description().value(addedLoc);
+					const QString expectedDesc = description.value(addedLoc);
+					QCOMPARE(actualDesc, expectedDesc);
+					contained = true;
+				}
+			}
+		}
+		QCOMPARE(contained, valid);
+	}
+}
+
+void DatabaseTest::permission_setTitle_data()
+{
+	QTest::addColumn<Locale2String>("title");
+	QTest::addColumn<bool>("valid");
+
+	Locale2String multi(QLocale("de_DE"), "Administrator");
+	multi.add(QLocale("en_US"), "Admin");
+
+	QTest::addRow("empty")   << Locale2String() << false;
+	QTest::addRow("filled1") << Locale2String(QLocale("de_DE"), "Administrator") <<  true;
+	QTest::addRow("filled2") << multi <<  true;
+}
+
+void DatabaseTest::permission_setTitle()
+{
+	QFETCH(Locale2String, title);
+	QFETCH(bool, valid);
+
+	const int expectedPerms = DB::getPermissions().size() + 1;
+	const QString techName = QString("techName_%1__%2").arg(__FUNCTION__).arg(QTest::currentDataTag());
+
+	const int permissionId = DB::addPermission(techName);
+	QVERIFY(permissionId > 0);
+
+	QCOMPARE(DB::setPermissionTitle(permissionId, title), valid);
+
+	QList<PermissionData> perms = DB::getPermissions();
+	QCOMPARE(perms.size(), expectedPerms);
+
+	if (valid) {
+		bool contained = false;
+		for(const PermissionData & pData: perms) {
+			if (pData.techName() == techName) {
+				for (const QLocale & addedLoc: title.keys()) {
+					const QString actualTitle = pData.title().value(addedLoc);
+					const QString expectedTitle = title.value(addedLoc);
+					QCOMPARE(actualTitle, expectedTitle);
+					contained = true;
+				}
+			}
+		}
+		QCOMPARE(contained, valid);
+	}
+}
+
+void DatabaseTest::permission_setTitleAndDescription_data()
+{
+	QTest::addColumn<Locale2String>("title");
+	QTest::addColumn<Locale2String>("description");
+
+	Locale2String multiTitle(QLocale("de_DE"), "Administrator");
+	multiTitle.add(QLocale("en_US"), "Admin");
+	Locale2String multiDescription(QLocale("de_DE"), "Beschreibung auf Deutsch");
+	multiDescription.add(QLocale("en_US"), "Description in simplified English");
+
+	QTest::newRow("empty")             << Locale2String()                                  << Locale2String();
+	QTest::newRow("titleAndDesc")      << Locale2String(QLocale("de_DE"), "Administrator") << Locale2String(QLocale("de_DE"), "Hat die erlaubnis administrativ zu arbeiten");
+	QTest::newRow("multiTitleAndDesc") << multiTitle                                       << multiDescription;
+}
+
+void DatabaseTest::permission_setTitleAndDescription()
+{
+	QFETCH(Locale2String, title);
+	QFETCH(Locale2String, description);
+
+	const int expectedPerms = DB::getPermissions().size() + 1;
+	const QString techName = QString("techName_%1__%2").arg(__FUNCTION__).arg(QTest::currentDataTag());
+
+	const int permissionId = DB::addPermission(techName);
+	QVERIFY(permissionId > 0);
+
+	DB::setPermissionTitle(permissionId, title);
+	DB::setPermissionDescription(permissionId, description);
+
+	QList<PermissionData> perms = DB::getPermissions();
+	QCOMPARE(perms.size(), expectedPerms);
+
+	int contained = 0;
+	for(const PermissionData & pData: perms) {
+		if (pData.techName() == techName) {
+			for (const QLocale & addedLoc: title.keys()) {
+				const QString actualTitle = pData.title().value(addedLoc);
+				const QString expectedTitle = title.value(addedLoc);
+				QCOMPARE(actualTitle, expectedTitle);
+				contained++;
+			}
+			for (const QLocale & addedLoc: description.keys()) {
+				const QString actualDesc = pData.description().value(addedLoc);
+				const QString expectedDesc = description.value(addedLoc);
+				QCOMPARE(actualDesc, expectedDesc);
+				contained++;
+			}
+		}
+	}
+	QCOMPARE(contained, title.size() + description.size());
 }
 
 QTEST_MAIN(DatabaseTest)

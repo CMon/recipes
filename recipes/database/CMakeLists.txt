@@ -17,6 +17,8 @@ endif()
 add_library(${LIB_NAME} SHARED
     database.cpp
     database.h
+    dbpermission.cpp
+    dbpermission.h
     dbrecipe.cpp
     dbrecipe.h
     dbuser.cpp
