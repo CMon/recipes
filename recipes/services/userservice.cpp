@@ -125,8 +125,3 @@ QList<User> UserService::getUsers(QWebSocket * sendingSocket)
 
 	return DB::getAllUsers();
 }
-
-void UserService::connectionClosed(QWebSocket * client)
-{
-	ClientInfoCache::instance().removeUser(client);
-}
