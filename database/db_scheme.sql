@@ -166,4 +166,16 @@ CREATE TABLE `instructionStep` (
 -- scheme version 2     --
 --------------------------
 
-INSERT INTO permission(`id`, `techName`) VALUES(1, 'admin');
+INSERT INTO permission(`id`, `techName`) VALUES(1, 'administrator');
+INSERT INTO permission(`id`, `techName`) VALUES(2, 'create_recipe');
+INSERT INTO permission(`id`, `techName`) VALUES(3, 'read_recipes');
+INSERT INTO permission(`id`, `techName`) VALUES(4, 'add_ingredients');
+INSERT INTO permission(`id`, `techName`) VALUES(5, 'add_units');
+INSERT INTO permission(`id`, `techName`) VALUES(6, 'add_categories');
+
+INSERT INTO permission_i18n(`permissionId`, `language`, `title`, `description`) VALUES(1, 'de_DE', 'Administrator', 'Benutzt zur Erstellung neuer Nutzer und anpassung der Rechte');
+INSERT INTO permission_i18n(`permissionId`, `language`, `title`, `description`) VALUES(2, 'de_DE', 'Rezepte erstellen', 'Hat die Berechtigung Rezepte zu erstellen oder zu bearbeiten');
+INSERT INTO permission_i18n(`permissionId`, `language`, `title`, `description`) VALUES(3, 'de_DE', 'Rezepte lesen', 'Hat die Berechtigung Rezepte zu lesen');
+INSERT INTO permission_i18n(`permissionId`, `language`, `title`, `description`) VALUES(4, 'de_DE', 'Zutaten hinzufügen', 'Hat das Recht Zutaten hinzuzufügen oder zu bearbeiten');
+INSERT INTO permission_i18n(`permissionId`, `language`, `title`, `description`) VALUES(5, 'de_DE', 'Einheiten hinzufügen', 'Hat das Recht neue Einheiten und deren Umrechnungen hinzuzufügen oder zu bearbeiten');
+INSERT INTO permission_i18n(`permissionId`, `language`, `title`, `description`) VALUES(6, 'de_DE', 'Kategorien hinzufügen', 'Hat das Recht neue arten von Kategorien hinzuzufügen oder zu bearbeiten');

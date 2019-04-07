@@ -9,7 +9,12 @@ class Permissions
 {
 public:
 	enum Permission {
-		Administrator = 1,
+		Administrator  = 1,
+		CreateRecipe   = 2,
+		ReadRecipes    = 3,
+		AddIngredients = 4,
+		AddUnits       = 5,
+		AddCategories  = 6
 	};
 
 private:

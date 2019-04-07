@@ -21,6 +21,16 @@ INSERT INTO portions_i18n(`portionId`, `language`, `description`) VALUES(3, 'de_
 
 --- Admin permissions
 INSERT INTO userPermission(`userId`, `permissionId`) VALUES(1, 1);
+INSERT INTO userPermission(`userId`, `permissionId`) VALUES(1, 2);
+INSERT INTO userPermission(`userId`, `permissionId`) VALUES(1, 3);
+INSERT INTO userPermission(`userId`, `permissionId`) VALUES(1, 4);
+INSERT INTO userPermission(`userId`, `permissionId`) VALUES(1, 5);
+INSERT INTO userPermission(`userId`, `permissionId`) VALUES(1, 6);
 
 --- testUser permissions
 INSERT INTO userPermission(`userId`, `permissionId`) VALUES(2, 1);
+INSERT INTO userPermission(`userId`, `permissionId`) VALUES(2, 2);
+INSERT INTO userPermission(`userId`, `permissionId`) VALUES(2, 3);
+INSERT INTO userPermission(`userId`, `permissionId`) VALUES(2, 4);
+INSERT INTO userPermission(`userId`, `permissionId`) VALUES(2, 5);
+INSERT INTO userPermission(`userId`, `permissionId`) VALUES(2, 6);
