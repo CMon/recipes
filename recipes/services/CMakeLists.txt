@@ -5,14 +5,13 @@ set(CMAKE_AUTOMOC ON)
 find_package(Qt5Core CONFIG REQUIRED)
 find_package(Qt5WebSockets CONFIG REQUIRED)
 
-set(PUBLIC_HEADER
-    recipeservice.h
-    userservice.h
-)
-
-add_library(${LIB_NAME} SHARED ${PUBLIC_HEADER}
+add_library(${LIB_NAME} SHARED
+    adminservice.cpp
+    adminservice.h
     recipeservice.cpp
+    recipeservice.h
     userservice.cpp
+    userservice.h
 )
 target_link_libraries(${LIB_NAME}
     Qt5::Core
@@ -29,7 +28,6 @@ include_directories(
 set_target_properties(${LIB_NAME} PROPERTIES
     VERSION ${PROJECT_VERSION}
     SOVERSION 1
-    PUBLIC_HEADER ${PUBLIC_HEADER}
 )
 install(TARGETS ${LIB_NAME}
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
