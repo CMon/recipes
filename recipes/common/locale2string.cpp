@@ -4,6 +4,11 @@ Locale2String::Locale2String()
 {
 }
 
+Locale2String::Locale2String(const QString & loc, const QString & value)
+{
+	mapping_[QLocale(loc)] = value;
+}
+
 Locale2String::Locale2String(const QLocale & loc, const QString & value)
 {
 	mapping_[loc] = value;

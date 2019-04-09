@@ -8,6 +8,7 @@ class Locale2String
 {
 public:
 	Locale2String();
+	Locale2String(const QString & loc, const QString & value);
 	Locale2String(const QLocale & loc, const QString & value);
 
 	bool operator ==(const Locale2String & rhs) const;
