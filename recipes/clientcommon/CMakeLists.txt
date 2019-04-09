@@ -9,7 +9,6 @@ find_package(Qt5Sql CONFIG REQUIRED)
 add_library(${LIB_NAME} SHARED
     clientcontroller.cpp
     clientcontroller.h
-    logcategory.h
     recipesearchmodel.cpp
     recipesearchmodel.h
     userserviceinterface.cpp

@@ -1,7 +1,6 @@
 #include "userserviceinterface.h"
 
 #include <recipes/common/user.h>
-#include <recipes/clientcommon/logcategory.h>
 
 #include <cereal/archives/json.hpp>
 #include <QJsonDocument>
@@ -9,7 +8,9 @@
 #include <rpclib/client/rpcclient.h>
 #include <rpclib/common/serializehelper.h>
 
-Q_LOGGING_CATEGORY(GUI_CLIENT, "clientcommon.services")
+#include <QLoggingCategory>
+Q_DECLARE_LOGGING_CATEGORY(GUI_CLIENT_USERINTERFACE)
+Q_LOGGING_CATEGORY(GUI_CLIENT_USERINTERFACE, "clientcommon.userservice")
 
 UserServiceInterface::UserServiceInterface(RPCClient * rpcClient, QObject * parent)
     : QObject(parent)
@@ -29,12 +30,12 @@ UserServiceInterface::~UserServiceInterface()
 void UserServiceInterface::login(const QString & username, const QString & password) const
 {
 	if (username.isEmpty() || password.isEmpty()) {
-		qCWarning(GUI_CLIENT) << "username and password have to be provided to login";
+		qCWarning(GUI_CLIENT_USERINTERFACE) << "username and password have to be provided to login";
 		return;
 	}
 
 	if (!rpcClient_->isConnected()) {
-		qCWarning(GUI_CLIENT) << "not connected to any host, connect first";
+		qCWarning(GUI_CLIENT_USERINTERFACE) << "not connected to any host, connect first";
 		return;
 	}
 
@@ -122,7 +123,7 @@ void UserServiceInterface::handleNotificationResponse(const QString & notificati
 	stream.str(string);
 	cereal::JSONInputArchive archive(stream);
 
-	Q_UNUSED(notification);
+	Q_UNUSED(notification)
 //	if (notification == "ChatService::newMessage(Message)") {
 //	}
 }

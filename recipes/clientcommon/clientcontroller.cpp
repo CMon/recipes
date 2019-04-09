@@ -1,11 +1,12 @@
 #include "clientcontroller.h"
 
-#include <recipes/clientcommon/logcategory.h>
 #include <rpclib/client/rpcclient.h>
 
 #include <QJsonObject>
 #include <QJsonValue>
 
+#include <QLoggingCategory>
+Q_DECLARE_LOGGING_CATEGORY(GUI_CLIENT_CC)
 Q_LOGGING_CATEGORY(GUI_CLIENT_CC, "client.clientcontroller")
 
 ClientController::ClientController(RPCClient * rpcClient, QObject * parent)
