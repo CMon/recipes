@@ -4,5 +4,6 @@
         <file>images/admin.svg</file>
         <file>images/edit.svg</file>
         <file>images/search.svg</file>
+        <file>images/refresh.svg</file>
     </qresource>
 </RCC>

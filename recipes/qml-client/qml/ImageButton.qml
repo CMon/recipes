@@ -8,6 +8,15 @@ Rectangle {
     color: "transparent"
 
     Image {
+        Component.onCompleted: {
+            if(width > root.width) {
+                width = root.width;
+            }
+            if (height > root.height) {
+                height = root.height;
+            }
+        }
+
         anchors.centerIn: parent
         id: image
         MouseArea {

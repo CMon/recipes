@@ -7,5 +7,7 @@
         <file>qml/search/Search.qml</file>
         <file>qml/search/RecipeListDelegate.qml</file>
         <file>qml/ImageButton.qml</file>
+        <file>qml/administration/Administration.qml</file>
+        <file>qml/administration/Users.qml</file>
     </qresource>
 </RCC>

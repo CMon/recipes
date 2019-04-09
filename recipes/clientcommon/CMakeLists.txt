@@ -15,6 +15,8 @@ add_library(${LIB_NAME} SHARED
     recipesearchmodel.h
     userserviceinterface.cpp
     userserviceinterface.h
+    usersmodel.cpp
+    usersmodel.h
 )
 target_link_libraries(${LIB_NAME}
     Qt5::Core

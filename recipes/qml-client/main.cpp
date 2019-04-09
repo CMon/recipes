@@ -1,6 +1,7 @@
 #include <recipes/clientcommon/clientcontroller.h>
 #include <recipes/clientcommon/recipesearchmodel.h>
 #include <recipes/clientcommon/userserviceinterface.h>
+#include <recipes/clientcommon/usersmodel.h>
 
 #include <QApplication>
 #include <QQmlApplicationEngine>
@@ -40,8 +41,9 @@ int main(int argc, char *argv[])
 	engine.rootContext()->setContextProperty("UserService", &userService);
 
 	RecipeSearchModel recipeSearchModel(Client.data());
-
 	engine.rootContext()->setContextProperty("recipeSearchModel", &recipeSearchModel);
+	UsersModel usersModel(Client.data(), &userService);
+	engine.rootContext()->setContextProperty("usersModel", &usersModel);
 
 	engine.load(QUrl(QStringLiteral("qrc:/qml/main.qml")));
 
