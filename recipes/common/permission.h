@@ -14,7 +14,10 @@ public:
 		ReadRecipes    = 3,
 		AddIngredients = 4,
 		AddUnits       = 5,
-		AddCategories  = 6
+		AddCategories  = 6,
+
+		FIRST = Administrator,
+		LAST = AddCategories
 	};
 
 private:

@@ -22,6 +22,8 @@ void Server::init()
 	userService_->registerMethods(&rpcServer_);
 	recipeService_ = new RecipeService;
 	recipeService_->registerMethods(&rpcServer_);
+	adminService_ = new AdminService;
+	adminService_->registerMethods(&rpcServer_);
 }
 
 QList<QPair<QString, QString>> Server::availableServiceMethods()

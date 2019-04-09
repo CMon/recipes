@@ -7,6 +7,8 @@ find_package(Qt5WebSockets CONFIG REQUIRED)
 find_package(Qt5Sql CONFIG REQUIRED)
 
 add_library(${LIB_NAME} SHARED
+    adminserviceinterface.cpp
+    adminserviceinterface.h
     clientcontroller.cpp
     clientcontroller.h
     recipesearchmodel.cpp

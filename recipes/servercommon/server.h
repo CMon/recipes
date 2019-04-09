@@ -1,6 +1,7 @@
 #ifndef SERVER_H
 #define SERVER_H
 
+#include <recipes/services/adminservice.h>
 #include <recipes/services/recipeservice.h>
 #include <recipes/services/userservice.h>
 #include <rpclib/server/rpcserver.h>
@@ -40,6 +41,7 @@ private:
 
 	QPointer<UserService> userService_;
 	QPointer<RecipeService> recipeService_;
+	QPointer<AdminService> adminService_;
 };
 
 #endif // SERVER_H
