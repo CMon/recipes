@@ -8,6 +8,6 @@ qrc_*
 *.pro.user*
 .qmake.cache
 .qmake.stash
-*.txt.user
+*.txt.user*
 *.log
 
