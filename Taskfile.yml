@@ -1,0 +1,69 @@
+version: '3'
+
+vars:
+  BUILD_FOLDER: ${HOME}/builds/build-recipes
+  AD_GLOBAL_REQUIRES: --require asciidoctor-diagram --section-numbers --verbose --require asciidoctor-pdf --backend pdf --attribute allow-uri-read
+  DOCKER_ASCIIDOCTOR: docker run -it -u $(id -u):$(id -g) -v $(pwd):/documents/ asciidoctor/docker-asciidoctor asciidoctor {{.AD_GLOBAL_REQUIRES}} --require asciidoctor-kroki
+
+tasks:
+  default:
+    deps: [build-all]
+
+  build-all:
+    desc: build server and clients
+    deps: [build-client, build-server]
+
+  build-client:
+    desc: build cpp client
+    cmds:
+      - echo todo
+
+  compile-proto-files:
+    desc: compile proto files to golang and cpp interfaces
+    deps: [compile-proto-to-golang]
+
+  compile-proto-to-golang:
+    desc: compile proto to golang
+    dir: recipes
+    cmds:
+      - mkdir -p {{.BUILD_FOLDER}}/golang-generated/
+      - protoc -I=./protos --go_out={{.BUILD_FOLDER}}/golang-generated/ ./protos/recipes.proto
+
+  build-server:
+    desc: build go implmentation server
+    dir: recipes/golang-server
+    sources:
+      - "**/*.go"
+      - exclude: "**/*_test.go"
+    generates:
+      - bin/threagile
+    vars:
+      GOFLAGS: -a -ldflags="-s -w -X main.buildTimestamp=$(shell date '+%Y%m%d%H%M%S')"
+    cmds:
+      - go mod download
+      - go build -o {{.BUILD_FOLDER}}/bin/golang-server main.go
+
+  run-debug-server:
+    desc: run go implementation server
+    deps: [build-server]
+    dir: "{{.BUILD_FOLDER}}/bin/"
+    cmds:
+      - rm -f /tmp/dummy-db.sqlite
+      - ./golang-server -database /tmp/dummy-db.sqlite -initTestData
+      - ./golang-server -database /tmp/dummy-db.sqlite
+
+  golangci-lint:
+    desc: run golangci-lint on current code
+    dir: recipes/golang-server
+    cmds:
+      - docker run --rm -it -v $(pwd):/app -w /app golangci/golangci-lint golangci-lint run -v
+
+  gosec:
+    desc: run securego/gosec
+    dir: recipes/golang-server
+    cmds:
+      - docker run --rm -it -v $(pwd):/app -w /app securego/gosec /app/...
+
+  linting:
+    desc: all linting jobs
+    deps: [golangci-lint, gosec]

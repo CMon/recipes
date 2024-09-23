@@ -106,7 +106,7 @@ func (db database) InitDatabase() error {
 	return nil
 }
 
-func (db database) AddDebugData() error {
+func (db database) AddTestData() error {
 	garlic := Ingredient{Name: "Garlic", IsLiquid: false, ContainsGluten: false, ContainsLactose: false}
 	chili := Ingredient{Name: "Chili", IsLiquid: false, ContainsGluten: false, ContainsLactose: false}
 

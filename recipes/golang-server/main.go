@@ -10,6 +10,7 @@ func main() {
 	fmt.Println("Running recipes Server")
 
 	var databaseFileName = flag.String("database", "/tmp/test.db", "The file the sqlite db should be stored")
+	var initTestData = flag.Bool("initTestData", false, "Init the database with test data")
 	flag.Parse()
 	// TODO:
 	// create proto file to communicate with this go server
@@ -25,6 +26,8 @@ func main() {
 	}
 	db.InitDatabase()
 
-	db.AddDebugData()
+	if *initTestData {
+		db.AddTestData()
+	}
 
 }

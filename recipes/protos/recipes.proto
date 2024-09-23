@@ -1,0 +1,40 @@
+syntax = "proto3";
+
+option go_package = "protos/recipes";
+
+message RecipeId {
+    int64 id = 1;
+}
+
+message Offset {
+    int64 offset = 1;
+}
+
+enum ErrorCode {
+    ERR_OK = 0;
+    ERR_INTERNAL_ERROR = 1;
+}
+
+message Recipe {
+    string name = 1;
+}
+
+message RecipeRet {
+    ErrorCode errorCode = 1;
+    Recipe recipe = 2;
+}
+
+message RecipeList {
+    int64 offset = 1;
+    repeated Recipe recipes = 2;
+}
+
+message RecipeListRet {
+    ErrorCode errorCode = 1;
+    RecipeList recipes = 2;
+}
+
+service Recipes {
+    rpc recipe(RecipeId) returns (Recipe);
+    rpc recipes(Offset) returns (RecipeList);
+}
