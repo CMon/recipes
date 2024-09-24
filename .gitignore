@@ -11,3 +11,5 @@ qrc_*
 *.txt.user*
 *.log
 
+*.pb.go
+.task

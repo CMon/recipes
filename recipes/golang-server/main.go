@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"recipes/server/database"
+	"recipes/server/grpc"
 )
 
 func main() {
@@ -30,4 +31,5 @@ func main() {
 		db.AddTestData()
 	}
 
+	grpc.Start(&db)
 }

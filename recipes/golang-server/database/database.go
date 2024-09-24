@@ -60,24 +60,24 @@ type Recipe struct {
 	Ingredients []IngredientPOD
 }
 
-type database struct {
+type Database struct {
 	dbFile string
 	dbConn *gorm.DB
 }
 
-func NewDatabaseConnection(databaseFile string) (database, error) {
+func NewDatabaseConnection(databaseFile string) (Database, error) {
 	dbConn, err := gorm.Open(sqlite.Open(databaseFile), &gorm.Config{})
 	if err != nil {
 		panic("failed to connect database")
 	}
-	db := database{
+	db := Database{
 		dbFile: databaseFile,
 		dbConn: dbConn,
 	}
 	return db, err
 }
 
-func (db database) InitDatabase() error {
+func (db Database) InitDatabase() error {
 	// Migrate the schema
 	db.dbConn.AutoMigrate(&Unit{})
 	db.dbConn.AutoMigrate(&Ingredient{})
@@ -106,7 +106,7 @@ func (db database) InitDatabase() error {
 	return nil
 }
 
-func (db database) AddTestData() error {
+func (db Database) AddTestData() error {
 	garlic := Ingredient{Name: "Garlic", IsLiquid: false, ContainsGluten: false, ContainsLactose: false}
 	chili := Ingredient{Name: "Chili", IsLiquid: false, ContainsGluten: false, ContainsLactose: false}
 
@@ -142,4 +142,11 @@ func (db database) AddTestData() error {
 	db.dbConn.Create(&hotSauce)
 
 	return nil
+}
+
+func (db Database) GetRecipes(limit int, offset int) ([]Recipe, error) {
+	var recipes []Recipe
+	result := db.dbConn.Limit(limit).Offset(offset).Find(&recipes)
+
+	return recipes, result.Error
 }

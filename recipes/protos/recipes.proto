@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-option go_package = "protos/recipes";
+option go_package = "protos/grpcInterface";
 
 message RecipeId {
     int64 id = 1;
@@ -35,6 +35,6 @@ message RecipeListRet {
 }
 
 service Recipes {
-    rpc recipe(RecipeId) returns (Recipe);
-    rpc recipes(Offset) returns (RecipeList);
+    rpc Recipe(RecipeId) returns (RecipeRet) {}
+    rpc Recipes(Offset) returns (RecipeListRet) {}
 }
